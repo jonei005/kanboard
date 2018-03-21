@@ -71,7 +71,7 @@ class Register extends Component {
 
         var data = JSON.stringify(userData);
 
-        console.log("User data is: ", data);
+        //console.log("User data is: ", data);
 
         fetch("http://localhost:3001/register", {
             method: "post",
