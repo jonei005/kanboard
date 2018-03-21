@@ -6,6 +6,7 @@ router.get('/', function(req, res, next) {
   res.render('index', { title: 'Express' });
 });
 
+// handle login requests
 router.post('/login', function(req, res, next) {
   console.log("Someone wants to login...\n");
   // handle login attempt
@@ -15,6 +16,7 @@ router.post('/login', function(req, res, next) {
   // send token? or something?
 });
 
+// handle registration requests
 router.post('/register', function(req, res, next) {
 
   if (!req.body) {
@@ -47,6 +49,7 @@ router.post('/register', function(req, res, next) {
   return res.status(200).send("Registered!");
 });
 
+// for handling pre-flight requests for registration (needed?)
 router.options('/register', function(req, res, next) {
   res.set('access-control-allow-origin', '*')
   return res.status(200);
