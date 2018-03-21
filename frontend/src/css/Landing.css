@@ -1,0 +1,19 @@
+/* Landing page styles */
+
+#kanboard.container {
+    color: #333;
+}
+
+#kanboard .page-title {
+    font-size: 36pt;
+}
+
+.kanboard-description {
+    text-align: justify;
+    font-size: 16pt;
+    margin-bottom: 48px;
+}
+
+.kanboard-description:first-of-type {
+    margin-top: 64px;
+}

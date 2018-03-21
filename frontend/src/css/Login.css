@@ -1,0 +1,48 @@
+/* Login page styles */
+
+
+.login-form {
+    width: 400px;
+    margin: 64px auto;
+    color: #333;
+}
+
+.login-field {
+    display: block;
+    margin: 0 auto;
+    width: 376px;
+    padding: 12px;
+    margin-bottom: 36px;
+    border-radius: 5px 5px 5px 5px;
+    border-width: 1px;
+    border-color: #ddd;
+    border-style: solid;
+    box-shadow: inset 2px 2px 4px -2px #ccc;
+    font-size: 12pt;
+}
+
+.login-form p {
+    text-align: left;
+    margin-bottom: 6px;
+    font-size: 14pt;
+}
+
+.login-button {
+    text-align: center;
+    margin: 0 auto;
+    display: block;
+    font-size: 14pt;
+    border: none;
+    border-radius: 5px;
+    padding: 12px 18px;
+    box-shadow: 2px 2px 6px -1px #333;
+    background: #fbf380;
+    color: #42426a;
+    cursor: pointer;
+    margin-top: 64px;
+}
+
+.login-button:hover {
+    opacity: 0.8;
+    margin-top: 66px;
+}
