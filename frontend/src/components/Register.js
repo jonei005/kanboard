@@ -81,11 +81,14 @@ class Register extends Component {
                 'content-type': 'application/json'
             }
         }).then(response => {
-            console.log(response);
-            if (response.status === 200) {
-                alert("Success!");
+            if (response.status !== 200) {
+                alert("Registration Failed");
             }
-        })
+            return response.json();
+
+        }).then(data => {
+            console.log(data.message);
+        });
 
     }
 

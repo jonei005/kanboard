@@ -46,7 +46,7 @@ router.post('/register', function(req, res, next) {
 
   // send token? authentication?? what???
 
-  return res.status(200).send("Registered!");
+  res.status(200).json({message: "Successfully signed up as " + data.email});
 });
 
 // for handling pre-flight requests for registration (needed?)
