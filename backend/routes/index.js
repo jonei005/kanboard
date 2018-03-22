@@ -1,6 +1,8 @@
 var express = require('express');
 var router = express.Router();
 
+const db = require('../db');
+
 /* GET home page. */
 router.get('/', function(req, res, next) {
   res.render('index', { title: 'Express' });
@@ -27,22 +29,36 @@ router.post('/register', function(req, res, next) {
   var data = req.body;
 
   // validate credentials
-  if (data.email.length === 0 || data.password.length === 0 || data.confirm.length === 0) {
+  if (data.email.length === 0 || 
+    data.name.length === 0 ||
+    data.password.length === 0 || 
+    data.confirm.length === 0) {
     console.log("Register: Some field is empty...");
-    return res.status(400).send("Empty");
+    return res.status(400).json({message: "Empty"});
   }
 
   if (data.password !== data.confirm) {
     console.log("Register: Passwords don't match...");
-    return res.status(400).send("Matching");
+    return res.status(400).json({message: "Matching"});
   }
 
   if (data.password.length < 6) {
     console.log("Register: Password is too short...");
-    return res.status(400).send("Length");
+    return res.status(400).json({message: "Length"});
   }
 
   // add user to database
+  var queryData = [data.email, data.name, data.password];
+  var queryString = "INSERT INTO Users (user_email, user_name, user_password) VALUES ($1, $2, $3)";
+
+  db.query(queryString, queryData, (err, response) => {
+      if (err) {
+        console.log("Error inserting User to database:");
+        console.log(err);
+        return res.status(400).json({message: "Database error"});
+      }
+    }
+  );
 
   // send token? authentication?? what???
 

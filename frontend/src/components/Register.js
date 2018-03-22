@@ -8,6 +8,7 @@ class Register extends Component {
 
         this.state = {
             email: "",
+            name: "",
             password: "",
             confirmPassword: ""
         }
@@ -20,16 +21,18 @@ class Register extends Component {
     }
 
     // for validating the form (check length, matching, etc)
-    validate(email, password, confirm) {
+    validate(email, name, password, confirm) {
         var emailEmpty = (email.length === 0);
+        var nameEmpty = (name.length === 0);
         var passwordEmpty = (password.length === 0);
         var confirmEmpty = (confirm.length === 0);
 
         // TODO: Make these messages appear on page
     
-        if (emailEmpty || passwordEmpty || confirmEmpty) {
+        if (emailEmpty || nameEmpty || passwordEmpty || confirmEmpty) {
             var message = "Please fill in the following fields: ";
             message += emailEmpty ? "Email, " : "";
+            message += nameEmpty ? "Name, " : "";
             message += passwordEmpty ? "Password, " : "";
             message += confirmEmpty ? "Confirm Password, " : "";
             console.log(message);
@@ -55,16 +58,18 @@ class Register extends Component {
 
         // form validation/sanitation
         var email = this.state.email;
+        var name = this.state.name;
         var password = this.state.password;
         var confirm = this.state.confirmPassword;
 
-        if (!this.validate(email, password, confirm)) {
+        if (!this.validate(email, name, password, confirm)) {
             return;
         }
 
         // make POST request
         var userData = {
             email: email,
+            name: name,
             password: password,
             confirm: confirm
         };
@@ -108,6 +113,9 @@ class Register extends Component {
                     <p>Email:</p>
                     <input type="email" className="register-field" id="email"
                         value={this.state.email} onChange={this.handleChange} />
+                    <p>Name:</p>
+                    <input type="text" className="register-field" id="name"
+                        value={this.state.name} onChange={this.handleChange} />
                     <p>Password:</p>
                     <input type="password" className="register-field" id="password"
                         value={this.state.password} onChange={this.handleChange} />
