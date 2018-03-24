@@ -76,8 +76,6 @@ class Register extends Component {
 
         var data = JSON.stringify(userData);
 
-        //console.log("User data is: ", data);
-
         fetch("http://localhost:3001/register", {
             method: "post",
             body: data,
@@ -93,6 +91,38 @@ class Register extends Component {
 
         }).then(data => {
             console.log(data.message);
+            console.log(data.user);
+
+            var loginData = new URLSearchParams();
+            loginData.append('email', userData.email);
+            loginData.append('password', userData.password);
+
+            // then login user 
+            fetch("http://localhost:3001/login", {
+                method: "post",
+                body: loginData,
+                headers: {
+                    'content-type': 'application/x-www-form-urlencoded; charset=UTF-8'
+                }
+            }).then((response) => {
+                if (response.status === 401) {
+                    alert("Logging in failed according to passport");
+                    return null;
+                }
+                else if (response.status !== 200) {
+                    alert("Log in failed");
+                    return null;
+                }
+                else {
+                    alert("Log in succeeded! I think!");
+                    return response.json();
+                }
+            }).then((data) => {
+                if (data) {
+                    console.log(data.message);
+                    // redirect user to home page or profile page
+                }
+            })
         });
 
     }

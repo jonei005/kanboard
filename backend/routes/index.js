@@ -1,5 +1,7 @@
 var express = require('express');
 var router = express.Router();
+var bcrypt = require('bcrypt');
+var passport = require('passport');
 
 const db = require('../db');
 
@@ -8,17 +10,16 @@ router.get('/', function(req, res, next) {
   res.render('index', { title: 'Express' });
 });
 
-// handle login requests
+
+// LOGIN REQUESTS
 router.post('/login', function(req, res, next) {
-  console.log("Someone wants to login...\n");
-  // handle login attempt
-
-  // validate credentials
-
-  // send token? or something?
+  console.log("Someone wants to login...");
+  console.log(req.body);
+  res.status(200).json({message: "I think this worked!"});
 });
 
-// handle registration requests
+
+// REGISTER REQUESTS
 router.post('/register', function(req, res, next) {
 
   if (!req.body) {
@@ -47,22 +48,46 @@ router.post('/register', function(req, res, next) {
     return res.status(400).json({message: "Length"});
   }
 
-  // add user to database
-  var queryData = [data.email, data.name, data.password];
-  var queryString = "INSERT INTO Users (user_email, user_name, user_password) VALUES ($1, $2, $3)";
-
-  db.query(queryString, queryData, (err, response) => {
-      if (err) {
-        console.log("Error inserting User to database:");
-        console.log(err);
-        return res.status(400).json({message: "Database error"});
-      }
+  // encrypt password with bcrypt
+  bcrypt.hash(data.password, 10, (err, hash) => {
+    if (err) {
+      console.log('Error hashing password on sign up: ', err);
     }
-  );
+    else {
+      // add user to database
+      var queryData = [data.email, data.name, hash];
+      var queryString = "INSERT INTO Users (user_email, user_name, user_password) VALUES ($1, $2, $3) RETURNING *";
 
-  // send token? authentication?? what???
+      db.query(queryString, queryData, (err, results) => {
+          if (err) {
+            console.log("Error inserting User to database:");
+            console.log(err);
+            return res.status(400).json({message: "Database error"});
+          }
 
-  res.status(200).json({message: "Successfully signed up as " + data.email});
+          var user = {
+            user_id: results.rows[0].user_id,
+            user_email: results.rows[0].user_email,
+            user_name: results.rows[0].user_name,
+          }
+
+          // send response status to frontend
+          var myResponse = {
+            message: "Successfully signed up as " + data.email,
+            user: user
+          }
+
+          console.log("Successful registration! User ID: " + user.user_id);
+          res.status(200).json(myResponse);
+        }
+      );
+
+      
+    }
+  });
+
+  // finally send response status and message to frontend
+  // res.status(200).json({message: "Successfully signed up as " + data.email});
 });
 
 // for handling pre-flight requests for registration (needed?)

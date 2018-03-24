@@ -4,8 +4,10 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
+var multer = require('multer');
 var sassMiddleware = require('node-sass-middleware');
 var cors = require('cors');
+var passport = require('passport');
 
 var index = require('./routes/index');
 
@@ -29,6 +31,8 @@ app.use(sassMiddleware({
 }));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(cors());
+app.use(passport.initialize());
+app.use(passport.session()); // maybe?
 
 app.use('/', index);
 app.use('/register', index);
