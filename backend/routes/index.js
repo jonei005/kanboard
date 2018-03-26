@@ -13,9 +13,52 @@ router.get('/', function(req, res, next) {
 
 // LOGIN REQUESTS
 router.post('/login', function(req, res, next) {
-  console.log("Someone wants to login...");
   console.log(req.body);
-  res.status(200).json({message: "I think this worked!"});
+
+  var queryString = 'SELECT user_id, user_email, user_password, user_name, \
+    user_bio, user_company, user_position, user_location \
+    FROM Users WHERE user_email=$1';
+  
+  db.query(queryString, [req.body.email], (err, result) => {
+    if (err) {
+      console.log('Error getting user on login', err);
+      res.status(500).json({message: 'Server error. Try again later.', success: false});
+      return;
+    }
+    if (result.rows.length > 0) {
+      var user = result.rows[0];
+      bcrypt.compare(req.body.password, user.user_password, (err, result) => {
+        if (err) {
+          console.log('Error comparing passwords on login', err);
+          res.status(500).json({message: 'Server error. Try again later.', success: false});
+          return;
+        }
+        if (result) {
+          // Log in succeeded
+
+          // Create JWT
+          // TODO
+
+          // clear password from user to prepare it to be sent to client
+          delete user.user_password;
+          res.status(200).json({
+            message: 'Login succeeded!', 
+            success: true, 
+            user: user
+          });
+
+          return;
+        }
+        else {
+          res.status(401).json({message: 'Invalid password.', success: false});
+        }
+      });
+    }
+    else {
+      res.status(401).json({message: 'Email address not found.', success: false});
+      return;
+    }
+  });
 });
 
 

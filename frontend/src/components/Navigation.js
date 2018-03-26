@@ -3,20 +3,23 @@ import { Link } from 'react-router-dom';
 import './../css/Navigation.css';
 
 class Navigation extends Component {
+
+    logout() {
+        alert("logging out!");
+    }
+
     render() {
         return(
             <div id="navigation">
-                <div className="nav-button btn-1">
-                    <Link to="/">Kanboard</Link>
+                <div id="navigation-left">
+                    <Link to="/" className="nav-button" id="nav-title">Kanboard</Link>
+                    <Link to="/login" className="nav-button">Login</Link>
+                    <Link to="/register" className="nav-button">Register</Link>
+                    <Link to="/about" className="nav-button">About</Link>
                 </div>
-                <div className="nav-button btn-2">
-                    <Link to="/login">Login</Link
-                ></div>
-                <div className="nav-button btn-3">
-                    <Link to="/register">Register</Link>
-                </div>
-                <div className="nav-button btn-4">
-                    <Link to="/about">About</Link>
+                <div id="navigation-right">
+                    <Link to="/about" className="nav-button">Account</Link>
+                    <Link to="/" className="nav-button" onClick={this.logout}>Logout</Link>
                 </div>
             </div>
         )

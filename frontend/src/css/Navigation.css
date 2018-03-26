@@ -3,44 +3,45 @@
 #navigation {
     background: #42426a;
     height: auto;
-    padding: 6px 0;
+    padding: 0 1%;
+    position: relative;
+}
 
-    display: grid;
-    grid-template-columns: repeat(auto-fill, 140px);
+#navigation-left {
+    width: 50%;
+    position: relative;
+    height: auto;
+    display: inline-block;
+}
+
+#navigation-right {
+    width: 50%;
+    position: relative;
+    height: auto;
+    display: inline-block;
+    text-align: right;
+}
+
+#navigation-right .nav-button {
+    right: 0;
+    top: 0;
 }
 
 .nav-button {
     font-weight: bold;
     text-align: center;
-    padding: 0 12px;
-}
-
-.nav-button a {
+    width: 100px;
     text-decoration: none;
     color: rgba(255, 255, 255, 0.9);
     display: inline-block;
-    font-size: 14pt;
-    padding: 18px 0;
-    width: 100%;
+    font-size: 13pt;
+    padding: 18px 12px;
 }
 
-.nav-button a:hover {
+.nav-button:hover {
     opacity: 0.7;
 }
 
-.btn-1 a {
-    grid-column: 1;
+#nav-title {
     color: #fbf380;
-}
-
-.btn-2 {
-    grid-column: 2;
-}
-
-.btn-3 {
-    grid-column: 3;
-}
-
-.btn-4 {
-    grid-column: 4;
 }

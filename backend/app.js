@@ -8,6 +8,8 @@ var multer = require('multer');
 var sassMiddleware = require('node-sass-middleware');
 var cors = require('cors');
 var passport = require('passport');
+var jwt = require('jsonwebtoken');
+var config = require('./config');
 
 var index = require('./routes/index');
 
@@ -36,6 +38,8 @@ app.use(passport.session()); // maybe?
 
 app.use('/', index);
 app.use('/register', index);
+
+app.set('mysecret', config.secret);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

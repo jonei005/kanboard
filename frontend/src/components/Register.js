@@ -97,32 +97,32 @@ class Register extends Component {
             loginData.append('email', userData.email);
             loginData.append('password', userData.password);
 
-            // then login user 
-            fetch("http://localhost:3001/login", {
-                method: "post",
-                body: loginData,
-                headers: {
-                    'content-type': 'application/x-www-form-urlencoded; charset=UTF-8'
-                }
-            }).then((response) => {
-                if (response.status === 401) {
-                    alert("Logging in failed according to passport");
-                    return null;
-                }
-                else if (response.status !== 200) {
-                    alert("Log in failed");
-                    return null;
-                }
-                else {
-                    alert("Log in succeeded! I think!");
-                    return response.json();
-                }
-            }).then((data) => {
-                if (data) {
-                    console.log(data.message);
-                    // redirect user to home page or profile page
-                }
-            })
+            // then login user *** WORK IN PROGRESS
+            // fetch("http://localhost:3001/login", {
+            //     method: "post",
+            //     body: loginData,
+            //     headers: {
+            //         'content-type': 'application/x-www-form-urlencoded; charset=UTF-8'
+            //     }
+            // }).then((response) => {
+            //     if (response.status === 401) {
+            //         alert("Logging in failed according to passport");
+            //         return null;
+            //     }
+            //     else if (response.status !== 200) {
+            //         alert("Log in failed");
+            //         return null;
+            //     }
+            //     else {
+            //         alert("Log in succeeded! I think!");
+            //         return response.json();
+            //     }
+            // }).then((data) => {
+            //     if (data) {
+            //         console.log(data.message);
+            //         // redirect user to home page or profile page
+            //     }
+            // });
         });
 
     }
