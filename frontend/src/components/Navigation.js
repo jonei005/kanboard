@@ -20,30 +20,14 @@ class Navigation extends Component {
     render() {
         var {auth} = this.props;
 
-        if (auth) {
-            return(
-                <AuthNav logout={this.logout} />
-            );
-        }
-        else {
-            return(
-                <NoAuthNav />
-            );
-        }
-        // return(
-        //     <div id="navigation">
-        //         <div id="navigation-left">
-        //             <Link to="/" className="nav-button" id="nav-title">Kanboard</Link>
-        //             <Link to="/login" className="nav-button">Login</Link>
-        //             <Link to="/register" className="nav-button">Register</Link>
-        //             <Link to="/about" className="nav-button">About</Link>
-        //         </div>
-        //         <div id="navigation-right">
-        //             <Link to="/about" className="nav-button">Account</Link>
-        //             <Link to="/" className="nav-button" onClick={this.logout}>Logout</Link>
-        //         </div>
-        //     </div>
-        // )
+        return auth ? <AuthNav logout={this.logout} /> : <NoAuthNav />
+
+        // if (auth) {
+        //     return(<AuthNav logout={this.logout} />);
+        // }
+        // else {
+        //     return(<NoAuthNav />);
+        // }
     }
 }
 

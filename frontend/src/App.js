@@ -1,13 +1,45 @@
 import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
-import * as actions from './actions';
+import { storeUser, clearUser } from './actions';
 import Routes from './routes';
 import Navigation from './components/Navigation';
 import './css/App.css';
 
 // App component that loads the router
 class App extends Component {
+
+  componentWillMount() {
+    // check user token and send it up to api to verify user is authenticated
+    var token = localStorage.getItem('kanboard-user-token') || null;
+    
+    if (token) {
+      fetch('http://localhost:3001/user', {
+        method: 'post',
+        body: JSON.stringify({token: token}),
+        headers: {
+          "content-type": "application/json"
+        }
+      }).then((response) => {
+        if (response.status === 200) {
+          return response.json();
+        }
+        else {
+          return null;
+        }
+      }).then((data) => {
+        if (data && data.auth) {
+          console.log(data.message);
+          this.props.storeUser(data.user);
+        }
+        else if (data && !data.auth) {
+          console.log(data.message);
+          this.props.clearUser();
+        }
+      });
+    }
+  }
+
   render() {
     return (
       <div className="App">
@@ -25,7 +57,14 @@ const mapStateToProps = (state) => {
   }
 }
 
+const mapDispatchToProps = (dispatch) => {
+  return {
+      storeUser: (user) => dispatch(storeUser(user)),
+      clearUser: () => dispatch(clearUser)
+  }
+}
+
 export default withRouter(
-  connect(mapStateToProps, actions)(App)
+  connect(mapStateToProps, mapDispatchToProps)(App)
 );
 

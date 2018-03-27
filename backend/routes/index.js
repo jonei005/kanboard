@@ -145,4 +145,61 @@ router.options('/register', function(req, res, next) {
   return res.status(200);
 });
 
+// GET USER REQUESTS
+// used to verify that a token is correct and send user data (such as on page refresh)
+router.post('/user', function(req, res) {
+  if (!req.body) {
+    return res.status(500).json({
+      message: 'Error: No request body.',
+      auth: false
+    });
+  }
+
+  if (!req.body.token) {
+    return res.status(200).json({
+      message: 'No user token.',
+      auth: false
+    });
+  }
+
+  var token = req.body.token;
+  
+  try {
+    var decoded = jwt.verify(token, config.secret);
+  }
+  catch (err) {
+    return res.status(200).json({
+      message: 'User token invalid.', error: err,
+      auth: false
+    });
+  }
+
+  // get user data from database based on user_id in token
+  var queryString = 'SELECT user_id, user_email, user_name, \
+    user_bio, user_company, user_position, user_location \
+    FROM Users WHERE user_id=$1';
+  
+  db.query(queryString, [decoded.user_id], (err, result) => {
+    if (err) {
+      console.log('Error getting user with token', err);
+
+      return res.status(500).json({
+        message: 'Error getting user from DB with token.',
+        auth: false
+      });
+    }
+
+    var user = result.rows[0];
+
+    // send user data back to client
+    return res.status(200).json({
+      message: 'User token is valid.',
+      user: user,
+      auth: true
+    });
+
+  });
+
+});
+
 module.exports = router;
