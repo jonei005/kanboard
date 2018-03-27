@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
+import { connect } from 'react-redux';
+import { clearUser } from './../actions';
 import './../css/Navigation.css';
 
 class Navigation extends Component {
@@ -7,65 +9,86 @@ class Navigation extends Component {
     constructor(props) {
         super(props);
 
-        this.state = {
-            auth: false
-        }
+        this.logout = this.logout.bind(this);
     }
 
     logout() {
         localStorage.removeItem('kanboard-user-token');
-        
-        this.setState({
-            auth: false
-        });
+        this.props.clearUser();
     }
 
     render() {
-        return(
+        var {auth} = this.props;
+
+        if (auth) {
+            return(
+                <AuthNav logout={this.logout} />
+            );
+        }
+        else {
+            return(
+                <NoAuthNav />
+            );
+        }
+        // return(
+        //     <div id="navigation">
+        //         <div id="navigation-left">
+        //             <Link to="/" className="nav-button" id="nav-title">Kanboard</Link>
+        //             <Link to="/login" className="nav-button">Login</Link>
+        //             <Link to="/register" className="nav-button">Register</Link>
+        //             <Link to="/about" className="nav-button">About</Link>
+        //         </div>
+        //         <div id="navigation-right">
+        //             <Link to="/about" className="nav-button">Account</Link>
+        //             <Link to="/" className="nav-button" onClick={this.logout}>Logout</Link>
+        //         </div>
+        //     </div>
+        // )
+    }
+}
+
+class AuthNav extends Component {
+
+    logout(e) {
+        e.preventDefault();
+        this.props.logout();
+    }
+
+    render() {
+        return (
             <div id="navigation">
                 <div id="navigation-left">
                     <Link to="/" className="nav-button" id="nav-title">Kanboard</Link>
-                    <Link to="/login" className="nav-button">Login</Link>
-                    <Link to="/register" className="nav-button">Register</Link>
+                    <Link to="/about" className="nav-button">Dashboard</Link>
                     <Link to="/about" className="nav-button">About</Link>
                 </div>
                 <div id="navigation-right">
                     <Link to="/about" className="nav-button">Account</Link>
-                    <Link to="/" className="nav-button" onClick={this.logout}>Logout</Link>
+                    <Link to="/" className="nav-button" onClick={(e) => this.logout(e)}>Logout</Link>
                 </div>
             </div>
         )
     }
+} 
+
+const NoAuthNav = () => (
+    <div id="navigation">
+        <div id="navigation-left">
+            <Link to="/" className="nav-button" id="nav-title">Kanboard</Link>
+
+            <Link to="/about" className="nav-button">About</Link>
+        </div>
+        <div id="navigation-right">
+            <Link to="/login" className="nav-button">Login</Link>
+            <Link to="/register" className="nav-button">Register</Link>
+        </div>
+    </div>
+)
+
+const mapDispatchToProps = (dispatch) => {
+    return {
+        clearUser: () => dispatch(clearUser())
+    }
 }
 
-// const AuthNav = () => (
-//     <div id="navigation">
-//         <div id="navigation-left">
-//             <Link to="/" className="nav-button" id="nav-title">Kanboard</Link>
-//             <Link to="/login" className="nav-button">Login</Link>
-//             <Link to="/register" className="nav-button">Register</Link>
-//             <Link to="/about" className="nav-button">About</Link>
-//         </div>
-//         <div id="navigation-right">
-//             <Link to="/about" className="nav-button">Account</Link>
-//             <Link to="/" className="nav-button" onClick={this.logout}>Logout</Link>
-//         </div>
-//     </div>
-// )
-
-// const NoAuthNav = () => (
-//     <div id="navigation">
-//         <div id="navigation-left">
-//             <Link to="/" className="nav-button" id="nav-title">Kanboard</Link>
-//             <Link to="/login" className="nav-button">Login</Link>
-//             <Link to="/register" className="nav-button">Register</Link>
-//             <Link to="/about" className="nav-button">About</Link>
-//         </div>
-//         <div id="navigation-right">
-//             <Link to="/about" className="nav-button">Account</Link>
-//             <Link to="/" className="nav-button" onClick={this.logout}>Logout</Link>
-//         </div>
-//     </div>
-// )
-
-export default Navigation;
+export default connect(null, mapDispatchToProps)(Navigation);

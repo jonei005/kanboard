@@ -1,13 +1,16 @@
-import { GET_USER, CLEAR_USER } from "../constants/actionTypes";
+import { 
+    STORE_USER,
+    CLEAR_USER 
+} from "../constants/actionTypes";
 
 // define actions
 
-export const getUser = (user_id) => ({
-    type: GET_USER,
-    payload: user_id
+export const storeUser = (user) => ({
+    type: STORE_USER,
+    payload: user,
 });
 
-export const clearUser = () => ({
+export const clearUser = (u) => ({
     type: CLEAR_USER,
-    payload: true
+    payload: {},
 });

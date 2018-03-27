@@ -1,5 +1,8 @@
 import React, { Component } from 'react';
+import LoginForm from './LoginForm';
 import { Redirect } from 'react-router-dom';
+import { connect } from 'react-redux';
+import { storeUser } from './../actions';
 import './../css/Login.css';
 
 class Login extends Component {
@@ -13,6 +16,8 @@ class Login extends Component {
             message: "",
             auth: false
         }
+
+        // this.validate = this.validate.bind(this);
     }
 
     componentWillMount() {
@@ -29,18 +34,10 @@ class Login extends Component {
             return 0;
         }
 
-        // any other checks?
-
         return 1;
     }
 
-    handleSubmit(e) {
-        e.preventDefault();
-        var data = {
-            email: this.state.email,
-            password: this.state.password
-        }
-
+    handleSubmit(data) {
         // form validation/sanitation
         if (!this.validate(data.email, data.password)) {
             alert("Please complete all fields.");
@@ -63,7 +60,10 @@ class Login extends Component {
             }    
         }).then((data) => {
             if (data && data.success === true) {
+                // data.user holds all user information
+                // we need to call redux action to store this data
                 console.log(data);
+                this.props.storeUser(data.user);
 
                 // store JWT in browser local storage
                 localStorage.setItem('kanboard-user-token', data.token);
@@ -94,26 +94,16 @@ class Login extends Component {
 
         else {
             return (
-                <div className="container">
-                    <h1 className="page-title">Login To Kanboard</h1>
-                    <hr className="title-underline" />
-                    <form className="login-form" onSubmit={(e) => this.handleSubmit(e)}>
-                        <p>Email:</p>
-                        <input type="email" className="login-field" id="email"
-                            value={this.state.email} onChange={this.handleChange}/>
-                        <p>Password:</p>
-                        <input type="password" className="login-field" id="password" 
-                            value={this.state.password} onChange={this.handleChange}/>
-                        { /* If message exists (not empty), display the message to user */
-                            this.state.message &&
-                            <p className="error-message">{this.state.message}</p>
-                        }
-                        <input type="submit" value="Login" className="login-button"/>
-                    </form>
-                </div>
+                <LoginForm handleSubmit={(data) => this.handleSubmit(data)} message={this.state.message} />
             );
         }
     }
 }
 
-export default Login;
+const mapDispatchToProps = (dispatch) => {
+    return {
+        storeUser: (user) => dispatch(storeUser(user))
+    }
+}
+
+export default connect(null, mapDispatchToProps)(Login);
