@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { Redirect } from 'react-router-dom';
 import './../css/Register.css';
 
 class Register extends Component {
@@ -10,7 +11,8 @@ class Register extends Component {
             email: "",
             name: "",
             password: "",
-            confirmPassword: ""
+            confirmPassword: "",
+            auth: false
         }
     }
 
@@ -93,36 +95,41 @@ class Register extends Component {
             console.log(data.message);
             console.log(data.user);
 
-            var loginData = new URLSearchParams();
-            loginData.append('email', userData.email);
-            loginData.append('password', userData.password);
+            var loginData = {
+                email: userData.email,
+                password: userData.password
+            };
 
             // then login user *** WORK IN PROGRESS
-            // fetch("http://localhost:3001/login", {
-            //     method: "post",
-            //     body: loginData,
-            //     headers: {
-            //         'content-type': 'application/x-www-form-urlencoded; charset=UTF-8'
-            //     }
-            // }).then((response) => {
-            //     if (response.status === 401) {
-            //         alert("Logging in failed according to passport");
-            //         return null;
-            //     }
-            //     else if (response.status !== 200) {
-            //         alert("Log in failed");
-            //         return null;
-            //     }
-            //     else {
-            //         alert("Log in succeeded! I think!");
-            //         return response.json();
-            //     }
-            // }).then((data) => {
-            //     if (data) {
-            //         console.log(data.message);
-            //         // redirect user to home page or profile page
-            //     }
-            // });
+            fetch("http://localhost:3001/login", {
+                method: "post",
+                body: JSON.stringify(loginData),
+                headers: {
+                    "content-type": "application/json"
+                }
+            }).then((response) => {
+                if (response.status === 200 || response.status === 401 || response.status === 500) {
+                    return (response.json());
+                }
+                else {
+                    console.log("Unrecognized code: ", response.status);
+                    return (null);
+                }    
+            }).then((data) => {
+                if (data && data.success === true) {
+                    console.log(data);
+
+                    // store JWT in browser local storage
+                    localStorage.setItem('kanboard-user-token', data.token);
+                    this.setState({auth: true});
+                }
+                else if (data && data.success === false) {
+                    this.setState({auth: false});
+                }
+                else {
+                    console.log("Something went wrong with the log in...");
+                }
+            });
         });
 
     }
@@ -135,27 +142,35 @@ class Register extends Component {
     }
 
     render() {
-        return(
-            <div className="container">
-                <h1 className="page-title">Sign Up To Kanboard</h1>
-                <hr className="title-underline" />
-                <form className="register-form" onSubmit={(e) => this.handleSubmit(e)}>
-                    <p>Email:</p>
-                    <input type="email" className="register-field" id="email"
-                        value={this.state.email} onChange={this.handleChange} />
-                    <p>Name:</p>
-                    <input type="text" className="register-field" id="name"
-                        value={this.state.name} onChange={this.handleChange} />
-                    <p>Password:</p>
-                    <input type="password" className="register-field" id="password"
-                        value={this.state.password} onChange={this.handleChange} />
-                    <p>Confirm Password:</p>
-                    <input type="password" className="register-field" id="confirmPassword"
-                        value={this.state.confirmPassword} onChange={this.handleChange} />
-                    <input type="submit" value="Sign Up" className="register-button" id="register-button"/>
-                </form>
-            </div>
-        )
+        if (this.state.auth === true) {
+            return (
+                <Redirect to="/" />
+            );
+        }
+
+        else {
+            return (
+                <div className="container">
+                    <h1 className="page-title">Sign Up To Kanboard</h1>
+                    <hr className="title-underline" />
+                    <form className="register-form" onSubmit={(e) => this.handleSubmit(e)}>
+                        <p>Email:</p>
+                        <input type="email" className="register-field" id="email"
+                            value={this.state.email} onChange={this.handleChange} />
+                        <p>Name:</p>
+                        <input type="text" className="register-field" id="name"
+                            value={this.state.name} onChange={this.handleChange} />
+                        <p>Password:</p>
+                        <input type="password" className="register-field" id="password"
+                            value={this.state.password} onChange={this.handleChange} />
+                        <p>Confirm Password:</p>
+                        <input type="password" className="register-field" id="confirmPassword"
+                            value={this.state.confirmPassword} onChange={this.handleChange} />
+                        <input type="submit" value="Sign Up" className="register-button" id="register-button"/>
+                    </form>
+                </div>
+            );
+        }
     }
 }
 

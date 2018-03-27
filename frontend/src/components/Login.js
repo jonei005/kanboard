@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { Redirect } from 'react-router-dom';
 import './../css/Login.css';
 
 class Login extends Component {
@@ -9,7 +10,8 @@ class Login extends Component {
         this.state = {
             email: "",
             password: "",
-            message: ""
+            message: "",
+            auth: false
         }
     }
 
@@ -57,14 +59,16 @@ class Login extends Component {
             }
             else {
                 console.log("Unrecognized code: ", response.status);
-                return ({
-                    
-                });
+                return (null);
             }    
         }).then((data) => {
             if (data && data.success === true) {
                 console.log(data);
-                // redirect?
+
+                // store JWT in browser local storage
+                localStorage.setItem('kanboard-user-token', data.token);
+                this.setState({auth: true});
+
             }
             else if (data && data.success === false) {
                 this.setState({message: data.message});
@@ -82,25 +86,33 @@ class Login extends Component {
     }
 
     render() {
-        return(
-            <div className="container">
-                <h1 className="page-title">Login To Kanboard</h1>
-                <hr className="title-underline" />
-                <form className="login-form" onSubmit={(e) => this.handleSubmit(e)}>
-                    <p>Email:</p>
-                    <input type="email" className="login-field" id="email"
-                        value={this.state.email} onChange={this.handleChange}/>
-                    <p>Password:</p>
-                    <input type="password" className="login-field" id="password" 
-                        value={this.state.password} onChange={this.handleChange}/>
-                    { /* If message exists (not empty), display the message to user */
-                        this.state.message &&
-                        <p className="error-message">{this.state.message}</p>
-                    }
-                    <input type="submit" value="Login" className="login-button"/>
-                </form>
-            </div>
-        )
+        if (this.state.auth === true) {
+            return (
+                <Redirect to="/" />
+            );
+        }
+
+        else {
+            return (
+                <div className="container">
+                    <h1 className="page-title">Login To Kanboard</h1>
+                    <hr className="title-underline" />
+                    <form className="login-form" onSubmit={(e) => this.handleSubmit(e)}>
+                        <p>Email:</p>
+                        <input type="email" className="login-field" id="email"
+                            value={this.state.email} onChange={this.handleChange}/>
+                        <p>Password:</p>
+                        <input type="password" className="login-field" id="password" 
+                            value={this.state.password} onChange={this.handleChange}/>
+                        { /* If message exists (not empty), display the message to user */
+                            this.state.message &&
+                            <p className="error-message">{this.state.message}</p>
+                        }
+                        <input type="submit" value="Login" className="login-button"/>
+                    </form>
+                </div>
+            );
+        }
     }
 }
 

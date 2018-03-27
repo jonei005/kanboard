@@ -2,8 +2,10 @@ var express = require('express');
 var router = express.Router();
 var bcrypt = require('bcrypt');
 var passport = require('passport');
+var jwt = require('jsonwebtoken');
 
 const db = require('../db');
+const config = require('../config');
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
@@ -37,14 +39,18 @@ router.post('/login', function(req, res, next) {
           // Log in succeeded
 
           // Create JWT
-          // TODO
+          var payload = {user_id: user.user_id};
+          var options = {expiresIn: 86400}; // expire in 24 hours
+
+          var token = jwt.sign(payload, config.secret, options);
 
           // clear password from user to prepare it to be sent to client
           delete user.user_password;
           res.status(200).json({
             message: 'Login succeeded!', 
             success: true, 
-            user: user
+            user: user,
+            token: token
           });
 
           return;
