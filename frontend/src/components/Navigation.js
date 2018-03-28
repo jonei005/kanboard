@@ -43,7 +43,7 @@ class AuthNav extends Component {
             <div id="navigation">
                 <div id="navigation-left">
                     <Link to="/" className="nav-button" id="nav-title">Kanboard</Link>
-                    <Link to="/about" className="nav-button">Dashboard</Link>
+                    <Link to="/dashboard" className="nav-button">Dashboard</Link>
                     <Link to="/about" className="nav-button">About</Link>
                 </div>
                 <div id="navigation-right">
