@@ -1,11 +1,55 @@
 /* Styles for the Dashboard component, including DashboardTile */
 
+#dashboard {
+    display: grid;
+    grid-template-columns: repeat(4, 23%);
+    grid-column-gap: 2.67%;
+    grid-row-gap: 48px;
+    margin-top: 48px;
+}
+
 .dashboard-tile {
-    width: 20%;
+    position: relative;
     display: inline-block;
     padding: 24px;
-    margin-right: 2.5%;
-    background: #ddd;
+    background: #fbf380;
     border-radius: 10px;
-    margin-bottom: 36px;
+    text-decoration: none;
+    color: #42426a;
+    text-align: center;
+    font-size: 14pt;
+    box-shadow: 4px 4px 8px -4px #42426a;
+}
+
+.dashboard-tile:hover {
+    background: #f7ea42;
+    box-shadow: 4px 4px 8px -2px #42426a;
+    font-weight: bold;
+}
+
+.dashboard-tile-menu {
+    visibility: hidden;
+    position: absolute;
+    width: 100%;
+    left: 0;
+    bottom: 0;
+    height: 28px;
+    border-radius: 0 0 10px 10px;
+}
+
+.dashboard-tile:hover .dashboard-tile-menu {
+    visibility: visible;
+}
+
+.dashboard-tile-menu-button {
+    display: inline-block;
+    width: 33.33%;
+    text-align: center;
+    color: #42426a;
+    font-size: 12pt;
+    padding-bottom: 8px;
+}
+
+.dashboard-tile-menu-button:hover {
+    opacity: 0.6;
 }
