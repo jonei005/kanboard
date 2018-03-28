@@ -28,12 +28,13 @@ class App extends Component {
           return null;
         }
       }).then((data) => {
-        if (data && data.auth) {
-          console.log(data.message);
+        if (data && data.auth === true) {
+          console.log('auth === true: ', data.message);
           this.props.storeUser(data.user);
         }
-        else if (data && !data.auth) {
-          console.log(data.message);
+        else if (data && data.auth === false) {
+          console.log('auth === false: ', data.message);
+          localStorage.removeItem('kanboard-user-token');
           this.props.clearUser();
         }
       });

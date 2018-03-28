@@ -7,28 +7,33 @@ import {
 
 // set initial state
 // should get token from localstorage to authenticate here, so user persists over refresh
-function checkUserToken() {
-    var token = localStorage.getItem('kanboard-user-token') || null;
-    if (token) {
-        console.log("Token found!");
-        // call api to send token and get user data back
-        var user = {};
+// function checkUserToken() {
+//     var token = localStorage.getItem('kanboard-user-token') || null;
+//     if (token) {
+//         console.log("Token found!");
+//         // call api to send token and get user data back
+//         var user = {};
         
-        return {
-            user: user,
-            auth: true
-        };
-    }
-    else {
-        console.log("No token found!");
-        return {
-            user: {},
-            auth: false
-        };
-    }
-}
+//         return {
+//             user: user,
+//             auth: true
+//         };
+//     }
+//     else {
+//         console.log("No token found!");
+//         return {
+//             user: {},
+//             auth: false
+//         };
+//     }
+// }
 
-const initialState = checkUserToken();
+// const initialState = checkUserToken();
+
+const initialState = {
+    user: {},
+    auth: false
+}
 
 const rootReducer = (state = initialState, action) => {
 

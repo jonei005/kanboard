@@ -10,7 +10,7 @@ export const storeUser = (user) => ({
     payload: user,
 });
 
-export const clearUser = (u) => ({
+export const clearUser = () => ({
     type: CLEAR_USER,
     payload: {},
 });

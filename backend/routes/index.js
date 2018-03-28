@@ -169,7 +169,8 @@ router.post('/user', function(req, res) {
   }
   catch (err) {
     return res.status(200).json({
-      message: 'User token invalid.', error: err,
+      message: 'User token invalid.',
+      error: err,
       auth: false
     });
   }

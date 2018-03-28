@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 import { Redirect } from 'react-router-dom';
+import { connect } from 'react-redux';
+import { storeUser } from './../actions';
 import './../css/Register.css';
 
 class Register extends Component {
@@ -118,6 +120,7 @@ class Register extends Component {
             }).then((data) => {
                 if (data && data.success === true) {
                     console.log(data);
+                    this.props.storeUser(data.user);
 
                     // store JWT in browser local storage
                     localStorage.setItem('kanboard-user-token', data.token);
@@ -174,4 +177,10 @@ class Register extends Component {
     }
 }
 
-export default Register;
+const mapDispatchToProps = (dispatch) => {
+    return {
+        storeUser: (user) => dispatch(storeUser(user))
+    }
+}
+
+export default connect(null, mapDispatchToProps)(Register);
