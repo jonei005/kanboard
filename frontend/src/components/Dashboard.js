@@ -10,6 +10,19 @@ class Dashboard extends Component {
         document.title = 'Kanboard Dashboard';
     }
 
+    createNewBoard() {
+        console.log("Create a new board please!");
+        // api call to create new board
+
+        // receive board back from database with ID
+
+
+        // append new board to boards array in state
+        // var newBoard = {
+        //     name: 'New Board', id: 0
+        // };
+    }
+
     render() {
 
         var name = this.props.user.user_name;
@@ -33,6 +46,9 @@ class Dashboard extends Component {
                 <hr className="title-underline" />
                 <div id="dashboard">
                     {boardTiles}
+                    <div className="new-board-tile" onClick={() => this.createNewBoard()} title="Create New Board">
+                        <p>+</p>
+                    </div>
                 </div>
             </div>
         );

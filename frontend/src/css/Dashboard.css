@@ -11,14 +11,21 @@
 .dashboard-tile {
     position: relative;
     display: inline-block;
-    padding: 24px;
     background: #fbf380;
-    border-radius: 10px;
-    text-decoration: none;
-    color: #42426a;
     text-align: center;
     font-size: 14pt;
     box-shadow: 4px 4px 8px -4px #42426a;
+    border-radius: 10px;
+}
+
+.dashboard-tile a {
+    position: relative;
+    display: inline-block;
+    padding: 24px 0;
+    border-radius: 10px;
+    text-decoration: none;
+    color: #42426a;
+    width: 100%;
 }
 
 .dashboard-tile:hover {
@@ -26,6 +33,26 @@
     box-shadow: 4px 4px 8px -2px #42426a;
     font-weight: bold;
 }
+
+.new-board-tile {
+    position: relative;
+    display: inline-block;
+    background: rgba(66, 66, 106, 0.85);
+    text-align: center;
+    font-size: 14pt;
+    box-shadow: 4px 4px 8px -4px #42426a;
+    border-radius: 10px;
+    color: #fbf380;
+    padding: 24px 0;
+}
+
+.new-board-tile:hover {
+    cursor: pointer;
+    background: rgba(66, 66, 106, 1);
+    box-shadow: 4px 4px 8px -2px #42426a;
+    font-weight: bold;
+}
+
 
 .dashboard-tile-menu {
     visibility: hidden;
@@ -48,8 +75,28 @@
     color: #42426a;
     font-size: 12pt;
     padding-bottom: 8px;
+    cursor: pointer;
 }
 
 .dashboard-tile-menu-button:hover {
     opacity: 0.6;
+}
+
+
+/* Forms */
+.dashboard-tile-rename-form {
+    position: relative;
+    top: -12px;
+}
+
+.dashboard-tile-rename-form input {
+    height: 24px;
+    padding: 1px 2px;
+}
+
+.dashboard-tile-rename-form button {
+    height: 30px;
+    cursor: pointer;
+    color: #42426a;
+    border: 1px solid #aaa;
 }
