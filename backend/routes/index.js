@@ -9,7 +9,7 @@ const config = require('../config');
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-  res.render('index', { title: 'Express' });
+  res.render('index', { title: 'Kanboard' });
 });
 
 
@@ -109,34 +109,98 @@ router.post('/register', function(req, res, next) {
 
       db.query(queryString, queryData, (err, results) => {
           if (err) {
-            console.log("Error inserting User to database:");
-            console.log(err);
+            console.log("Error inserting User to database:", err);
             return res.status(400).json({message: "Database error"});
           }
 
+          // create user variable to store relevent information for sending to client
           var user = {
             user_id: results.rows[0].user_id,
             user_email: results.rows[0].user_email,
             user_name: results.rows[0].user_name,
           }
 
-          // send response status to frontend
+          // store message and user into a JSON object to send to client
           var myResponse = {
             message: "Successfully signed up as " + data.email,
             user: user
           }
 
+          // send response status to frontend
           console.log("Successful registration! User ID: " + user.user_id);
           res.status(200).json(myResponse);
+
+          // now that response is sent, we can create a new board for the user to use
+
+          // this really long string is the query responsible for:
+          // 1: inserting a new board called 'My First Board'
+          // 2: inserting a BoardOwners entry to map this user to the new board
+          // 3: inserting 3 new columns for use in the new board
+          // 4: inserting a BoardsToColumns entry to map the new columns to the new board
+          var queryStringCTE = " \
+            WITH board_id as ( \
+              INSERT INTO Boards (board_name) \
+                VALUES ($1) \
+                RETURNING board_id \
+            ), user_id as ( \
+              INSERT INTO BoardOwners (user_id, board_id) \
+                VALUES ($2, (SELECT board_id FROM board_id LIMIT 1)) \
+                RETURNING user_id \
+            ), column_id as ( \
+              INSERT INTO Columns (column_name, column_position) \
+                VALUES ('Backlog', 0), ('In Progress', 1), ('Completed', 2) \
+                RETURNING column_id \
+            ) \
+            INSERT INTO BoardsToColumns (board_id, column_id) \
+              VALUES \
+                  ((SELECT board_id FROM board_id LIMIT 1), (SELECT column_id FROM column_id LIMIT 1)), \
+                  ((SELECT board_id FROM board_id LIMIT 1), (SELECT column_id FROM column_id OFFSET 1 LIMIT 1)), \
+                  ((SELECT board_id FROM board_id LIMIT 1), (SELECT column_id FROM column_id OFFSET 2 LIMIT 1)) \
+              RETURNING *; \
+          ";
+
+          db.query(queryStringCTE, ['My First Board', user.user_id], (err, results) => {
+            if (err) {
+              console.log("Error with CTE insert", err);
+              //return res.status(400).json({message: "Database error"});
+              return;
+            }
+
+            console.log(results.rows);
+            return;
+
+
+
+          });
+
+          // insert into Boards table, get id back
+          // db.query(queryStringBoard, boardData, (err, results) => {
+          //   if (err) {
+          //     console.log("Error inserting Board to database", err);
+          //     return res.status(400).json({message: "Database error"});
+          //   }
+
+          //   var board_id = results.rows[0].board_id;
+
+
+          // });
+
+
+          // use user_id and board_id to insert into BoardOwners to register user as an owner
+
+
+          // insert into Columns table, get ids back
+          
+
+          // insert into BoardsToColumns table
+
+
+
+          return;
         }
       );
-
-      
     }
   });
-
-  // finally send response status and message to frontend
-  // res.status(200).json({message: "Successfully signed up as " + data.email});
 });
 
 // for handling pre-flight requests for registration (needed?)

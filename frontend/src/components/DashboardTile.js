@@ -33,8 +33,7 @@ class DashboardTile extends Component {
 
     render() {
 
-        // TODO: MENU BUTTONS DON'T DO ANYTHING
-        // TODO: CLICKING A MENU BUTTON TRIGGERS THE LINK
+        
 
         return(
             <div className="dashboard-tile">

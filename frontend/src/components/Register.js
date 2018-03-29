@@ -147,7 +147,7 @@ class Register extends Component {
     render() {
         if (this.state.auth === true) {
             return (
-                <Redirect to="/" />
+                <Redirect to="/dashboard" />
             );
         }
 

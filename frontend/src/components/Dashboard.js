@@ -8,6 +8,14 @@ class Dashboard extends Component {
 
     componentDidMount() {
         document.title = 'Kanboard Dashboard';
+
+        // send user token and get boards from database based on user id
+
+        // add boards to state (id and name)
+
+        // use action GET_BOARDS or similar
+
+        // keep in state forever (until logout) as it doesn't take a lot of memory
     }
 
     createNewBoard() {
@@ -24,6 +32,8 @@ class Dashboard extends Component {
     }
 
     render() {
+
+        
 
         var name = this.props.user.user_name;
 
