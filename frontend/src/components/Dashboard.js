@@ -20,6 +20,9 @@ class Dashboard extends Component {
 
         var token = localStorage.getItem('kanboard-user-token');
 
+        // send user token, get boards from database based on user id
+        // add boards to state (id and name)
+
         fetch('http://localhost:3001/boards', {
             method: 'post',
             body: JSON.stringify({token: token}),
@@ -27,31 +30,46 @@ class Dashboard extends Component {
                 'content-type': 'application/json' 
             }
         }).then((response) => {
-            console.log('Response: ', response);
             return response.json();
         }).then((data) => {
             console.log('Data: ', data);
             console.log(JSON.parse(data.boards));
 
-            // replace this with redux store
+            // replace this with redux store?
             var boardsArray = JSON.parse(data.boards);
             this.setState({boards: boardsArray});
-        })
-
-        // send user token and get boards from database based on user id
-
-        // add boards to state (id and name)
-
-        // use action GET_BOARDS or similar
-
-        // keep in state forever (until logout) as it doesn't take a lot of memory
+        });
     }
 
     createNewBoard() {
         console.log("Create a new board please!");
         // api call to create new board
 
-        // receive board back from database with ID
+        var token = localStorage.getItem('kanboard-user-token');
+        var board_name = 'New Board'; // get name 
+
+        fetch('http://localhost:3001/createboard', {
+            method: 'post',
+            body: JSON.stringify({token: token, board_name: board_name}),
+            headers: {
+                'content-type': 'application/json' 
+            }
+        }).then((response) => {
+            return response.json();
+        }).then((data) => {
+            console.log('Data: ', data);
+            console.log('Created board with id: ' + data.board_id);
+
+            var currentBoards = this.state.boards;
+            currentBoards.push({board_id: data.board_id, board_name: board_name});
+            this.setState({boards: currentBoards});
+
+            // now fetch the board from api again? I already have id and name
+        });
+
+
+        // api call to receive all boards again? (or only the one board?)
+        // future: simply add this new board to state
 
 
         // append new board to boards array in state
@@ -62,18 +80,7 @@ class Dashboard extends Component {
 
     render() {
 
-        
-
         var name = this.props.user.user_name;
-
-        // var boards = [
-        //     { name: 'Javascript', id: 1 },
-        //     { name: 'React', id: 2 },
-        //     { name: 'Redux', id: 3 },
-        //     { name: 'Node', id: 4 },
-        //     { name: 'Express', id: 5 },
-        //     { name: 'Postgres', id: 6 }
-        // ];
 
         var boards = this.state.boards;
 

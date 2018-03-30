@@ -40,7 +40,7 @@ router.post('/login', function(req, res, next) {
 
           // Create JWT
           var payload = {user_id: user.user_id};
-          var options = {expiresIn: 86400}; // expire in 24 hours
+          var options = {expiresIn: '7d'}; // expire in 1 week
 
           var token = jwt.sign(payload, config.secret, options);
 
@@ -126,11 +126,7 @@ router.post('/register', function(req, res, next) {
             user: user
           }
 
-          // send response status to frontend
-          console.log("Successful registration! User ID: " + user.user_id);
-          res.status(200).json(myResponse);
-
-          // now that response is sent, we can create a new board for the user to use
+          // console.log("Successful registration! User ID: " + user.user_id);
 
           // this really long string is the query responsible for:
           // 1: inserting a new board called 'My First Board'
@@ -162,12 +158,11 @@ router.post('/register', function(req, res, next) {
           db.query(queryStringCTE, ['My First Board', user.user_id], (err, results) => {
             if (err) {
               console.log("Error with CTE insert", err);
-              //return res.status(400).json({message: "Database error"});
-              return;
+              return res.status(400).json({message: "Database error"});
             }
 
             // console.log(results.rows);
-            return;
+            return res.status(200).json(myResponse);;
 
           });
         }
@@ -283,6 +278,7 @@ router.post('/boards', function(req, res) {
       });
     }  
 
+    // send stringified array of boards to client
     return res.status(200).json({
       message: 'Found ' + result.rows.length + ' boards.',
       boards: JSON.stringify(result.rows)
@@ -290,6 +286,139 @@ router.post('/boards', function(req, res) {
 
 
   });
+});
+
+// SEND USER BOARDS
+// used to verify token and send single board (for use when creating a single board)
+// CURRENTLY UNTESTED
+router.post('/boards/:id', function(req, res) {
+  if (!req.body) {
+    return res.status(500).json({
+      message: 'Error: No request body.',
+      auth: false
+    });
+  }
+
+  if (!req.body.token) {
+    return res.status(200).json({
+      message: 'No user token.',
+      auth: false
+    });
+  }
+
+  var token = req.body.token;
+  
+  try {
+    var decoded = jwt.verify(token, config.secret);
+  }
+  catch (err) {
+    return res.status(200).json({
+      message: 'User token invalid.',
+      error: err,
+      auth: false
+    });
+  }
+
+  var board_id = req.params.id;
+
+  // get single board based on user_id
+  var queryString = 'SELECT board_id, board_name FROM Boards WHERE board_id = $1';
+
+  db.query(queryString, [board_id], (err, result) => {
+    if (err) {
+      console.log('Error getting single board from database with user token', err);
+
+      return res.status(500).json({
+        message: 'Error getting boards from DB with token.',
+      });
+    }  
+
+    // send stringified array of boards to client
+    return res.status(200).json({
+      message: 'Successfully retrieved board with id ' + board_id,
+      boards: JSON.stringify(result.rows[0])
+    });
+
+
+  });
+});
+
+// CREATE NEW BOARD
+// based on given user_id, create a new board
+// future: receive board_name to assign to the board
+router.post('/createboard', function(req, res) {
+  if (!req.body) {
+    return res.status(500).json({
+      message: 'Error: No request body.',
+      auth: false
+    });
+  }
+
+  if (!req.body.token) {
+    return res.status(200).json({
+      message: 'No user token.',
+      auth: false
+    });
+  }
+
+  var token = req.body.token;
+  
+  // decode token into usable data (only user_id is inside token)
+  // get user_id with 'decoded.user_id'
+  try {
+    var decoded = jwt.verify(token, config.secret);
+  }
+  catch (err) {
+    return res.status(200).json({
+      message: 'User token invalid.',
+      error: err,
+      auth: false
+    });
+  }
+
+  // this really long string is the query responsible for:
+  // 1: inserting a new board called 'My First Board'
+  // 2: inserting a BoardOwners entry to map this user to the new board
+  // 3: inserting 3 new columns for use in the new board
+  // 4: inserting a BoardsToColumns entry to map the new columns to the new board
+  var queryStringCTE = " \
+    WITH board_id as ( \
+      INSERT INTO Boards (board_name) \
+        VALUES ($1) \
+        RETURNING board_id \
+    ), user_id as ( \
+      INSERT INTO BoardOwners (user_id, board_id) \
+        VALUES ($2, (SELECT board_id FROM board_id LIMIT 1)) \
+        RETURNING user_id \
+    ), column_id as ( \
+      INSERT INTO Columns (column_name, column_position) \
+        VALUES ('Backlog', 0), ('In Progress', 1), ('Completed', 2) \
+        RETURNING column_id \
+    ) \
+    INSERT INTO BoardsToColumns (board_id, column_id) \
+      VALUES \
+          ((SELECT board_id FROM board_id LIMIT 1), (SELECT column_id FROM column_id LIMIT 1)), \
+          ((SELECT board_id FROM board_id LIMIT 1), (SELECT column_id FROM column_id OFFSET 1 LIMIT 1)), \
+          ((SELECT board_id FROM board_id LIMIT 1), (SELECT column_id FROM column_id OFFSET 2 LIMIT 1)) \
+      RETURNING *; \
+  ";
+
+  var new_board_name = req.body.board_name;
+
+  db.query(queryStringCTE, [new_board_name, decoded.user_id], (err, results) => {
+    if (err) {
+      console.log("Error with CTE insert", err);
+      return res.status(400).json({message: "Database error"});
+    }
+
+    console.log("New Board: ID=" + results.rows[0].board_id);
+
+    // console.log(results.rows);
+    return res.status(200).json({message: "Board Created!", board_id: results.rows[0].board_id});;
+
+  });
+
+
 });
 
 module.exports = router;
