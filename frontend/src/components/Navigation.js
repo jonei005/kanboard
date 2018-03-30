@@ -21,20 +21,12 @@ class Navigation extends Component {
         var {auth} = this.props;
 
         return auth ? <AuthNav logout={this.logout} /> : <NoAuthNav />
-
-        // if (auth) {
-        //     return(<AuthNav logout={this.logout} />);
-        // }
-        // else {
-        //     return(<NoAuthNav />);
-        // }
     }
 }
 
 class AuthNav extends Component {
 
-    logout(e) {
-        e.preventDefault();
+    logout() {
         this.props.logout();
     }
 
@@ -48,7 +40,7 @@ class AuthNav extends Component {
                 </div>
                 <div id="navigation-right">
                     <Link to="/about" className="nav-button">Account</Link>
-                    <Link to="/" className="nav-button" onClick={(e) => this.logout(e)}>Logout</Link>
+                    <Link to="/" className="nav-button" onClick={() => this.logout()}>Logout</Link>
                 </div>
             </div>
         )

@@ -6,8 +6,37 @@ import './../css/Dashboard.css';
 
 class Dashboard extends Component {
 
+    constructor(props) {
+        super(props);
+
+        // replace this with redux store
+        this.state = {
+            boards: []
+        }
+    }
+
     componentDidMount() {
         document.title = 'Kanboard Dashboard';
+
+        var token = localStorage.getItem('kanboard-user-token');
+
+        fetch('http://localhost:3001/boards', {
+            method: 'post',
+            body: JSON.stringify({token: token}),
+            headers: {
+                'content-type': 'application/json' 
+            }
+        }).then((response) => {
+            console.log('Response: ', response);
+            return response.json();
+        }).then((data) => {
+            console.log('Data: ', data);
+            console.log(JSON.parse(data.boards));
+
+            // replace this with redux store
+            var boardsArray = JSON.parse(data.boards);
+            this.setState({boards: boardsArray});
+        })
 
         // send user token and get boards from database based on user id
 
@@ -37,17 +66,19 @@ class Dashboard extends Component {
 
         var name = this.props.user.user_name;
 
-        var boards = [
-            { name: 'Javascript', id: 1 },
-            { name: 'React', id: 2 },
-            { name: 'Redux', id: 3 },
-            { name: 'Node', id: 4 },
-            { name: 'Express', id: 5 },
-            { name: 'Postgres', id: 6 }
-        ];
+        // var boards = [
+        //     { name: 'Javascript', id: 1 },
+        //     { name: 'React', id: 2 },
+        //     { name: 'Redux', id: 3 },
+        //     { name: 'Node', id: 4 },
+        //     { name: 'Express', id: 5 },
+        //     { name: 'Postgres', id: 6 }
+        // ];
+
+        var boards = this.state.boards;
 
         var boardTiles = boards.map((board, num) => {
-            return <DashboardTile name={board.name} id={board.id} key={num} />
+            return <DashboardTile name={board.board_name} id={board.board_id} key={num} />
         });
 
         return (

@@ -166,37 +166,10 @@ router.post('/register', function(req, res, next) {
               return;
             }
 
-            console.log(results.rows);
+            // console.log(results.rows);
             return;
 
-
-
           });
-
-          // insert into Boards table, get id back
-          // db.query(queryStringBoard, boardData, (err, results) => {
-          //   if (err) {
-          //     console.log("Error inserting Board to database", err);
-          //     return res.status(400).json({message: "Database error"});
-          //   }
-
-          //   var board_id = results.rows[0].board_id;
-
-
-          // });
-
-
-          // use user_id and board_id to insert into BoardOwners to register user as an owner
-
-
-          // insert into Columns table, get ids back
-          
-
-          // insert into BoardsToColumns table
-
-
-
-          return;
         }
       );
     }
@@ -265,6 +238,58 @@ router.post('/user', function(req, res) {
 
   });
 
+});
+
+// SEND USER BOARDS
+// used to verify token and send list of user boards (for use in the dashboard page)
+router.post('/boards', function(req, res) {
+  if (!req.body) {
+    return res.status(500).json({
+      message: 'Error: No request body.',
+      auth: false
+    });
+  }
+
+  if (!req.body.token) {
+    return res.status(200).json({
+      message: 'No user token.',
+      auth: false
+    });
+  }
+
+  var token = req.body.token;
+  
+  try {
+    var decoded = jwt.verify(token, config.secret);
+  }
+  catch (err) {
+    return res.status(200).json({
+      message: 'User token invalid.',
+      error: err,
+      auth: false
+    });
+  }
+
+  // get list of user's boards based on user_id
+  var queryString = 'WITH myboards AS (SELECT board_id FROM BoardOwners WHERE user_id = $1) \
+    SELECT board_id, board_name FROM Boards WHERE board_id IN (SELECT board_id FROM myboards)';
+
+  db.query(queryString, [decoded.user_id], (err, result) => {
+    if (err) {
+      console.log('Error getting boards from database with user token', err);
+
+      return res.status(500).json({
+        message: 'Error getting boards from DB with token.',
+      });
+    }  
+
+    return res.status(200).json({
+      message: 'Found ' + result.rows.length + ' boards.',
+      boards: JSON.stringify(result.rows)
+    });
+
+
+  });
 });
 
 module.exports = router;
