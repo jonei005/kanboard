@@ -1,11 +1,12 @@
 var express = require('express');
 var router = express.Router();
 var bcrypt = require('bcrypt');
-var passport = require('passport');
 var jwt = require('jsonwebtoken');
 
 const db = require('../db');
 const config = require('../config');
+var auth = require('./auth');
+
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
@@ -338,8 +339,6 @@ router.post('/boards/:id', function(req, res) {
       message: 'Successfully retrieved board with id ' + board_id,
       boards: JSON.stringify(result.rows[0])
     });
-
-
   });
 });
 
@@ -407,15 +406,84 @@ router.post('/createboard', function(req, res) {
 
   db.query(queryStringCTE, [new_board_name, decoded.user_id], (err, results) => {
     if (err) {
-      console.log("Error with CTE insert", err);
-      return res.status(400).json({message: "Database error"});
+      console.log('Error with CTE insert', err);
+      return res.status(400).json({message: 'Database error'});
     }
 
-    console.log("New Board: ID=" + results.rows[0].board_id);
+    console.log('New Board: ID=' + results.rows[0].board_id);
 
     // console.log(results.rows);
     return res.status(200).json({message: "Board Created!", board_id: results.rows[0].board_id});;
 
+  });
+
+});
+
+// RENAME BOARD
+// Receive string "board_name" and id "board_id"
+// Set new name of board_id to board_name in DB
+router.post('/renameboard', auth.authenticate, function(req, res, next) {
+
+  // TODO: make sure user is board owner before renaming
+
+  var queryString = 'UPDATE Boards SET board_name = $1 WHERE board_id = $2 RETURNING *';
+
+  db.query(queryString, [req.body.new_board_name, req.body.board_id], (err, results) => {
+    if (err) {
+      console.log('Error with board rename query', err);
+      return res.status(500).json({message: 'Database error'});
+    }
+
+    console.log('Renamed board ' + results.rows[0].board_id + ' to ' + results.rows[0].board_name);
+    return res.status(200).json({
+      message: 'Successfully renamed board',
+      board_id: results.rows[0].board_id,
+      board_name: results.rows[0].board_name
+    });
+  });
+});
+
+// DELETE BOARD
+// receive board_id
+// delete board_id from Boards, and consequent columns/cards in DB
+router.post('/deleteboard', auth.authenticate, function(req, res, next) {
+
+  // TODO: make sure user is board owner before deleting
+  // TODO: if user is not owner, just delete that user's mapping to the board
+  //       else, delete the entire board and all remnants of it
+  
+  // Things to delete:
+  // * Board
+  // * BoardOwners or BoardUsers mapping
+  // * BoardsToColumns mappings
+  // * Columns in the board
+  // * ColumnsToCards mappings
+  // * Cards in each column
+
+  // Sheesh
+
+  var queryString = " \
+    WITH my_board_id as ( \
+      DELETE FROM Boards WHERE board_id = $1 RETURNING board_id \
+    ), owner_id as ( \
+      DELETE FROM BoardOwners WHERE board_id = (SELECT board_id FROM my_board_id LIMIT 1) RETURNING user_id \
+    ), column_ids as ( \
+      DELETE FROM BoardsToColumns WHERE board_id = (SELECT board_id FROM my_board_id LIMIT 1) RETURNING column_id \
+    ), more_columns as ( \
+      DELETE FROM Columns WHERE column_id IN (SELECT * FROM column_ids) RETURNING column_id \
+    ), card_ids as ( \
+      DELETE FROM ColumnsToCards WHERE column_id IN (SELECT * FROM column_ids) RETURNING card_id \
+    ) DELETE FROM Cards WHERE card_id IN (SELECT * FROM card_ids) \
+  ";
+
+  db.query(queryString, [req.body.board_id], (err, result) => {
+    if (err) {
+      console.log('Error with delete query', err);
+      return res.status(500).json({message: 'Database error on board deletion'});
+    }
+
+    console.log('Successfully deleted board ' + req.body.board_id);
+    return res.status(200).json({message: 'Board deleted successfully'});
   });
 
 

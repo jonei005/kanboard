@@ -20,8 +20,14 @@ class Dashboard extends Component {
 
         var token = localStorage.getItem('kanboard-user-token');
 
+        // TODO: CHANGE ORDERING OF BOARDS ON FETCH (ORDER BY ID)
+        // EVEN BETTER: ADD POSITION TO Boards TABLE AND LET USER DECIDE
+        // THEN WE CAN SORT HERE BY POSITION INSTEAD OF BY ID
+        // OR: SORT BY POSITION IN THE QUERY (MUCH BETTER)
+
         // send user token, get boards from database based on user id
         // add boards to state (id and name)
+
 
         fetch('http://localhost:3001/boards', {
             method: 'post',
@@ -32,8 +38,8 @@ class Dashboard extends Component {
         }).then((response) => {
             return response.json();
         }).then((data) => {
-            console.log('Data: ', data);
-            console.log(JSON.parse(data.boards));
+            // console.log('Data: ', data);
+            // console.log(JSON.parse(data.boards));
 
             // replace this with redux store?
             var boardsArray = JSON.parse(data.boards);
@@ -60,32 +66,64 @@ class Dashboard extends Component {
             console.log('Data: ', data);
             console.log('Created board with id: ' + data.board_id);
 
+            // add new board to the component state
             var currentBoards = this.state.boards;
             currentBoards.push({board_id: data.board_id, board_name: board_name});
             this.setState({boards: currentBoards});
-
-            // now fetch the board from api again? I already have id and name
         });
+    }
 
+    renameBoard(newName, id) {
+        // rename api call is handled in DashboardTile component
+    
+        var currentBoards = this.state.boards;
+        var boardFound = false;
 
-        // api call to receive all boards again? (or only the one board?)
-        // future: simply add this new board to state
+        for (var i = 0; i < currentBoards.length; i++) {
+            if (currentBoards[i].board_id === id) {
+                boardFound = true;
+                currentBoards[i].board_name = newName;
+            }
+        }
 
+        if (boardFound) {
+            this.setState({boards: currentBoards});
+        }
+        else {
+            console.log('renameBoard error: board id not found');
+        }
+    }
 
-        // append new board to boards array in state
-        // var newBoard = {
-        //     name: 'New Board', id: 0
-        // };
+    deleteBoard(id) {
+        // delete api call is handled in DashboardTile component
+
+        var currentBoards = this.state.boards;
+        var deleteIndex = -1;
+        
+        for (var i = 0; i < currentBoards.length; i++) {
+            if (currentBoards[i].board_id === id) {
+                deleteIndex = i;
+            }
+        }
+
+        if (deleteIndex > -1) {
+            // remove that element of array
+            currentBoards.splice(deleteIndex, 1);
+            this.setState({boards: currentBoards});
+        }
     }
 
     render() {
 
+        // get user name from redux store
         var name = this.props.user.user_name;
 
+        // get list of boards from component state, map them to <DashboardTile> components
         var boards = this.state.boards;
-
         var boardTiles = boards.map((board, num) => {
-            return <DashboardTile name={board.board_name} id={board.board_id} key={num} />
+            return <DashboardTile name={board.board_name} id={board.board_id} key={num} 
+                renameBoard={(newName, id) => this.renameBoard(newName, id)}
+                deleteBoard={(id) => this.deleteBoard(id)} />
         });
 
         return (
@@ -95,7 +133,7 @@ class Dashboard extends Component {
                 <div id="dashboard">
                     {boardTiles}
                     <div className="new-board-tile" onClick={() => this.createNewBoard()} title="Create New Board">
-                        <p>+</p>
+                        <p><i className="fas fa-plus"></i></p>
                     </div>
                 </div>
             </div>
