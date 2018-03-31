@@ -1,3 +1,6 @@
 
 #Ignore npm dependencies
 /node_modules
+
+#Ignore config file
+/config
