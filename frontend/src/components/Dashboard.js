@@ -20,14 +20,8 @@ class Dashboard extends Component {
 
         var token = localStorage.getItem('kanboard-user-token');
 
-        // TODO: CHANGE ORDERING OF BOARDS ON FETCH (ORDER BY ID)
-        // EVEN BETTER: ADD POSITION TO Boards TABLE AND LET USER DECIDE
-        // THEN WE CAN SORT HERE BY POSITION INSTEAD OF BY ID
-        // OR: SORT BY POSITION IN THE QUERY (MUCH BETTER)
-
         // send user token, get boards from database based on user id
         // add boards to state (id and name)
-
 
         fetch('http://localhost:3001/boards', {
             method: 'post',
@@ -53,10 +47,15 @@ class Dashboard extends Component {
 
         var token = localStorage.getItem('kanboard-user-token');
         var board_name = 'New Board'; // get name 
+        var board_position = this.state.boards.length;
 
         fetch('http://localhost:3001/createboard', {
             method: 'post',
-            body: JSON.stringify({token: token, board_name: board_name}),
+            body: JSON.stringify({
+                token: token, 
+                board_name: board_name,
+                board_position: board_position
+            }),
             headers: {
                 'content-type': 'application/json' 
             }
@@ -68,7 +67,12 @@ class Dashboard extends Component {
 
             // add new board to the component state
             var currentBoards = this.state.boards;
-            currentBoards.push({board_id: data.board_id, board_name: board_name});
+            currentBoards.push({
+                board_id: data.board_id, 
+                board_name: board_name,
+                board_position: board_position
+            });
+
             this.setState({boards: currentBoards});
         });
     }

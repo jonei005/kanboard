@@ -180,40 +180,17 @@ router.options('/register', function(req, res, next) {
 
 // GET USER REQUESTS
 // used to verify that a token is correct and send user data (such as on page refresh)
-router.post('/user', function(req, res) {
-  if (!req.body) {
-    return res.status(500).json({
-      message: 'Error: No request body.',
-      auth: false
-    });
-  }
-
-  if (!req.body.token) {
-    return res.status(200).json({
-      message: 'No user token.',
-      auth: false
-    });
-  }
-
-  var token = req.body.token;
+router.post('/user', auth.authenticate, function(req, res) {
   
-  try {
-    var decoded = jwt.verify(token, config.secret);
-  }
-  catch (err) {
-    return res.status(200).json({
-      message: 'User token invalid.',
-      error: err,
-      auth: false
-    });
-  }
+  // decoded token provided by middleware
+  var decodedToken = res.locals.decodedToken;
 
   // get user data from database based on user_id in token
   var queryString = 'SELECT user_id, user_email, user_name, \
     user_bio, user_company, user_position, user_location \
     FROM Users WHERE user_id=$1';
   
-  db.query(queryString, [decoded.user_id], (err, result) => {
+  db.query(queryString, [decodedToken.user_id], (err, result) => {
     if (err) {
       console.log('Error getting user with token', err);
 
@@ -238,39 +215,16 @@ router.post('/user', function(req, res) {
 
 // SEND USER BOARDS
 // used to verify token and send list of user boards (for use in the dashboard page)
-router.post('/boards', function(req, res) {
-  if (!req.body) {
-    return res.status(500).json({
-      message: 'Error: No request body.',
-      auth: false
-    });
-  }
+router.post('/boards', auth.authenticate, function(req, res) {
 
-  if (!req.body.token) {
-    return res.status(200).json({
-      message: 'No user token.',
-      auth: false
-    });
-  }
-
-  var token = req.body.token;
-  
-  try {
-    var decoded = jwt.verify(token, config.secret);
-  }
-  catch (err) {
-    return res.status(200).json({
-      message: 'User token invalid.',
-      error: err,
-      auth: false
-    });
-  }
+  // decoded token provided by middleware
+  var decodedToken = res.locals.decodedToken;
 
   // get list of user's boards based on user_id
   var queryString = 'WITH myboards AS (SELECT board_id FROM BoardOwners WHERE user_id = $1) \
-    SELECT board_id, board_name FROM Boards WHERE board_id IN (SELECT board_id FROM myboards)';
+    SELECT board_id, board_name, board_position FROM Boards WHERE board_id IN (SELECT board_id FROM myboards) ORDER BY board_position ASC';
 
-  db.query(queryString, [decoded.user_id], (err, result) => {
+  db.query(queryString, [decodedToken.user_id], (err, result) => {
     if (err) {
       console.log('Error getting boards from database with user token', err);
 
@@ -292,88 +246,132 @@ router.post('/boards', function(req, res) {
 // SEND USER BOARDS
 // used to verify token and send single board (for use when creating a single board)
 // CURRENTLY UNTESTED
-router.post('/boards/:id', function(req, res) {
-  if (!req.body) {
-    return res.status(500).json({
-      message: 'Error: No request body.',
-      auth: false
-    });
-  }
+// router.post('/boards/:id', auth.authenticate, function(req, res) {
 
-  if (!req.body.token) {
-    return res.status(200).json({
-      message: 'No user token.',
-      auth: false
-    });
-  }
+//   var board_id = req.params.id;
 
-  var token = req.body.token;
+//   // get single board based on user_id
+//   var queryString = 'SELECT board_id, board_name FROM Boards WHERE board_id = $1';
+
+//   db.query(queryString, [board_id], (err, result) => {
+//     if (err) {
+//       console.log('Error getting single board from database with user token', err);
+
+//       return res.status(500).json({
+//         message: 'Error getting boards from DB with token.',
+//       });
+//     }  
+
+//     // send stringified array of boards to client
+//     return res.status(200).json({
+//       message: 'Successfully retrieved board with id ' + board_id,
+//       boards: JSON.stringify(result.rows[0])
+//     });
+//   });
+// });
+
+// SEND BOARD DETAILS
+// used to send all board details (columns, cards, etc) to client
+router.post('/board/:id', auth.authenticate, function(req, res) {
   
-  try {
-    var decoded = jwt.verify(token, config.secret);
-  }
-  catch (err) {
-    return res.status(200).json({
-      message: 'User token invalid.',
-      error: err,
-      auth: false
-    });
-  }
-
+  // get user_id from token (middleware) and board_id from route path
+  var user_id = res.locals.decodedToken.user_id;
   var board_id = req.params.id;
 
-  // get single board based on user_id
-  var queryString = 'SELECT board_id, board_name FROM Boards WHERE board_id = $1';
+  // things to get:
+  // * board_name from Boards
+  // * BoardsToColumns mappings
+  // * all columns
+  // * ColumnsToCards mappings
+  // * all cards
 
-  db.query(queryString, [board_id], (err, result) => {
+  // TODO: verify in query that user_id is an owner or member of the board
+
+  // Select a board that matches given board id
+  // Include all BoardsToColumns mappings from this board to any columns
+  // Include all Columns mapped to from BoardsToColumns
+  // Include all ColumnsToCards mappings from this board's columns to any cards
+  // Include all Cards mapped to from ColumnsToCards
+  // var queryString = " \
+  //   SELECT * FROM Boards \
+  //     INNER JOIN BoardsToColumns ON BoardsToColumns.board_id = Boards.board_id \
+  //     INNER JOIN Columns ON Columns.column_id = BoardsToColumns.column_id \
+  //     LEFT JOIN ColumnsToCards ON ColumnsToCards.column_id = Columns.column_id \
+  //     FULL JOIN Cards ON Cards.card_id = ColumnsToCards.card_id \
+  //   WHERE Boards.board_id = $1 \
+  // ";
+
+  // db.query(queryString, [board_id], (err, result) => {
+  //   if (err) {
+  //     console.log('Error retrieving board info from database', err);
+  //     return res.status(500).json({message: 'Error retrieving board info from database'});
+  //   }
+
+  //   console.log('Found Board with ID=' + board_id);
+  //   return res.status(200).json({
+  //     message: 'Found board with board_id = ' + board_id,
+  //     boardData: result.rows
+  //   });
+
+  // });
+
+  // this query gets all columns, separate from cards so I can easily get the column_ids
+  var queryString1 = " \
+    SELECT * FROM Boards \
+      INNER JOIN BoardsToColumns ON BoardsToColumns.board_id = Boards.board_id \
+      INNER JOIN Columns ON Columns.column_id = BoardsToColumns.column_id \
+    WHERE Boards.board_id = $1 \
+  ";
+
+
+  db.query(queryString1, [board_id], (err, result) => {
     if (err) {
-      console.log('Error getting single board from database with user token', err);
+      console.log('Error retrieving board columns from database', err);
+      return res.status(500).json({message: 'Error retrieving board columns from database'});
+    }
 
-      return res.status(500).json({
-        message: 'Error getting boards from DB with token.',
+    console.log('Found board ' + board_id);
+    
+    var columnData = result.rows;
+
+    // Get all column_ids from last query for use in next query
+    var columnIdArray = [];
+    for (var i = 0; i < result.rows.length; i++) {
+      columnIdArray.push(result.rows[i].column_id);
+    }
+
+    // now that we have all columns, this query gets the cards mapped to each column based on column_id
+    var queryString2 = " \
+      SELECT * FROM Columns \
+        INNER JOIN ColumnsToCards ON ColumnsToCards.column_id = Columns.column_id \
+        INNER JOIN Cards ON Cards.card_id = ColumnsToCards.card_id \
+      WHERE Columns.column_id = ANY ($1) \
+    ";
+
+    db.query(queryString2, [columnIdArray], (err2, result2) => {
+      if (err2) {
+        console.log('Error retrieving board cards from database', err);
+        return res.status(500).json({message: 'Error retrieving board cards from database'});
+      }
+
+      var cardData = result2.rows;
+
+      return res.status(200).json({
+        message: 'Found board with board_id = ' + board_id,
+        columnData: columnData,
+        cardData: cardData
       });
-    }  
-
-    // send stringified array of boards to client
-    return res.status(200).json({
-      message: 'Successfully retrieved board with id ' + board_id,
-      boards: JSON.stringify(result.rows[0])
-    });
+    })
   });
 });
 
 // CREATE NEW BOARD
 // based on given user_id, create a new board
 // future: receive board_name to assign to the board
-router.post('/createboard', function(req, res) {
-  if (!req.body) {
-    return res.status(500).json({
-      message: 'Error: No request body.',
-      auth: false
-    });
-  }
+router.post('/createboard', auth.authenticate, function(req, res) {
 
-  if (!req.body.token) {
-    return res.status(200).json({
-      message: 'No user token.',
-      auth: false
-    });
-  }
-
-  var token = req.body.token;
-  
-  // decode token into usable data (only user_id is inside token)
-  // get user_id with 'decoded.user_id'
-  try {
-    var decoded = jwt.verify(token, config.secret);
-  }
-  catch (err) {
-    return res.status(200).json({
-      message: 'User token invalid.',
-      error: err,
-      auth: false
-    });
-  }
+  // decoded token provided by middleware
+  var decodedToken = res.locals.decodedToken;
 
   // this really long string is the query responsible for:
   // 1: inserting a new board called 'My First Board'
@@ -382,12 +380,12 @@ router.post('/createboard', function(req, res) {
   // 4: inserting a BoardsToColumns entry to map the new columns to the new board
   var queryStringCTE = " \
     WITH board_id as ( \
-      INSERT INTO Boards (board_name) \
-        VALUES ($1) \
+      INSERT INTO Boards (board_name, board_position) \
+        VALUES ($1, $2) \
         RETURNING board_id \
     ), user_id as ( \
       INSERT INTO BoardOwners (user_id, board_id) \
-        VALUES ($2, (SELECT board_id FROM board_id LIMIT 1)) \
+        VALUES ($3, (SELECT board_id FROM board_id LIMIT 1)) \
         RETURNING user_id \
     ), column_id as ( \
       INSERT INTO Columns (column_name, column_position) \
@@ -403,8 +401,9 @@ router.post('/createboard', function(req, res) {
   ";
 
   var new_board_name = req.body.board_name;
+  var new_board_position = req.body.board_position || 0;
 
-  db.query(queryStringCTE, [new_board_name, decoded.user_id], (err, results) => {
+  db.query(queryStringCTE, [new_board_name, new_board_position, decodedToken.user_id], (err, results) => {
     if (err) {
       console.log('Error with CTE insert', err);
       return res.status(400).json({message: 'Database error'});
