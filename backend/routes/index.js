@@ -278,13 +278,6 @@ router.post('/board/:id', auth.authenticate, function(req, res) {
   var user_id = res.locals.decodedToken.user_id;
   var board_id = req.params.id;
 
-  // things to get:
-  // * board_name from Boards
-  // * BoardsToColumns mappings
-  // * all columns
-  // * ColumnsToCards mappings
-  // * all cards
-
   // TODO: verify in query that user_id is an owner or member of the board
 
   // Select a board that matches given board id
@@ -300,20 +293,6 @@ router.post('/board/:id', auth.authenticate, function(req, res) {
   //     FULL JOIN Cards ON Cards.card_id = ColumnsToCards.card_id \
   //   WHERE Boards.board_id = $1 \
   // ";
-
-  // db.query(queryString, [board_id], (err, result) => {
-  //   if (err) {
-  //     console.log('Error retrieving board info from database', err);
-  //     return res.status(500).json({message: 'Error retrieving board info from database'});
-  //   }
-
-  //   console.log('Found Board with ID=' + board_id);
-  //   return res.status(200).json({
-  //     message: 'Found board with board_id = ' + board_id,
-  //     boardData: result.rows
-  //   });
-
-  // });
 
   // this query gets all columns, separate from cards so I can easily get the column_ids
   var queryString1 = " \

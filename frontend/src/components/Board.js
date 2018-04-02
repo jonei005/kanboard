@@ -1,4 +1,8 @@
 import React, { Component } from 'react';
+import Column from './Column';
+import { connect } from 'react-redux';
+import { storeUser } from './../actions'; // make actual action for updating board stuffs
+import './../css/Board.css';
 
 class Board extends Component {
     
@@ -54,15 +58,18 @@ class Board extends Component {
 
 
     render() {
-
-        // get board id from pathname (ex: '/board/6')
-        // split string on '/' characters, then get 3rd entry (just the '6)
-        // var board_id = this.props.location.pathname.split('/')[2];
-
         return(
-            <div className="board container">
-                <h1 className="page-title">{this.state.board_name}</h1>
-                <hr className="title-underline" />
+            <div className="board">
+                <div className="container">
+                    <h1 className="page-title">{this.state.board_name}</h1>
+                    <hr className="title-underline" />
+                </div>
+                <div className="columns-container">
+                    <Column name='Backlog' />
+                    <Column name='In Progress' />
+                    <Column name='Completed' />
+
+                </div>
             </div>
         );
     }

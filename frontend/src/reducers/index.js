@@ -2,36 +2,15 @@
 
 import { 
     STORE_USER, 
-    CLEAR_USER 
+    CLEAR_USER,
+    STORE_BOARD,
+    UPDATE_BOARD,
+    CLEAR_BOARD 
 } from "../constants/actionTypes";
-
-// set initial state
-// should get token from localstorage to authenticate here, so user persists over refresh
-// function checkUserToken() {
-//     var token = localStorage.getItem('kanboard-user-token') || null;
-//     if (token) {
-//         console.log("Token found!");
-//         // call api to send token and get user data back
-//         var user = {};
-        
-//         return {
-//             user: user,
-//             auth: true
-//         };
-//     }
-//     else {
-//         console.log("No token found!");
-//         return {
-//             user: {},
-//             auth: false
-//         };
-//     }
-// }
-
-// const initialState = checkUserToken();
 
 const initialState = {
     user: {},
+    board: {},
     auth: false
 }
 
@@ -46,8 +25,20 @@ const rootReducer = (state = initialState, action) => {
             // clear user data from store (on logout)
             return {...state, user: action.payload, auth: false};
 
+        case STORE_BOARD:
+            // add board data to store (when entering board page)
+            return state; // TODO
+
+        case UPDATE_BOARD:
+            // update board data in store (when manipulating columns/cards)
+            return state; // TODO
+
+        case CLEAR_BOARD:
+            // clear board date from store (when leaving board page)
+            return {...state, board: action.payload};
+
         default:
-            // bad action, so return the original state
+            // unrecognized action, so return the original state
             return state;
     }
     
