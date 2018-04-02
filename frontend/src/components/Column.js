@@ -10,7 +10,7 @@ class Column extends Component {
     render() {
 
         // TODO: GET CARDS FROM BOARD PROPS
-        var cardArray = [{card_name: 'First Card'}];
+        var cardArray = this.props.cards;
         var cards = cardArray.map((card, index) => {
             return <Card name={card.card_name} key={index} />
         });

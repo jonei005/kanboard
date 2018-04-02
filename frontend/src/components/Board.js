@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import Column from './Column';
+import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
-import { storeUser } from './../actions'; // make actual action for updating board stuffs
+import { storeBoard, clearBoard } from './../actions'; // make actual action for updating board stuffs
 import './../css/Board.css';
 
 class Board extends Component {
@@ -41,38 +42,73 @@ class Board extends Component {
             return response.json();
         }).then((data) => {
             console.log(data.message);
-            console.log(data.columnData);
-            console.log(data.cardData);
+            // console.log(data.boardData);
+            // console.log(data.columnData);
+            // console.log(data.cardData);
 
-            var board_name = data.columnData[0].board_name;
+            // store board, column, card data in redux store
+            this.props.storeBoard(data.boardData, data.columnData, data.cardData);
 
-            this.setState({
-                board_name: board_name
-            });
-
-            // TODO: Store column and card data in redux store
-
-            document.title = 'Kanboard - ' + board_name;
+            document.title = 'Kanboard - ' + data.boardData.board_name;
         });
+    }
+
+    componentWillUnmount() {
+        // remove the board, column, and card data from redux store
+        this.props.clearBoard();
     }
 
 
     render() {
+
+        var cards = this.props.cards;
+
+        // TODO: map redux state columns/cards to their proper place
+        var columns = this.props.columns.map((column, index) => {
+            var myCards = [];
+
+            // Loop over all cards
+            // If current card's parent column is the current column,
+            // then add current card to myCards array to be added to column
+            for (var i = 0; i < cards.length; i++) {
+                if (cards[i].column_id === column.column_id) {
+                    myCards.push(cards[i]);
+                }
+            }
+
+            return <Column name={column.column_name} id={column.column_id} 
+                key={index} cards={myCards} />
+        });
+
         return(
             <div className="board">
                 <div className="container">
-                    <h1 className="page-title">{this.state.board_name}</h1>
+                    <h1 className="page-title">{this.props.boardData.board_name}</h1>
                     <hr className="title-underline" />
                 </div>
                 <div className="columns-container">
-                    <Column name='Backlog' />
-                    <Column name='In Progress' />
-                    <Column name='Completed' />
-
+                    {columns}
                 </div>
             </div>
         );
     }
 }
 
-export default Board;
+const mapStateToProps = (state) => {
+    return {
+      boardData: state.boardData,
+      columns: state.columns,
+      cards: state.cards
+    }
+  }
+
+const mapDispatchToProps = (dispatch) => {
+    return {
+        storeBoard: (boardData, columns, cards) => dispatch(storeBoard(boardData, columns, cards)),
+        clearBoard: () => dispatch(clearBoard())
+    }
+}
+
+export default withRouter(
+    connect(mapStateToProps, mapDispatchToProps)(Board)
+);

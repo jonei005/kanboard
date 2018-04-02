@@ -302,6 +302,11 @@ router.post('/board/:id', auth.authenticate, function(req, res) {
     WHERE Boards.board_id = $1 \
   ";
 
+  // var queryString1 = " \
+  //   WITH column_ids AS (SELECT column_id FROM BoardsToColumns WHERE board_id = $1) \
+  //   SELECT * FROM Columns WHERE column_id IN (SELECT column_id FROM column_ids) \
+  // ";
+
 
   db.query(queryString1, [board_id], (err, result) => {
     if (err) {
@@ -311,6 +316,7 @@ router.post('/board/:id', auth.authenticate, function(req, res) {
 
     console.log('Found board ' + board_id);
     
+    // get result of columns query (with joins)
     var columnData = result.rows;
 
     // Get all column_ids from last query for use in next query
@@ -333,10 +339,39 @@ router.post('/board/:id', auth.authenticate, function(req, res) {
         return res.status(500).json({message: 'Error retrieving board cards from database'});
       }
 
+      // get result of cards query (with joins)
       var cardData = result2.rows;
+
+      // get boardData from columns query results
+      var boardData = {
+        board_id: result.rows[0].board_id,
+        board_name: result.rows[0].board_name
+      };
+
+      // cut out unnecessary keys in columnData (not really needed, but nice to have)
+      for (var i = 0; i < columnData.length; i++) {
+        delete columnData[i]['board_id'];
+        delete columnData[i]['board_name'];
+        delete columnData[i]['board_position'];
+        delete columnData[i]['board_description'];
+      }
+
+      // v2
+      // uses regex to delete board keys in case new ones are added (not working 100%)
+      // var deleteBoardRegex = /(board_)\w+/g;
+      // for (var i = 0; i < columnData.length; i++) {
+      //   for (var key in columnData[i]) {
+      //     if (columnData[i].hasOwnProperty(key) && deleteBoardRegex.test(key)) {
+      //       console.log('key matched: ' + key);
+      //       delete columnData[i][key];
+      //     }
+      //   }
+      // }
+        
 
       return res.status(200).json({
         message: 'Found board with board_id = ' + board_id,
+        boardData: boardData,
         columnData: columnData,
         cardData: cardData
       });
