@@ -84,11 +84,10 @@ class DashboardTile extends Component {
         if (wantToDelete) {
             var token = localStorage.getItem('kanboard-user-token');
 
-            fetch('http://localhost:3001/deleteboard', {
+            fetch('http://localhost:3001/deleteboard/' + this.props.id, {
                 method: 'post',
                 body: JSON.stringify({
                     token: token,
-                    board_id: this.props.id
                 }),
                 headers: {
                     'content-type': 'application/json'
@@ -105,10 +104,10 @@ class DashboardTile extends Component {
                 if (data) {
                     console.log(data.message);
                     
-                    // close the rename form
+                    // close the delete form
                     this.setState({deleteFormOpen: false});
 
-                    // pass new name and id to Dashboard parent component so it can update state
+                    // pass id to Dashboard parent component so it can delete board and update state
                     this.props.deleteBoard(this.props.id);
                 }
             });

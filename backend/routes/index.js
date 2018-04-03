@@ -459,7 +459,7 @@ router.post('/renameboard', auth.authenticate, function(req, res, next) {
 // DELETE BOARD
 // receive board_id
 // delete board_id from Boards, and consequent columns/cards in DB
-router.post('/deleteboard', auth.authenticate, function(req, res, next) {
+router.post('/deleteboard/:board_id', auth.authenticate, function(req, res, next) {
 
   // TODO: make sure user is board owner before deleting
   // TODO: if user is not owner, just delete that user's mapping to the board
@@ -489,7 +489,7 @@ router.post('/deleteboard', auth.authenticate, function(req, res, next) {
     ) DELETE FROM Cards WHERE card_id IN (SELECT * FROM card_ids) \
   ";
 
-  db.query(queryString, [req.body.board_id], (err, result) => {
+  db.query(queryString, [req.params.board_id], (err, result) => {
     if (err) {
       console.log('Error with delete query', err);
       return res.status(500).json({message: 'Database error on board deletion'});
@@ -501,5 +501,88 @@ router.post('/deleteboard', auth.authenticate, function(req, res, next) {
 
 
 });
+
+// ADD COLUMN
+// adds column data (found in req.body) to DB, associated with board_id given from pathname
+router.post('/addcolumn/:board_id', auth.authenticate, function(req, res) {
+
+  // add column to Columns, then BoardsToColumns
+  var queryString = " \
+    WITH my_column_id AS ( \
+      INSERT INTO Columns (column_name, column_position) \
+        VALUES ($1, $2) RETURNING column_id \
+    ) \
+    INSERT INTO BoardsToColumns (board_id, column_id) \
+      VALUES ($3, (SELECT column_id FROM my_column_id LIMIT 1)) \
+      RETURNING column_id \
+  ";
+
+  // parameters: column_name, column_position, board_id
+  var queryParameters = [
+    req.body.column_name,
+    req.body.column_position,
+    req.params.board_id
+  ]
+
+  db.query(queryString, queryParameters, (err, result) => {
+    if (err) {
+      console.log('Error with add column query', err);
+      return res.status(500).json({message: 'Database error on column creation'});
+    }
+
+    var column_id = result.rows[0].column_id;
+
+    console.log('Successfully added column ' + column_id + ' to board ' + req.params.board_id);
+    return res.status(200).json({
+      message: 'Column created successfully',
+      column_id: column_id,
+      success: true
+    });
+  });
+});
+
+
+// DELETE COLUMN
+// deletes column based on its column_id (found in pathname)
+router.post('/deletecolumn/:column_id', auth.authenticate, function(req, res) {
+
+  // TODO: update positions of columns that came after it (how?)
+
+  // delete associated BoardsToColumns, Columns, ColumnsToCards, and Cards
+  var queryString = " \
+    WITH my_column_id AS ( \
+      DELETE FROM BoardsToColumns WHERE column_id = $1 RETURNING column_id \
+    ), more_columns AS ( \
+      DELETE FROM Columns WHERE column_id = (SELECT column_id FROM my_column_id LIMIT 1) RETURNING column_id \
+    ), card_ids AS ( \
+      DELETE FROM ColumnsToCards WHERE column_id = (SELECT column_id FROM my_column_id LIMIT 1) RETURNING card_id \
+    ) DELETE FROM Cards WHERE card_id IN (SELECT * FROM card_ids) RETURNING card_id \
+  ";
+
+  db.query(queryString, [req.params.column_id], (err, result) => {
+    if (err) {
+      console.log('Error with delete column query', err);
+      return res.status(500).json({message: 'Database error on column deletion'});
+    }
+
+    return res.status(200).json({
+      message: 'Column deleted successfully. ' + result.rows.length + ' cards deleted.',
+      numCards: result.rows.length,
+      card_ids: result.rows
+    });
+  });
+});
+
+
+// UPDATE COLUMN (change position, name, etc)
+
+
+// ADD CARD
+
+
+// DELETE CARD
+
+
+// UPDATE CARD (change name, add info, move columns, etc)
 
 module.exports = router;

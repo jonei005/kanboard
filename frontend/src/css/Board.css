@@ -1,5 +1,6 @@
 /* Styles for Board page, including columns and cards (for now) */
 
+/* Column styles */
 
 .columns-container {
     margin: 0 auto;
@@ -12,6 +13,7 @@
 }
 
 .column {
+    position: relative;
     text-align: center;
     background: #eee;
     border: 2px solid #afafaf;
@@ -26,19 +28,138 @@
     width: 90%;
 }
 
-.add-card-button {
+.add-column-button {
     width: 100%;
+    color: #42426a;
+    background: none;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+}
+
+.add-column-button:hover {
+    opacity: 0.7;
+    background: rgba(0, 0, 0, 0.1);
+}
+
+.add-column-button .column-name {
+    border: none;
+    padding: 16px 0;
+}
+
+.add-card-button {
+    width: 90%;
     border: none;
     background: none;
     cursor: pointer;
     padding: 12px;
+    margin: 12px 0;
     font-weight: bold;
+    border-radius: 5px;
+    color: #42426a;
+    background: rgba(0, 0, 0, 0.1);
 }
 
 .add-card-button:hover {
-    opacity: 0.8;
+    opacity: 0.7;
+}
+
+/* Column menu styles */
+.column-menu-container {
+    position: absolute;
+    right: 0;
+    top: 0;
+}
+
+.column-menu {
+    position: absolute;
+    top: 26px;
+    right: 12px;
+    background: white;
+    border-radius: 5px;
+    box-shadow: 0px 0px 8px 1px #333;
+    padding: 6px;
+}
+
+.column-menu button {
+    width: 130px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    text-align: left;
+    padding: 6px;
+}
+
+.column-menu button:first-child {
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+}
+
+.column-menu button:last-child {
+    border-bottom-left-radius: 5px;
+    border-bottom-right-radius: 5px;
+}
+
+.column-menu button:hover {
+    background: #fbf380;
+}
+
+.delete-column-dialog {
+    width: 90%;
+    margin: 12px auto 0;
+    padding: 6px;
+    background: rgba(255, 0, 0, 0.1);
+    border: 1px solid rgba(230, 0, 0, 0.9);
+    border-radius: 5px;
+    box-sizing: border-box;
+    font-size: 10pt;
+    box-shadow: 0px 0px 12px -2px red;
+}
+
+.delete-column-dialog div {
+    margin-bottom: 12px;
+}
+
+.delete-column-button {
+    width: 46%;
+    margin: 0 2%;
+    cursor: pointer;
+    border: 1px solid #999;
+    border-radius: 5px;
+    background: #eee;
+    height: 24px;
+}
+
+
+
+.delete-column-button:hover {
+    color: #555;
+    background: #e8e8e8;
+}
+
+.delete-column-button.delete:hover {
+    color: red;
+}
+
+.menu-button {
+    color: rgba(0, 0, 0, 0.2);
+    position: absolute;
+    top: 8px;
+    right: 4px;
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+.menu-button:hover {
     color: #42426a;
 }
+
+.menu-button:focus {
+    outline: none;
+}
+
+/* Card styles */
 
 .card {
     width: 90%;
@@ -55,3 +176,4 @@
 .card:hover {
     background: rgba(66, 66, 106, 1);
 }
+

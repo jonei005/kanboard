@@ -33,31 +33,40 @@ export const clearBoard = () => ({
     payload: {}
 });
 
+// TODO: used to manipulate column data (name or position)
 export const updateColumn = () => ({
     type: UPDATE_COLUMN,
     payload: {}
 });
 
-export const createColumn = () => ({
+// used to add a new column to the list
+export const createColumn = (column) => ({
     type: CREATE_COLUMN,
-    payload: {}
+    payload: {column}
 });
 
-export const deleteColumn = () => ({
+// used to delete a column from the list
+export const deleteColumn = (column_id, card_ids) => ({
     type: DELETE_COLUMN,
-    payload: {}
+    payload: {
+        column_id: column_id,
+        card_ids: card_ids
+    }
 });
 
+// TODO
 export const updateCard = () => ({
     type: UPDATE_CARD,
     payload: {}
 });
 
+// TODO
 export const createCard = () => ({
     type: CREATE_CARD,
     payload: {}
 });
 
+// TODO
 export const deleteCard = () => ({
     type: DELETE_CARD,
     payload: {}

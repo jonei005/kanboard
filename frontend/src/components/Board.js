@@ -2,7 +2,10 @@ import React, { Component } from 'react';
 import Column from './Column';
 import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
-import { storeBoard, clearBoard } from './../actions'; // make actual action for updating board stuffs
+import { 
+    storeBoard, clearBoard,
+    createColumn, deleteColumn, updateColumn
+} from './../actions'; // make actual action for updating board stuffs
 import './../css/Board.css';
 
 class Board extends Component {
@@ -18,7 +21,9 @@ class Board extends Component {
         this.state = {
             board_id: board_id,
             board_name: '',
-            board_data: {}
+            board_data: {},
+            columnFormOpen: false,
+            columnFormText: ''
         }
     }
 
@@ -41,6 +46,9 @@ class Board extends Component {
             }
             return response.json();
         }).then((data) => {
+
+            document.title = 'Kanboard - ' + data.boardData.board_name;
+
             console.log(data.message);
             // console.log(data.boardData);
             // console.log(data.columnData);
@@ -49,7 +57,7 @@ class Board extends Component {
             // store board, column, card data in redux store
             this.props.storeBoard(data.boardData, data.columnData, data.cardData);
 
-            document.title = 'Kanboard - ' + data.boardData.board_name;
+            
         });
     }
 
@@ -58,12 +66,73 @@ class Board extends Component {
         this.props.clearBoard();
     }
 
+    toggleColumnForm() {
+        this.setState({columnFormOpen: !this.state.columnFormOpen});
+    }
+
+    addColumn() {
+        // alert('add column');
+
+        this.setState({columnFormOpen: false});
+        
+        var token = localStorage.getItem('kanboard-user-token');
+        var columns = this.props.columns;
+        var column_position = columns.length;
+        var column_name = this.state.columnFormText;
+
+        
+        fetch('http://localhost:3001/addcolumn/' + this.state.board_id, {
+            method: 'post',
+            body: JSON.stringify({
+                token: token,
+                column_name: column_name,
+                column_position: column_position
+            }),
+            headers: {
+                'content-type': 'application/json' 
+            }
+        }).then((response) => {
+            if (response.status !== 200) {
+                console.log('Something went wrong with fetch adding column');
+            }
+            return response.json();
+        }).then((data) => {
+
+            console.log(data);
+
+            if (data.success) {
+                var column = {
+                    column_id: data.column_id,
+                    column_name: column_name,
+                    column_position: column_position
+                };
+    
+                // add column data to redux store
+                this.props.createColumn(column);
+            }
+            
+        });
+    }
+
+    deleteColumn(column_id, card_ids) {
+        // logic handled by Column component
+        // my job here is just to remove the column & cards from redux store
+        this.props.deleteColumn(column_id, card_ids);
+
+    }
+
+    handleChange = (e) => {
+        this.setState({
+            [e.target.id]: e.target.value
+        });
+    }
+
 
     render() {
 
         var cards = this.props.cards;
 
-        // TODO: map redux state columns/cards to their proper place
+        // map redux state columns/cards to their proper place
         var columns = this.props.columns.map((column, index) => {
             var myCards = [];
 
@@ -77,8 +146,11 @@ class Board extends Component {
             }
 
             return <Column name={column.column_name} id={column.column_id} 
-                key={index} cards={myCards} />
+                key={index} cards={myCards} 
+                deleteColumn={(col_id, card_ids) => this.deleteColumn(col_id, card_ids)} />
         });
+
+        // TODO: create/delete columns
 
         return(
             <div className="board">
@@ -88,6 +160,20 @@ class Board extends Component {
                 </div>
                 <div className="columns-container">
                     {columns}
+                    <div className="column">
+                        <button className="add-column-button" onClick={() => this.toggleColumnForm()}>
+                            <h3 className="column-name">Add Column</h3>
+                        </button>
+                        {this.state.columnFormOpen && 
+                            <div className="dashboard-tile-rename-form">
+                                <input type="text" value={this.state.columnFormText} 
+                                    onChange={this.handleChange} id="columnFormText" autoFocus /> 
+                                <button className="text-submit-button" title="Add Board" onClick={() => this.addColumn()}>
+                                    <i className="far fa-check-circle fa-lg"></i>
+                                </button>
+                            </div>
+                        }
+                    </div>
                 </div>
             </div>
         );
@@ -105,7 +191,10 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
     return {
         storeBoard: (boardData, columns, cards) => dispatch(storeBoard(boardData, columns, cards)),
-        clearBoard: () => dispatch(clearBoard())
+        clearBoard: () => dispatch(clearBoard()),
+        createColumn: (column) => dispatch(createColumn(column)),
+        deleteColumn: (column_id, card_ids) => dispatch(deleteColumn(column_id, card_ids)),
+        updateColumn: (column) => dispatch(updateColumn(column))
     }
 }
 
