@@ -3,7 +3,7 @@
 import { 
     STORE_USER, CLEAR_USER,
     STORE_BOARD, CLEAR_BOARD,
-    UPDATE_COLUMN, CREATE_COLUMN, DELETE_COLUMN,
+    CREATE_COLUMN, RENAME_COLUMN, DELETE_COLUMN,
     UPDATE_CARD, CREATE_CARD, DELETE_CARD
 } from "../constants/actionTypes";
 
@@ -18,6 +18,7 @@ const initialState = {
 const rootReducer = (state = initialState, action) => {
 
     var columns = null;
+    var i = 0;
 
     switch (action.type) {
         case STORE_USER:
@@ -46,16 +47,31 @@ const rootReducer = (state = initialState, action) => {
                 cards: []
             };
 
-        case UPDATE_COLUMN: // TODO
-            // manipulate some data of the column
-            return state;
+        case RENAME_COLUMN:
+            // manipulate name of the column
+            
+            // columns variable declared above switch statement to avoid warning
+            columns = [];
+            columns = columns.concat(state.columns);
+
+            // loop over columns to find the one we want to update
+            for (i = 0; i < columns.length; i++) {
+                if (columns[i].column_id === action.payload.column_id) {
+                    columns[i].column_name = action.payload.column_name;
+                }
+            }
+
+            return {
+                ...state,
+                columns: columns
+            };
 
         case CREATE_COLUMN:
             // create a new column completely and add it to the list
 
-            // FIX: NOT UPDATING UI
-
-            columns = state.columns;
+            // columns variable declared above switch statement to avoid warning
+            columns = [];
+            columns = columns.concat(state.columns);
             columns.push(action.payload.column);
 
             return {
@@ -63,17 +79,17 @@ const rootReducer = (state = initialState, action) => {
                 columns: columns
             };
 
-        case DELETE_COLUMN: // TODO
+        case DELETE_COLUMN: 
             // remove a column from the list
 
-            // FIX: NOT UPDATING UI
-
-            columns = state.columns;
+            // columns variable declared above switch statement to avoid warning
+            columns = [];
+            columns = columns.concat(state.columns);
             var cards = state.cards;
             var card_ids = action.payload.card_ids;
 
             // loop in reverse because splice causes indexing problems
-            for (var i = columns.length - 1; i > 0; i--) {
+            for (i = columns.length - 1; i > 0; i--) {
                 if (columns[i].column_id === action.payload.column_id) {
                     columns.splice(i, 1);
                 }

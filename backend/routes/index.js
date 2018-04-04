@@ -574,8 +574,26 @@ router.post('/deletecolumn/:column_id', auth.authenticate, function(req, res) {
 });
 
 
-// UPDATE COLUMN (change position, name, etc)
+// RENAME COLUMN 
+// get new name from req.body, update name of column_id in DB
+router.post('/updatecolumn/name/:column_id', auth.authenticate, function(req, res) {
 
+  // update Column name and position if those parameters are specified
+  var queryString = 'UPDATE Columns SET column_name = $1 WHERE column_id = $2';
+  var queryParameters = [req.body.column_name, req.params.column_id];
+
+  db.query(queryString, queryParameters, (err, result) => {
+    if (err) {
+      console.log('Error with rename column query', err);
+      return res.status(500).json({message: 'Database error on column rename'});
+    }
+
+    return res.status(200).json({
+      message: 'Column renamed successfully.',
+      success: true
+    });
+  });
+});
 
 // ADD CARD
 

@@ -3,7 +3,7 @@
 import { 
     STORE_USER, CLEAR_USER,
     STORE_BOARD, CLEAR_BOARD,
-    UPDATE_COLUMN, CREATE_COLUMN, DELETE_COLUMN,
+    CREATE_COLUMN, RENAME_COLUMN, DELETE_COLUMN,
     UPDATE_CARD, CREATE_CARD, DELETE_CARD
 } from "../constants/actionTypes";
 
@@ -33,10 +33,14 @@ export const clearBoard = () => ({
     payload: {}
 });
 
-// TODO: used to manipulate column data (name or position)
-export const updateColumn = () => ({
-    type: UPDATE_COLUMN,
-    payload: {}
+// TODO: used to rename a column 
+export const renameColumn = (column_id, column_name, column_position) => ({
+    type: RENAME_COLUMN,
+    payload: {
+        column_id: column_id,
+        column_name: column_name,
+        column_position: column_position
+    }
 });
 
 // used to add a new column to the list

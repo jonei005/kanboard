@@ -4,6 +4,7 @@
     max-width: 960px;
     padding: 36px 0;
     margin: 0 auto;
+    width: 100%;
 }
 
 .page-title {
@@ -21,3 +22,8 @@
     border: 1px solid #e8e8ed;
 }
 
+.App {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}

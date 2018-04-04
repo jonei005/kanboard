@@ -1,10 +1,9 @@
 import React, { Component } from 'react';
 import Column from './Column';
-import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { 
     storeBoard, clearBoard,
-    createColumn, deleteColumn, updateColumn
+    createColumn, deleteColumn, renameColumn
 } from './../actions'; // make actual action for updating board stuffs
 import './../css/Board.css';
 
@@ -49,10 +48,7 @@ class Board extends Component {
 
             document.title = 'Kanboard - ' + data.boardData.board_name;
 
-            console.log(data.message);
-            // console.log(data.boardData);
-            // console.log(data.columnData);
-            // console.log(data.cardData);
+            // console.log(data.message);
 
             // store board, column, card data in redux store
             this.props.storeBoard(data.boardData, data.columnData, data.cardData);
@@ -72,8 +68,6 @@ class Board extends Component {
 
     addColumn() {
         // alert('add column');
-
-        this.setState({columnFormOpen: false});
         
         var token = localStorage.getItem('kanboard-user-token');
         var columns = this.props.columns;
@@ -109,6 +103,8 @@ class Board extends Component {
     
                 // add column data to redux store
                 this.props.createColumn(column);
+
+                this.setState({columnFormOpen: false, columnFormText: ''});
             }
             
         });
@@ -116,9 +112,15 @@ class Board extends Component {
 
     deleteColumn(column_id, card_ids) {
         // logic handled by Column component
-        // my job here is just to remove the column & cards from redux store
+        // remove the column & cards from redux store
         this.props.deleteColumn(column_id, card_ids);
 
+    }
+
+    renameColumn(column_id, column_name) {
+        // logic handled by Column component
+        // rename the column in redux store
+        this.props.renameColumn(column_id, column_name);
     }
 
     handleChange = (e) => {
@@ -131,6 +133,18 @@ class Board extends Component {
     render() {
 
         var cards = this.props.cards;
+
+        // numColumns is the actual columns + add column button 
+        // used to control the width of the columns
+        var numColumns = this.props.columns.length + 1;
+        var columnWidth = (100 - (numColumns * 2)) / numColumns;
+        console.log('Number of columns: ' + numColumns + ', Width: ' + columnWidth);
+        var columnContainerStyles = {};
+        // var boardStyles = {};
+        if (numColumns > 5) {
+            columnContainerStyles.gridTemplateColumns = 'repeat(auto-fill, minmax(' + columnWidth + '%, 1fr))';
+        }
+
 
         // map redux state columns/cards to their proper place
         var columns = this.props.columns.map((column, index) => {
@@ -146,8 +160,9 @@ class Board extends Component {
             }
 
             return <Column name={column.column_name} id={column.column_id} 
-                key={index} cards={myCards} 
-                deleteColumn={(col_id, card_ids) => this.deleteColumn(col_id, card_ids)} />
+                key={index} cards={myCards}
+                deleteColumn={(col_id, card_ids) => this.deleteColumn(col_id, card_ids)}
+                renameColumn={(col_id, col_name) => this.renameColumn(col_id, col_name)} />
         });
 
         // TODO: create/delete columns
@@ -158,21 +173,24 @@ class Board extends Component {
                     <h1 className="page-title">{this.props.boardData.board_name}</h1>
                     <hr className="title-underline" />
                 </div>
-                <div className="columns-container">
-                    {columns}
-                    <div className="column">
-                        <button className="add-column-button" onClick={() => this.toggleColumnForm()}>
-                            <h3 className="column-name">Add Column</h3>
-                        </button>
-                        {this.state.columnFormOpen && 
-                            <div className="dashboard-tile-rename-form">
-                                <input type="text" value={this.state.columnFormText} 
-                                    onChange={this.handleChange} id="columnFormText" autoFocus /> 
-                                <button className="text-submit-button" title="Add Board" onClick={() => this.addColumn()}>
-                                    <i className="far fa-check-circle fa-lg"></i>
-                                </button>
-                            </div>
-                        }
+                <div className="columns">
+                    <div className="columns-container" style={columnContainerStyles}>
+                        {columns}
+                        <div className="column">
+                            <button className="add-column-button" onClick={() => this.toggleColumnForm()}>
+                                <h3 className="column-name">Add Column</h3>
+                            </button>
+                            {this.state.columnFormOpen && 
+                                <div className="dashboard-tile-rename-form">
+                                    <input type="text" value={this.state.columnFormText} 
+                                        onChange={this.handleChange} id="columnFormText" autoFocus
+                                        onKeyDown={(e) => {if (e.keyCode === 13) this.addColumn()}} /> 
+                                    <button className="text-submit-button" title="Add Board" onClick={() => this.addColumn()}>
+                                        <i className="far fa-check-circle fa-lg"></i>
+                                    </button>
+                                </div>
+                            }
+                        </div>
                     </div>
                 </div>
             </div>
@@ -194,10 +212,8 @@ const mapDispatchToProps = (dispatch) => {
         clearBoard: () => dispatch(clearBoard()),
         createColumn: (column) => dispatch(createColumn(column)),
         deleteColumn: (column_id, card_ids) => dispatch(deleteColumn(column_id, card_ids)),
-        updateColumn: (column) => dispatch(updateColumn(column))
+        renameColumn: (column_id, column_name) => dispatch(renameColumn(column_id, column_name))
     }
 }
 
-export default withRouter(
-    connect(mapStateToProps, mapDispatchToProps)(Board)
-);
+export default connect(mapStateToProps, mapDispatchToProps)(Board);
