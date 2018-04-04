@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import Column from './Column';
+import BoardMenu from './BoardMenu';
 import { connect } from 'react-redux';
 import { 
     storeBoard, clearBoard,
@@ -68,6 +69,11 @@ class Board extends Component {
 
     addColumn() {
         // alert('add column');
+
+        if (this.state.columnFormText === '') {
+            this.setState({columnFormOpen: false});
+            return;
+        }
         
         var token = localStorage.getItem('kanboard-user-token');
         var columns = this.props.columns;
@@ -136,14 +142,14 @@ class Board extends Component {
 
         // numColumns is the actual columns + add column button 
         // used to control the width of the columns
-        var numColumns = this.props.columns.length + 1;
-        var columnWidth = (100 - (numColumns * 2)) / numColumns;
-        console.log('Number of columns: ' + numColumns + ', Width: ' + columnWidth);
-        var columnContainerStyles = {};
-        // var boardStyles = {};
-        if (numColumns > 5) {
-            columnContainerStyles.gridTemplateColumns = 'repeat(auto-fill, minmax(' + columnWidth + '%, 1fr))';
-        }
+        // var numColumns = this.props.columns.length + 1;
+        // var columnWidth = (100 - (numColumns * 2)) / numColumns;
+        // console.log('Number of columns: ' + numColumns + ', Width: ' + columnWidth);
+        // var columnContainerStyles = {};
+        // // var boardStyles = {};
+        // if (numColumns > 5) {
+        //     columnContainerStyles.gridTemplateColumns = 'repeat(auto-fill, minmax(' + columnWidth + '%, 1fr))';
+        // }
 
 
         // map redux state columns/cards to their proper place
@@ -165,8 +171,6 @@ class Board extends Component {
                 renameColumn={(col_id, col_name) => this.renameColumn(col_id, col_name)} />
         });
 
-        // TODO: create/delete columns
-
         return(
             <div className="board">
                 <div className="container">
@@ -174,24 +178,25 @@ class Board extends Component {
                     <hr className="title-underline" />
                 </div>
                 <div className="columns">
-                    <div className="columns-container" style={columnContainerStyles}>
+                    <div className="columns-container">
                         {columns}
                         <div className="column">
                             <button className="add-column-button" onClick={() => this.toggleColumnForm()}>
                                 <h3 className="column-name">Add Column</h3>
                             </button>
                             {this.state.columnFormOpen && 
-                                <div className="dashboard-tile-rename-form">
+                                <div className="rename-column-dialog add-column">
                                     <input type="text" value={this.state.columnFormText} 
-                                        onChange={this.handleChange} id="columnFormText" autoFocus
+                                        onChange={(e) => this.handleChange(e)} id="columnFormText" autoFocus
                                         onKeyDown={(e) => {if (e.keyCode === 13) this.addColumn()}} /> 
-                                    <button className="text-submit-button" title="Add Board" onClick={() => this.addColumn()}>
-                                        <i className="far fa-check-circle fa-lg"></i>
+                                    <button className="text-submit-button" title="Add Column" onClick={() => this.addColumn()}>
+                                        <i className="fas fa-arrow-right"></i>
                                     </button>
                                 </div>
                             }
                         </div>
                     </div>
+                    <BoardMenu />
                 </div>
             </div>
         );

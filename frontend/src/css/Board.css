@@ -12,11 +12,16 @@
     padding: 36px 0 12px;
 }
 
+.board h3 {
+    color: #333;
+}
+
 /* Column styles */
 
 .columns {
     flex-basis: 100%;
-    overflow-x: auto;
+    display: grid;
+    grid-template-columns: 80% 20%;
 }
 
 /* TODO: for mobile, use percentages for columns */
@@ -27,6 +32,7 @@
     grid-gap: 2%;    
     padding: 0 36px;
     height: 100%;
+    overflow-x: auto;
 }
 
 .column {
@@ -52,6 +58,7 @@
     border-radius: 5px;
     border: none;
     cursor: pointer;
+    margin-right: 36px;
 }
 
 .add-column-button:hover {
@@ -62,6 +69,14 @@
 .add-column-button .column-name {
     border: none;
     padding: 16px 0;
+}
+
+.add-column.rename-column-dialog {
+    padding: 2px 0 16px;
+}
+
+.add-column.rename-column-dialog button {
+    top: 2px;
 }
 
 .add-card-button {
@@ -79,6 +94,30 @@
 
 .add-card-button:hover {
     opacity: 0.7;
+}
+
+/* Board menu styles */
+.board-menu-container {
+    background: white;
+    position: relative;
+    box-shadow: 0px 0px 36px 24px white;
+    padding-right: 36px;
+    padding-bottom: 36px;
+}
+
+.board-menu {
+    border: 2px solid #afafaf;
+    border-radius: 5px;
+    height: 100%;
+    padding: 16px;
+    background: #eeeeef;
+    box-sizing: border-box;
+}
+
+.board-menu-title {
+    margin: 0;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #afafaf;
 }
 
 /* Column menu styles */
