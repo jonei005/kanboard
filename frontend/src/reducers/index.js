@@ -95,6 +95,7 @@ const rootReducer = (state = initialState, action) => {
                 }
             }
 
+            // delete all cards that were in the deleted column
             for (i = 0; i < card_ids.length; i++) {
                 for (var j = cards.length - 1; j > 0; j--) {
                     if (card_ids[i].card_id === cards[j].card_id) {
@@ -116,7 +117,15 @@ const rootReducer = (state = initialState, action) => {
 
         case CREATE_CARD: // TODO
             // create a completely new card, add it to the list
-            return state;
+            cards = [];
+            cards = cards.concat(state.cards);
+
+            cards.push(action.payload.card);
+
+            return {
+                ...state,
+                cards: cards
+            };
         
         case DELETE_CARD: // TODO
             // remove a card from the list

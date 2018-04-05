@@ -595,7 +595,51 @@ router.post('/updatecolumn/name/:column_id', auth.authenticate, function(req, re
   });
 });
 
+// MOVE COLUMN
+// router.post('/updatecolumn/move/:column_id', auth.authenticate, function(req, res) {
+//   var queryString = '';
+// })
+
 // ADD CARD
+// add new card to column
+router.post('/addcard/:column_id', auth.authenticate, function(req, res) {
+
+  // TODO: Check if user is verified member of board
+
+  var queryString = ' \
+    WITH my_card AS ( \
+      INSERT INTO Cards (card_name, card_position) \
+      VALUES ($1, $2) RETURNING * \
+    ), my_column_id AS ( \
+      INSERT INTO ColumnsToCards (column_id, card_id) \
+      VALUES ($3, (SELECT card_id FROM my_card LIMIT 1)) RETURNING * \
+    ) SELECT * FROM my_card \
+        INNER JOIN my_column_id ON my_column_id.card_id = my_card.card_id \
+  ';
+
+  var queryParameters = [
+    req.body.card_name,
+    req.body.card_position,
+    req.params.column_id
+  ];
+
+  db.query(queryString, queryParameters, (err, result) => {
+    if (err) {
+      console.log('Error with add card query', err);
+      return res.status(500).json({message: 'Database error on card add'});
+    }
+
+    res.status(200).json({
+      message: 'Successfully added card.',
+      card: result.rows[0],
+      success: true
+    })
+  });
+
+
+
+});
+
 
 
 // DELETE CARD

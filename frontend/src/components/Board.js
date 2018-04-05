@@ -4,7 +4,8 @@ import BoardMenu from './BoardMenu';
 import { connect } from 'react-redux';
 import { 
     storeBoard, clearBoard,
-    createColumn, deleteColumn, renameColumn
+    createColumn, deleteColumn, renameColumn,
+    createCard
 } from './../actions'; // make actual action for updating board stuffs
 import './../css/Board.css';
 
@@ -129,6 +130,12 @@ class Board extends Component {
         this.props.renameColumn(column_id, column_name);
     }
 
+    addCard(card) {
+        //logic handled by Column component
+        // add a card to redux store
+        this.props.createCard(card);
+    }
+
     handleChange = (e) => {
         this.setState({
             [e.target.id]: e.target.value
@@ -139,18 +146,6 @@ class Board extends Component {
     render() {
 
         var cards = this.props.cards;
-
-        // numColumns is the actual columns + add column button 
-        // used to control the width of the columns
-        // var numColumns = this.props.columns.length + 1;
-        // var columnWidth = (100 - (numColumns * 2)) / numColumns;
-        // console.log('Number of columns: ' + numColumns + ', Width: ' + columnWidth);
-        // var columnContainerStyles = {};
-        // // var boardStyles = {};
-        // if (numColumns > 5) {
-        //     columnContainerStyles.gridTemplateColumns = 'repeat(auto-fill, minmax(' + columnWidth + '%, 1fr))';
-        // }
-
 
         // map redux state columns/cards to their proper place
         var columns = this.props.columns.map((column, index) => {
@@ -168,7 +163,8 @@ class Board extends Component {
             return <Column name={column.column_name} id={column.column_id} 
                 key={index} cards={myCards}
                 deleteColumn={(col_id, card_ids) => this.deleteColumn(col_id, card_ids)}
-                renameColumn={(col_id, col_name) => this.renameColumn(col_id, col_name)} />
+                renameColumn={(col_id, col_name) => this.renameColumn(col_id, col_name)}
+                addCard={(card) => this.addCard(card)} />
         });
 
         return(
@@ -217,7 +213,8 @@ const mapDispatchToProps = (dispatch) => {
         clearBoard: () => dispatch(clearBoard()),
         createColumn: (column) => dispatch(createColumn(column)),
         deleteColumn: (column_id, card_ids) => dispatch(deleteColumn(column_id, card_ids)),
-        renameColumn: (column_id, column_name) => dispatch(renameColumn(column_id, column_name))
+        renameColumn: (column_id, column_name) => dispatch(renameColumn(column_id, column_name)),
+        createCard: (card) => dispatch(createCard(card))
     }
 }
 

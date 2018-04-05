@@ -65,9 +65,11 @@ export const updateCard = () => ({
 });
 
 // TODO
-export const createCard = () => ({
+export const createCard = (card) => ({
     type: CREATE_CARD,
-    payload: {}
+    payload: {
+        card: card
+    }
 });
 
 // TODO

@@ -10,14 +10,58 @@ class Column extends Component {
             columnMenuOpen: false,
             deleteColumnDialogOpen: false,
             renameColumnDialogOpen: false,
-            renameColumnText: props.name
+            renameColumnText: props.name,
+            addCardFormOpen: false,
+            addCardText: ''
         };
 
         this.pageClick = this.pageClick.bind(this);
     }
 
     addCard() {
-        alert('Want to add a new card...');
+        this.setState({addCardFormOpen: false});
+
+        // TODO
+
+        // get relevent data about the card to send to the api
+        var card_name = this.state.addCardText;
+        if (card_name === '') return;
+
+        var card_position = this.props.cards.length;
+
+        // send column_id, card_name, card_position to api
+        this.setState({addCardText: ''});
+
+        var token = localStorage.getItem('kanboard-user-token');
+
+        fetch('http://localhost:3001/addcard/' + this.props.id, {
+            method: 'post',
+            body: JSON.stringify({
+                token: token,
+                card_name: card_name,
+                card_position: card_position
+            }),
+            headers: {
+                'content-type': 'application/json'
+            }
+        }).then((response) => {
+            if (response.status === 200) {
+                return response.json();
+            }
+            else {
+                console.log('Hmm something went wrong with add card fetch', response);
+                return null;
+            }
+        }).then((data) => {
+            if (data) {
+                this.props.addCard(data.card);
+            }
+        });
+    }
+
+    // open or close add card form based on current state
+    toggleAddCardForm() {
+        this.setState({addCardFormOpen: !this.state.addCardFormOpen});
     }
 
     toggleColumnMenu() {
@@ -131,24 +175,19 @@ class Column extends Component {
                 this.setState({renameColumnText: this.props.name});
             }
         });
-
-        // set renameColumnText to new column_name
-        this.setState({renameColumnText: column_name});
-
-
-
     }
 
     render() {
 
         var cardArray = this.props.cards;
+
         var cards = cardArray.map((card, index) => {
             return <Card name={card.card_name} key={index} />
         });
 
         return(
             <div className="column">
-                {this.state.renameColumnDialogOpen 
+                {this.state.renameColumnDialogOpen /* Render the rename form or the name of the column */
                     ? 
                         <div className="rename-column-dialog">
                             <input type="text" id="renameColumnText" autoFocus
@@ -161,10 +200,10 @@ class Column extends Component {
                             </button>
                         </div>
 
-                    : <h3 className="column-name">{this.props.name}</h3>
+                    : <h3 className="column-name" onClick={() => this.toggleRenameColumnDialog()}>{this.props.name}</h3>
                 }
                 
-                {this.state.deleteColumnDialogOpen &&
+                {this.state.deleteColumnDialogOpen && /* If deleteColumnDialogOpen is true, render delete column warning */
                     <div className="delete-column-dialog">
                         <div>Are you sure you want to delete this column? All column data, including cards, will be lost forever.</div>
                         <button className="delete-column-button delete" title="Delete Board" onClick={() => this.deleteColumn(true)}>
@@ -176,9 +215,21 @@ class Column extends Component {
                     </div>
                 }
                 {cards}
-                <button className="add-card-button" onClick={() => this.addCard()}>
-                    Add Card
-                </button>
+                {this.state.addCardFormOpen /* If addCardFormOpen is true, render the add card form, else show the button */
+                    ? 
+                        <div className="add-card-form">
+                            <input type="text" id="addCardText" autoFocus placeholder="Name of card"
+                                value={this.state.addCardText} 
+                                onChange={(e) => this.handleChange(e)}
+                                onKeyDown={(e) => {if (e.keyCode === 13) this.addCard()}} />
+                            <button onClick={() => this.addCard()}>
+                                <i className="fas fa-arrow-right"></i>
+                            </button>
+                        </div>
+
+                    : <button className="add-card-button" onClick={() => this.toggleAddCardForm()}>Add Card</button>
+                }
+                
                 <div className="column-menu-container">
                     <button className="menu-button" onClick={() => this.toggleColumnMenu()}>
                         <i className="fas fa-ellipsis-v"></i>
