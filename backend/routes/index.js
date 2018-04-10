@@ -547,16 +547,32 @@ router.post('/addcolumn/:board_id', auth.authenticate, function(req, res) {
 router.post('/deletecolumn/:column_id', auth.authenticate, function(req, res) {
 
   // TODO: update positions of columns that came after it (how?)
+  // in query: get position of column to delete (curPos)
+  // get associated board using BoardsToColumns
+  // select all Columns associated with that board in BoardsToColumns with pos > curPos
+  // decrement pos of all these columns by 1
 
   // delete associated BoardsToColumns, Columns, ColumnsToCards, and Cards
   var queryString = " \
-    WITH my_column_id AS ( \
-      DELETE FROM BoardsToColumns WHERE column_id = $1 RETURNING column_id \
-    ), more_columns AS ( \
-      DELETE FROM Columns WHERE column_id = (SELECT column_id FROM my_column_id LIMIT 1) RETURNING column_id \
+    WITH my_column AS ( \
+      DELETE FROM BoardsToColumns WHERE column_id = $1 RETURNING * \
+    ), my_column_full AS ( \
+      DELETE FROM Columns WHERE column_id = (SELECT column_id FROM my_column LIMIT 1) RETURNING * \
     ), card_ids AS ( \
-      DELETE FROM ColumnsToCards WHERE column_id = (SELECT column_id FROM my_column_id LIMIT 1) RETURNING card_id \
-    ) DELETE FROM Cards WHERE card_id IN (SELECT * FROM card_ids) RETURNING card_id \
+      DELETE FROM ColumnsToCards WHERE column_id = (SELECT column_id FROM my_column LIMIT 1) RETURNING card_id \
+    ), cards AS ( \
+      DELETE FROM Cards WHERE card_id IN (SELECT * FROM card_ids) RETURNING card_id \
+    ), my_board_id AS ( \
+      SELECT board_id FROM BoardsToColumns WHERE column_id = (SELECT column_id FROM my_column LIMIT 1) \
+    ), after_columns_ids AS ( \
+      SELECT column_id FROM BoardsToColumns WHERE board_id = (SELECT board_id FROM my_board_id LIMIT 1) \
+    ), after_columns AS ( \
+      SELECT * FROM Columns WHERE column_id IN (SELECT column_id FROM after_columns_ids) \
+    ), columns_to_move AS ( \
+      SELECT * FROM after_columns WHERE column_position > (SELECT column_position FROM my_column_full LIMIT 1)  \
+    ), moved_columns AS ( \
+      UPDATE Columns SET column_position = column_position - 1 WHERE column_id IN (SELECT column_id FROM columns_to_move) RETURNING * \
+    ) SELECT card_id FROM cards \
   ";
 
   db.query(queryString, [req.params.column_id], (err, result) => {

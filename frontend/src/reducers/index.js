@@ -87,11 +87,24 @@ const rootReducer = (state = initialState, action) => {
             columns = columns.concat(state.columns);
             var cards = state.cards;
             var card_ids = action.payload.card_ids;
+            var column_position = -1;
 
+            // remove column from the array of columns
             // loop in reverse because splice causes indexing problems
             for (i = columns.length - 1; i > 0; i--) {
                 if (columns[i].column_id === action.payload.column_id) {
+                    // get position of deleted column in order to update positions of other columns
+                    column_position = columns[i].column_position;
+
+                    // cut deleted column out of the array
                     columns.splice(i, 1);
+                }
+            }
+
+            // loop over remaining columns in length and change the position if necessary
+            for (i = 0; i < columns.length; i++) {
+                if (columns[i].column_position > column_position) {
+                    columns[i].column_position--;
                 }
             }
 
