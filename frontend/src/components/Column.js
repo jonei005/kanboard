@@ -18,18 +18,18 @@ const columnTarget = {
     },
 
     drop(props, monitor, component) {
-        const item = monitor.getItem();
+        if (!monitor.didDrop()) {
+            //const item = monitor.getItem();
+            //console.log("Drop item: ", item);
 
-        // react to this droppage in the database
-        console.log("Drop item: ", item);
-
-        // or do nothing and return a result
-        // this result can be found in monitor.getDropResult()
-        // from the drag source's endDrag() method
-        return { 
-            moved: true,
-            column_id: props.id
-        };
+            // this result can be found in monitor.getDropResult()
+            // from the drag source's endDrag() method
+            return { 
+                moved: true,
+                column: true,
+                column_id: props.id
+            };
+        }
     }
 }
 
@@ -225,11 +225,11 @@ class Column extends Component {
 
         var cards = cardArray.map((card, index) => {
             return <Card name={card.card_name} id={card.card_id} 
-                column={this.props.id} key={index} />
+                column={this.props.id} position={card.card_position} key={index} />
         });
 
         return connectDropTarget(
-            <div className={"column " + (canDrop && "can-drop")} >
+            <div className={"column" + (canDrop ? " can-drop" : "")} >
                 {this.state.renameColumnDialogOpen /* Render the rename form or the name of the column */
                     ? 
                         <div className="rename-column-dialog">

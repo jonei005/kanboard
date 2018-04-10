@@ -333,3 +333,7 @@
     background: rgba(66, 66, 106, 1);
 }
 
+.card.is-over {
+    background: green;
+}
+
