@@ -581,6 +581,8 @@ router.post('/deletecolumn/:column_id', auth.authenticate, function(req, res) {
       return res.status(500).json({message: 'Database error on column deletion'});
     }
 
+    console.log("Deleted cards: ", result.rows);
+
     return res.status(200).json({
       message: 'Column deleted successfully. ' + result.rows.length + ' cards deleted.',
       numCards: result.rows.length,

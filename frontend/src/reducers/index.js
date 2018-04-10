@@ -91,7 +91,7 @@ const rootReducer = (state = initialState, action) => {
 
             // remove column from the array of columns
             // loop in reverse because splice causes indexing problems
-            for (i = columns.length - 1; i > 0; i--) {
+            for (i = columns.length - 1; i >= 0; i--) {
                 if (columns[i].column_id === action.payload.column_id) {
                     // get position of deleted column in order to update positions of other columns
                     column_position = columns[i].column_position;
@@ -109,14 +109,23 @@ const rootReducer = (state = initialState, action) => {
             }
 
             // delete all cards that were in the deleted column
+            var cards_to_delete = [];
             for (i = 0; i < card_ids.length; i++) {
-                for (var j = cards.length - 1; j > 0; j--) {
-                    if (card_ids[i].card_id === cards[j].card_id) {
-                        cards.splice(i, 1);
-                        break;
-                    }
-                }
+                var card_index = cards.indexOf(card_ids[i]);
+                cards_to_delete.push(card_index);
             }
+            for (i = 0; i < cards_to_delete.length; i++) {
+                cards.splice(cards_to_delete[i], 1);
+            }
+
+            // for (i = 0; i < card_ids.length; i++) {
+            //     for (var j = cards.length - 1; j > 0; j--) {
+            //         if (card_ids[i].card_id === cards[j].card_id) {
+            //             cards.splice(i, 1);
+            //             break;
+            //         }
+            //     }
+            // }
             
             return {
                 ...state,
