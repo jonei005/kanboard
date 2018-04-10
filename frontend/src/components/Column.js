@@ -10,7 +10,7 @@ const columnTarget = {
         //console.log('Column canDrop item: ', item);
         // check if its over its same column, or something
         if (item.column_id === props.id) {
-            return false;
+            return true;
         }
         else {
             return true;

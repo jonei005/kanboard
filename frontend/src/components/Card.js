@@ -16,21 +16,19 @@ var cardSource = {
     },
 
     endDrag(props, monitor, component) {
-        // if (!monitor.didDrop()) {
-        //     return;
-        // }
-
         // when dropped on compatible target, do something
         
         const item = monitor.getItem();
-        // console.log("Drop item: ", item);
         const dropResult = monitor.getDropResult();
-        // console.log("Drop result: ", dropResult);
 
         if (dropResult && dropResult.moved && dropResult.moved === true) {
-            alert("Moved card " + props.id + " to column " + dropResult.column_id);
+            alert("Moved card " + props.id + " from column " + item.column_id + " to column " + dropResult.column_id);
+            // now check if its the same column as where it originated from
+            // if it is, then only change the position
+            // if not, then change ColumnsToCards row as well as the position (make it 0 for now)
+
+            // after changed in DB, change it in redux
         }
-        // alert("Moved card id " + props.id);
     }
 }
 
