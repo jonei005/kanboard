@@ -4,6 +4,8 @@ import { connect } from 'react-redux';
 import { storeUser, clearUser } from './actions';
 import Routes from './routes';
 import Navigation from './components/Navigation';
+import { DragDropContext } from 'react-dnd';
+import HTML5Backend from 'react-dnd-html5-backend';
 import './css/App.css';
 
 // App component that loads the router
@@ -64,6 +66,8 @@ const mapDispatchToProps = (dispatch) => {
       clearUser: () => dispatch(clearUser)
   }
 }
+
+App = DragDropContext(HTML5Backend)(App);
 
 export default withRouter(
   connect(mapStateToProps, mapDispatchToProps)(App)

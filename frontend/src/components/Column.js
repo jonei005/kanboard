@@ -1,5 +1,45 @@
 import React, { Component } from 'react';
 import Card from './Card';
+import { DropTarget } from 'react-dnd';
+import dndTypes from './../constants/dndTypes';
+
+// specifies drop target contract, all methods optional
+const columnTarget = {
+    canDrop(props, monitor) {
+        const item = monitor.getItem();
+        //console.log('Column canDrop item: ', item);
+        // check if its over its same column, or something
+        if (item.column_id === props.id) {
+            return false;
+        }
+        else {
+            return true;
+        }
+    },
+
+    drop(props, monitor, component) {
+        const item = monitor.getItem();
+
+        // react to this droppage in the database
+        console.log("Drop item: ", item);
+
+        // or do nothing and return a result
+        // this result can be found in monitor.getDropResult()
+        // from the drag source's endDrag() method
+        return { 
+            moved: true,
+            column_id: props.id
+        };
+    }
+}
+
+// specifies which props to inject into component
+function collect(connect, monitor) {
+    return {
+        connectDropTarget: connect.dropTarget(),
+        canDrop: monitor.canDrop()
+    }
+}
 
 class Column extends Component {
 
@@ -179,14 +219,17 @@ class Column extends Component {
 
     render() {
 
+        const { canDrop, connectDropTarget } = this.props;
+
         var cardArray = this.props.cards;
 
         var cards = cardArray.map((card, index) => {
-            return <Card name={card.card_name} key={index} />
+            return <Card name={card.card_name} id={card.card_id} 
+                column={this.props.id} key={index} />
         });
 
-        return(
-            <div className="column">
+        return connectDropTarget(
+            <div className={"column " + (canDrop && "can-drop")} >
                 {this.state.renameColumnDialogOpen /* Render the rename form or the name of the column */
                     ? 
                         <div className="rename-column-dialog">
@@ -247,4 +290,4 @@ class Column extends Component {
     }
 }
 
-export default Column;
+export default DropTarget(dndTypes.CARD, columnTarget, collect)(Column);

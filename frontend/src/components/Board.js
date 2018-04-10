@@ -7,6 +7,7 @@ import {
     createColumn, deleteColumn, renameColumn,
     createCard
 } from './../actions'; // make actual action for updating board stuffs
+import dndTypes from './../constants/dndTypes';
 import './../css/Board.css';
 
 class Board extends Component {
