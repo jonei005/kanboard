@@ -14,6 +14,6 @@ export const RENAME_COLUMN = "UPDATE_COLUMN";
 export const MOVE_COLUMN = "MOVE_COLUMN";
 export const DELETE_COLUMN = "DELETE COLUMN";
 
-export const UPDATE_CARD = "UPDATE_CARD";
+export const MOVE_CARD = "MOVE_CARD";
 export const CREATE_CARD = "CREATE_CARD";
 export const DELETE_CARD = "DELETE_CARD";

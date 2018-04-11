@@ -223,6 +223,11 @@ class Column extends Component {
 
         var cardArray = this.props.cards;
 
+        // sort cards by position
+        cardArray.sort((card1, card2) => {
+            return card1.card_position - card2.card_position;
+        });
+
         var cards = cardArray.map((card, index) => {
             return <Card name={card.card_name} id={card.card_id} 
                 column={this.props.id} position={card.card_position} key={index} />

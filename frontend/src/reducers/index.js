@@ -4,7 +4,7 @@ import {
     STORE_USER, CLEAR_USER,
     STORE_BOARD, CLEAR_BOARD,
     CREATE_COLUMN, RENAME_COLUMN, DELETE_COLUMN,
-    UPDATE_CARD, CREATE_CARD, DELETE_CARD
+    MOVE_CARD, CREATE_CARD, DELETE_CARD
 } from "../constants/actionTypes";
 
 const initialState = {
@@ -18,6 +18,7 @@ const initialState = {
 const rootReducer = (state = initialState, action) => {
 
     var columns = null;
+    var cards = null;
     var i = 0;
 
     switch (action.type) {
@@ -85,7 +86,7 @@ const rootReducer = (state = initialState, action) => {
             // columns variable declared above switch statement to avoid warning
             columns = [];
             columns = columns.concat(state.columns);
-            var cards = state.cards;
+            cards = state.cards;
             var card_ids = action.payload.card_ids;
             var column_position = -1;
 
@@ -133,11 +134,49 @@ const rootReducer = (state = initialState, action) => {
                 cards: cards
             };
 
-        case UPDATE_CARD: // TODO
-            // manipulate some data of the card
-            return state;
+        case MOVE_CARD: // TODO
+            // move a card to another column, update card positions 
+            cards = [];
+            cards = cards.concat(state.cards);
+            var card_id = action.payload.card_id;
+            var old_column_id = action.payload.old_column_id;
+            var new_column_id = action.payload.new_column_id;
+            var old_card_position = action.payload.old_card_position;
+            var new_card_position = action.payload.new_card_position;
 
-        case CREATE_CARD: // TODO
+            // set new card position and column id for moved card
+            for (i = 0; i < cards.length; i++) {
+                if (cards[i].card_id === card_id) {
+                    cards[i].column_id = new_column_id;
+                    cards[i].card_position = new_card_position;
+                }
+            }
+
+            // update (increment) card positions in new column (could be original column too)
+            for (i = 0; i < cards.length; i++) {
+                if (cards[i].card_id !== card_id &&
+                    cards[i].column_id === new_column_id && 
+                    cards[i].card_position >= new_card_position) {
+
+                    cards[i].card_position++;
+                }
+            }
+
+            // decrement card positions in old column only if card moved to a new column
+            if (old_column_id !== new_column_id) {
+                for (i = 0; i < cards.length; i++) {
+                    if (cards[i].column_id === old_column_id && cards[i].card_position > old_card_position) {
+                        cards[i].card_position--;
+                    }
+                }
+            }
+
+            return {
+                ...state,
+                cards: cards
+            };
+
+        case CREATE_CARD:
             // create a completely new card, add it to the list
             cards = [];
             cards = cards.concat(state.cards);
