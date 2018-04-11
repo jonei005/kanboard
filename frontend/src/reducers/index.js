@@ -160,21 +160,23 @@ const rootReducer = (state = initialState, action) => {
                 }
             }
 
-            // update (increment) card positions in new column (could be original column too)
-            // for (i = 0; i < cards.length; i++) {
-            //     if (cards[i].card_id !== card_id &&
-            //         cards[i].column_id === new_column_id && 
-            //         cards[i].card_position >= new_card_position) {
-
-            //         cards[i].card_position++;
-            //     }
-            // }
-
-            // decrement card positions in old column only if card moved to a new column
             if (old_column_id !== new_column_id) {
+                // moving card to new column
+                
+                // decrement card positions in old column only if card moved to a new column
                 for (i = 0; i < cards.length; i++) {
                     if (cards[i].column_id === old_column_id && cards[i].card_position > old_card_position) {
                         cards[i].card_position--;
+                    }
+                }
+
+                // update (increment) card positions in new column
+                for (i = 0; i < cards.length; i++) {
+                    if (cards[i].card_id !== card_id &&
+                        cards[i].column_id === new_column_id && 
+                        cards[i].card_position >= new_card_position) {
+
+                        cards[i].card_position++;
                     }
                 }
             }
