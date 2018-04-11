@@ -44,6 +44,10 @@
     height: max-content;
 }
 
+.column.can-drop {
+    border: 2px solid rgb(0, 180, 50);
+}
+
 .column-name {
     padding: 16px 0 8px;
     margin: 0 auto;
@@ -327,5 +331,9 @@
 
 .card:hover {
     background: rgba(66, 66, 106, 1);
+}
+
+.card.is-over {
+    background: green;
 }
 

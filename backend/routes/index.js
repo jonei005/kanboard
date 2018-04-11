@@ -663,6 +663,103 @@ router.post('/addcard/:column_id', auth.authenticate, function(req, res) {
 // DELETE CARD
 
 
-// UPDATE CARD (change name, add info, move columns, etc)
+// MOVE CARD
+router.post('/movecard/:card_id', auth.authenticate, function(req, res) {
+  // steps:
+  // * change ColumnsToCards, old_column_id to new_column_id
+  // * find all cards in old_column_id that came after this card
+  //   and decrement their positions
+  // * change card_position of current card to 0
+  // * find all cards in new_column_id and increment their position
+  
+  var old_column_id = req.body.old_column_id;
+  var new_column_id = req.body.new_column_id;
+  var new_position = req.body.new_position;
+  var old_position = req.body.old_position;
+
+  var queryString = '';
+  var queryParameters = [];
+
+  if (old_column_id === new_column_id) {
+    // no need to update ColumnsToCards, only update one column's card positions
+    console.log("Same column");
+
+    // update card position for moved card (position 0)
+    // get all cards that are in the same column excluding the moved card
+    //   increment position for all of those cards
+    queryString = ' \
+      WITH my_card AS ( \
+        UPDATE Cards SET card_position = $1 WHERE card_id = $2 RETURNING * \
+      ), update_card_ids AS ( \
+        SELECT * FROM ColumnsToCards WHERE column_id = $3 AND card_id <> $2 \
+      ) UPDATE Cards SET card_position = card_position + 1 WHERE card_id IN (SELECT card_id FROM update_card_ids) RETURNING * \
+    ';
+
+    queryParameters = [
+      new_position, 
+      req.params.card_id,
+      old_column_id
+    ];
+  }
+  else {
+    console.log("New column");
+
+
+    // update card position for moved card (given in req body)
+    // update ColumnsToCards to reflect new column
+    // get all cards that are in the new column AFTER cards new position
+    //   increment position for all of these cards
+    // get all cards that are in the old column AFTER cards old position
+    //   decrement position for all of these cards
+
+    queryString = ' \
+      WITH my_card AS ( \
+        UPDATE Cards SET card_position = $1 WHERE card_id = $2 RETURNING * \
+      ), update_column AS ( \
+        UPDATE ColumnsToCards SET column_id = $3 WHERE card_id = $2 RETURNING *  \
+      ), update_card_ids_new AS ( \
+        SELECT * FROM ColumnsToCards WHERE column_id = $3 AND card_id <> $2 \
+      ), update_cards_new AS ( \
+        SELECT * FROM Cards WHERE card_id IN (SELECT card_id FROM update_card_ids_new) \
+      ), updated_cards_new AS ( \
+        UPDATE Cards SET card_position = card_position + 1 \
+          WHERE card_id IN (SELECT card_id FROM update_cards_new) \
+          AND card_position >= $1 \
+        RETURNING * \
+      ), update_card_ids_old AS ( \
+        SELECT * FROM ColumnsToCards WHERE column_id = $4 \
+      ), update_cards_old AS ( \
+        SELECT * FROM Cards WHERE card_id IN (SELECT card_id FROM update_card_ids_old) \
+      ) UPDATE Cards SET card_position = card_position - 1 \
+          WHERE card_id IN (SELECT card_id FROM update_cards_old) \
+          AND card_position > $5 \
+        RETURNING * \
+    ';
+
+    queryParameters = [
+      new_position,
+      req.params.card_id,
+      new_column_id,
+      old_column_id,
+      old_position
+    ];
+  }
+
+  db.query(queryString, queryParameters, (err, result) => {
+    if (err) {
+      console.log('Error with move card query', err);
+      return res.status(500).json({message: 'Database error on card move'});
+    }
+
+    res.status(200).json({
+      message: 'Card moved successfully'
+    });
+  });
+
+  
+
+  
+
+});
 
 module.exports = router;

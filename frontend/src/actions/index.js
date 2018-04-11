@@ -4,7 +4,7 @@ import {
     STORE_USER, CLEAR_USER,
     STORE_BOARD, CLEAR_BOARD,
     CREATE_COLUMN, RENAME_COLUMN, DELETE_COLUMN,
-    UPDATE_CARD, CREATE_CARD, DELETE_CARD
+    MOVE_CARD, CREATE_CARD, DELETE_CARD
 } from "../constants/actionTypes";
 
 export const storeUser = (user) => ({
@@ -59,9 +59,15 @@ export const deleteColumn = (column_id, card_ids) => ({
 });
 
 // TODO
-export const updateCard = () => ({
-    type: UPDATE_CARD,
-    payload: {}
+export const moveCard = (card_id, old_col_id, new_col_id, old_card_pos, new_card_pos) => ({
+    type: MOVE_CARD,
+    payload: {
+        card_id: card_id,
+        old_column_id: old_col_id,
+        new_column_id: new_col_id,
+        old_card_position: old_card_pos,
+        new_card_position: new_card_pos
+    }
 });
 
 // TODO
