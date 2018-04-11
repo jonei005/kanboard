@@ -44,6 +44,12 @@ class DashboardTile extends Component {
     }
 
     submitRename(newName) {
+
+        if (newName.length === 0 || newName === this.props.name) {
+            this.setState({renameFormOpen: false});
+            return;
+        }
+
         var token = localStorage.getItem('kanboard-user-token');
         
         fetch('http://localhost:3001/renameboard', {

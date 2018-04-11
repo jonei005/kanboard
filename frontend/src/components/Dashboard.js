@@ -122,10 +122,15 @@ class Dashboard extends Component {
         // get user name from redux store
         var name = this.props.user.user_name;
 
-        // get list of boards from component state, map them to <DashboardTile> components
+        // get list of boards from component state, sort, map them to <DashboardTile> components
         var boards = this.state.boards;
+        boards.sort((board1, board2) => {
+            return board1.board_position - board2.board_position;
+        })
+
         var boardTiles = boards.map((board, num) => {
-            return <DashboardTile name={board.board_name} id={board.board_id} key={num} 
+            return <DashboardTile key={num} name={board.board_name}  
+                position={board.board_position} id={board.board_id}
                 renameBoard={(newName, id) => this.renameBoard(newName, id)}
                 deleteBoard={(id) => this.deleteBoard(id)} />
         });

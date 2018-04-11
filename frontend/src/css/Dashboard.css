@@ -40,18 +40,18 @@
 .new-board-tile {
     position: relative;
     display: inline-block;
-    background: rgba(66, 66, 106, 0.85);
+    background: #eee;
     text-align: center;
     font-size: 14pt;
     box-shadow: 4px 4px 8px -4px #42426a;
     border-radius: 10px;
-    color: #fbf380;
+    color: #42426a;
     padding: 24px 0;
 }
 
 .new-board-tile:hover {
     cursor: pointer;
-    background: rgba(66, 66, 106, 1);
+    background: #ddd;
     box-shadow: 4px 4px 8px -2px #42426a;
 }
 
@@ -92,21 +92,24 @@
 }
 
 .dashboard-tile-rename-form input {
-    height: 24px;
-    padding: 1px 2px;
+    height: 28px;
+    padding-right: 24px;
+    width: 90%;
+    box-sizing: border-box;
+    font-size: 12pt;
 }
 
 .dashboard-tile-rename-form button {
-    height: 30px;
+    position: absolute;
+    height: 28px;
+    right: 12px;
     cursor: pointer;
-    color: #42426a;
-    border: 1px solid #aaa;
-    background: #e8e8ed;
+    border: none;
+    background: none;
 }
 
 .dashboard-tile-rename-form button:hover {
-    color: green;
-    background: #ddd;
+    opacity: 0.6;
 }
 
 .dashboard-tile-delete-form {
