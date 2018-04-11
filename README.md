@@ -9,7 +9,7 @@ Backend:
 * PostgreSQL database
 
 Frontend:
-* Single page app built with [React.js](https://github.com/facebook/react), [React Router](https://github.com/ReactTraining/react-router), and [React Redux](https://github.com/reactjs/react-redux)
+* Single page app using [React.js](https://github.com/facebook/react), built with [Create React App](https://github.com/facebook/create-react-app), [React Router](https://github.com/ReactTraining/react-router), and [React Redux](https://github.com/reactjs/react-redux)
 
 ### Other Packages Used
 * [node-postgres](https://github.com/brianc/node-postgres)
@@ -19,6 +19,8 @@ Frontend:
 * [react-router-dom](https://github.com/ReactTraining/react-router)
 * [redux-thunk](https://github.com/gaearon/redux-thunk)
 * [redux-devtools-extension](https://github.com/zalmoxisus/redux-devtools-extension)
+* [react-dnd](https://github.com/react-dnd/react-dnd)
+
 
 ### Note
 This project is derivative of [Huddle](https://github.com/ReflexCS180/ReflexManagment) by Team Reflex at UC Riverside (which I was a part of). I am remaking the project from scratch for practice with full-stack development. The differences are that Huddle used React.js with Firebase Realtime Database, while Kanboard uses React.js + Redux, plus a backend API in Express.js communicating with a PostgreSQL database.
