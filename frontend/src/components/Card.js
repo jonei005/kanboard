@@ -63,12 +63,18 @@ var cardSource = {
                 // if card position is 1 away from target in same column, do nothing
                 // ex: pos 0 dropped on top half of pos 1, so it thinks it wants to move to pos 1
                 // but really it should stay where it is.
-                if (props.column === dropResult.target_column_id && 
-                    Math.abs(props.position - dropResult.drop_position) <= 1
-                ) {
-                    //console.log("dropped 1 away, do nothing");
-                    return;
+                // if (props.column === dropResult.target_column_id && 
+                //     Math.abs(props.position - dropResult.drop_position) <= 1
+                // ) {
+                //     //console.log("dropped 1 away, do nothing");
+                //     return;
 
+                // }
+
+                if (props.column === dropResult.target_column_id &&
+                    (dropResult.drop_position - props.position) === 1
+                ) {
+                    return;
                 }
 
                 // if card dropped onto itself, or if position won't change, do nothing
@@ -208,7 +214,7 @@ class Card extends Component {
 
         return connectDropTarget(connectDragSource(
             <button className={"card" + dropClasses} onClick={() => this.openCard()}>
-                {isDragging ? "Dragging..." : this.props.name}
+                {isDragging ? "Dragging..." : "(" + this.props.position + ") " + this.props.name}
             </button>
         ));
     }
