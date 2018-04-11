@@ -144,6 +144,14 @@ const rootReducer = (state = initialState, action) => {
             var old_card_position = action.payload.old_card_position;
             var new_card_position = action.payload.new_card_position;
 
+            // due to removing an element at top of list,
+            // if moving in same column and new position > old position,
+            // decrement the supposed new card position once to account for
+            // removing an element from higher up on the list 
+            if (old_column_id === new_column_id && new_card_position > old_card_position) {
+                new_card_position--;
+            }
+
             // set new card position and column id for moved card
             for (i = 0; i < cards.length; i++) {
                 if (cards[i].card_id === card_id) {
@@ -153,14 +161,14 @@ const rootReducer = (state = initialState, action) => {
             }
 
             // update (increment) card positions in new column (could be original column too)
-            for (i = 0; i < cards.length; i++) {
-                if (cards[i].card_id !== card_id &&
-                    cards[i].column_id === new_column_id && 
-                    cards[i].card_position >= new_card_position) {
+            // for (i = 0; i < cards.length; i++) {
+            //     if (cards[i].card_id !== card_id &&
+            //         cards[i].column_id === new_column_id && 
+            //         cards[i].card_position >= new_card_position) {
 
-                    cards[i].card_position++;
-                }
-            }
+            //         cards[i].card_position++;
+            //     }
+            // }
 
             // decrement card positions in old column only if card moved to a new column
             if (old_column_id !== new_column_id) {
@@ -169,6 +177,35 @@ const rootReducer = (state = initialState, action) => {
                         cards[i].card_position--;
                     }
                 }
+            }
+            else {
+                // moving card within same column
+
+                if (new_card_position > old_card_position) {
+                    // if new position > old position, decrement betweeners
+                    for (i = 0; i < cards.length; i++) {
+                        if (cards[i].column_id === old_column_id && 
+                            cards[i].card_id !== card_id &&
+                            cards[i].card_position > old_card_position &&
+                            cards[i].card_position <= new_card_position
+                        ) {
+                            cards[i].card_position--;
+                        }
+                    }
+                }
+                else {
+                    // if new position < old position, increment betweeners
+                    for (i = 0; i < cards.length; i++) {
+                        if (cards[i].column_id === old_column_id && 
+                            cards[i].card_id !== card_id &&
+                            cards[i].card_position < old_card_position &&
+                            cards[i].card_position >= new_card_position
+                        ) {
+                            cards[i].card_position++;
+                        }
+                    }
+                }
+                
             }
 
             return {

@@ -684,22 +684,86 @@ router.post('/movecard/:card_id', auth.authenticate, function(req, res) {
     // no need to update ColumnsToCards, only update one column's card positions
     console.log("Same column");
 
+    if (new_position < old_position) {
+      // new position < old position
+      // increment values >= new position AND < old position
+      queryString = ' \
+        WITH my_card AS ( \
+          UPDATE Cards SET card_position = $1 WHERE card_id = $2 RETURNING * \
+        ), update_card_ids AS ( \
+          SELECT * FROM ColumnsToCards WHERE column_id = $3 AND card_id <> $2 \
+        ) UPDATE Cards SET card_position = card_position + 1 \
+          WHERE card_id IN (SELECT card_id FROM update_card_ids) \
+          AND card_position < $4 \
+          AND card_position >= $1 \
+          RETURNING * \
+      ';
+
+      queryParameters = [
+        new_position, 
+        req.params.card_id,
+        old_column_id,
+        old_position
+      ];
+    }
+    else {
+      // new position > old position
+      // decrement values <= new position AND > old position
+      queryString = ' \
+        WITH my_card AS ( \
+          UPDATE Cards SET card_position = $1 WHERE card_id = $2 RETURNING * \
+        ), update_card_ids AS ( \
+          SELECT * FROM ColumnsToCards WHERE column_id = $3 AND card_id <> $2 \
+        ) UPDATE Cards SET card_position = card_position - 1 \
+          WHERE card_id IN (SELECT card_id FROM update_card_ids) \
+          AND card_position > $4 \
+          AND card_position <= $1 \
+          RETURNING * \
+      ';
+
+      queryParameters = [
+        new_position - 1, 
+        req.params.card_id,
+        old_column_id,
+        old_position
+      ];
+    }
+
+    // new thang
+    // if pos 4 -> pos 2 (new position < old position)
+    //   increment pos 2 and pos 3 (>= new position AND < old position)
+    // if pos 2 -> pos 4 (new position > old position) 
+    //   decrement pos 3 (< new position AND > old position)
+
     // update card position for moved card (position 0)
     // get all cards that are in the same column excluding the moved card
     //   increment position for all of those cards
-    queryString = ' \
-      WITH my_card AS ( \
-        UPDATE Cards SET card_position = $1 WHERE card_id = $2 RETURNING * \
-      ), update_card_ids AS ( \
-        SELECT * FROM ColumnsToCards WHERE column_id = $3 AND card_id <> $2 \
-      ) UPDATE Cards SET card_position = card_position + 1 WHERE card_id IN (SELECT card_id FROM update_card_ids) RETURNING * \
-    ';
+    // queryString = ' \
+    //   WITH my_card AS ( \
+    //     UPDATE Cards SET card_position = $1 WHERE card_id = $2 RETURNING * \
+    //   ), update_card_ids AS ( \
+    //     SELECT * FROM ColumnsToCards WHERE column_id = $3 AND card_id <> $2 \
+    //   ) UPDATE Cards SET card_position = card_position + 1 \
+    //     WHERE card_id IN (SELECT card_id FROM update_card_ids) \
+    //     AND card_position > \
+    //     RETURNING * \
+    // ';
 
-    queryParameters = [
-      new_position, 
-      req.params.card_id,
-      old_column_id
-    ];
+    // queryParameters = [
+    //   new_position, 
+    //   req.params.card_id,
+    //   old_column_id,
+    //   old_position
+    // ];
+    
+    // if (new_position >= old_position) {
+    //   queryParameters.push(old_position);
+    //   queryParameters.push(new_position);
+    // }
+    // else {
+    //   queryParameters.push(new_position);
+    //   queryParameters.push(old_position);
+    // }
   }
   else {
     console.log("New column");
@@ -752,7 +816,8 @@ router.post('/movecard/:card_id', auth.authenticate, function(req, res) {
     }
 
     res.status(200).json({
-      message: 'Card moved successfully'
+      message: 'Card moved successfully',
+      results: result.rows
     });
   });
 

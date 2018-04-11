@@ -110,6 +110,7 @@ var cardSource = {
                 }).then((data) => {
                     if (data) {
                         console.log(data.message);
+                        console.log(data.results);
                     }
 
                     // redux store stuff
