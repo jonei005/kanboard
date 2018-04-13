@@ -250,6 +250,19 @@ class Column extends Component {
 
                     : <h3 className="column-name" onClick={() => this.toggleRenameColumnDialog()}>{this.props.name}</h3>
                 }
+
+                <div className="column-menu-container">
+                    <button className="menu-button" onClick={() => this.toggleColumnMenu()}>
+                        <i className="fas fa-ellipsis-v"></i>
+                    </button>
+                    {this.state.columnMenuOpen &&
+                        <div className="column-menu" >
+                            <button onClick={() => this.toggleRenameColumnDialog()}>Rename Column</button>
+                            <button onClick={() => this.toggleDeleteColumnDialog()}>Delete Column</button>
+                            <button onClick={() => this.toggleColumnMenu()}>Close</button>
+                        </div>
+                    }
+                </div>
                 
                 {this.state.deleteColumnDialogOpen && /* If deleteColumnDialogOpen is true, render delete column warning */
                     <div className="delete-column-dialog">
@@ -262,32 +275,21 @@ class Column extends Component {
                         </button>
                     </div>
                 }
-                {cards}
-                {this.state.addCardFormOpen /* If addCardFormOpen is true, render the add card form, else show the button */
-                    ? 
-                        <div className="add-card-form">
-                            <input type="text" id="addCardText" autoFocus placeholder="Name of card"
-                                value={this.state.addCardText} 
-                                onChange={(e) => this.handleChange(e)}
-                                onKeyDown={(e) => {if (e.keyCode === 13) this.addCard()}} />
-                            <button onClick={() => this.addCard()}>
-                                <i className="fas fa-arrow-right"></i>
-                            </button>
-                        </div>
+                <div className="card-container">
+                    {cards}
+                    {this.state.addCardFormOpen /* If addCardFormOpen is true, render the add card form, else show the button */
+                        ? 
+                            <div className="add-card-form">
+                                <input type="text" id="addCardText" autoFocus placeholder="Name of card"
+                                    value={this.state.addCardText} 
+                                    onChange={(e) => this.handleChange(e)}
+                                    onKeyDown={(e) => {if (e.keyCode === 13) this.addCard()}} />
+                                <button onClick={() => this.addCard()}>
+                                    <i className="fas fa-arrow-right"></i>
+                                </button>
+                            </div>
 
-                    : <button className="add-card-button" onClick={() => this.toggleAddCardForm()}>Add Card</button>
-                }
-                
-                <div className="column-menu-container">
-                    <button className="menu-button" onClick={() => this.toggleColumnMenu()}>
-                        <i className="fas fa-ellipsis-v"></i>
-                    </button>
-                    {this.state.columnMenuOpen &&
-                        <div className="column-menu" >
-                            <button onClick={() => this.toggleRenameColumnDialog()}>Rename Column</button>
-                            <button onClick={() => this.toggleDeleteColumnDialog()}>Delete Column</button>
-                            <button onClick={() => this.toggleColumnMenu()}>Close</button>
-                        </div>
+                        : <button className="add-card-button" onClick={() => this.toggleAddCardForm()}>Add Card</button>
                     }
                 </div>
             </div>

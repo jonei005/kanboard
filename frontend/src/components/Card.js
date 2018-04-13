@@ -214,7 +214,7 @@ class Card extends Component {
 
         return connectDropTarget(connectDragSource(
             <button className={"card" + dropClasses} onClick={() => this.openCard()}>
-                {isDragging ? "Dragging..." : "(" + this.props.position + ") " + this.props.name}
+                {isDragging ? "Dragging..." : this.props.name}
             </button>
         ));
     }
