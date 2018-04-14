@@ -202,8 +202,8 @@ function dropCollect(connect, monitor) {
 
 class Card extends Component {
 
-    openCard() {
-        alert('Opening card');
+    openCardModal() {
+        this.props.openCardModal(this.props.id);
     }
 
     render() {
@@ -213,7 +213,7 @@ class Card extends Component {
         var dropClasses = (isOver && canDrop) ? " is-over" : "";
 
         return connectDropTarget(connectDragSource(
-            <button className={"card" + dropClasses} onClick={() => this.openCard()}>
+            <button className={"card" + dropClasses} onClick={() => this.openCardModal()}>
                 {isDragging ? "Dragging..." : this.props.name}
             </button>
         ));

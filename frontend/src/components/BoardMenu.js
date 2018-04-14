@@ -41,10 +41,10 @@ class BoardMenu extends Component {
                         <h3 className="board-menu-title">
                             <i className="fas fa-cog fa-sm"></i> Board Options
                         </h3>
-                        <button>Rename Board</button>
-                        <button>Add Column</button>
-                        <button>Delete Column</button>
-                        <button>Option 4</button>
+                        <button id="menu-rename-board-button">Rename Board</button>
+                        <button id="menu-add-column-button">Add Column</button>
+                        <button id="menu-delete-column-button">Delete Column</button>
+                        <button id="menu-delete-board-button">Delete Board</button>
                     </div>
                     <div className="board-menu-members">
                         <h3 className="board-menu-title">

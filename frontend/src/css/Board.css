@@ -1,6 +1,9 @@
-/* Styles for Board page, including columns and cards (for now) */
+/* Styles for Board page, including columns and cards */
 
-/* Page styles */
+/* 
+ * Page styles
+ */
+
 .board {
     flex: 1;
     display: flex;
@@ -16,7 +19,9 @@
     color: #333;
 }
 
-/* Column styles */
+/* 
+ * Column styles 
+ */
 
 .columns {
     flex-basis: 100%;
@@ -175,7 +180,10 @@
     opacity: 0.6;
 }
 
-/* Board menu styles */
+/*
+ * Board menu styles 
+ */
+
 .board-menu-container {
     background: white;
     position: relative;
@@ -234,6 +242,10 @@
     opacity: 0.7;
 }
 
+#menu-delete-board-button:hover {
+    color: red;
+}
+
 .board-menu-members ul {
     list-style: none;
     padding: 0 6px;
@@ -259,7 +271,10 @@
     background-color: rgba(0, 0, 0, 0.1);
 }
 
-/* Column menu styles */
+/* 
+ * Column menu styles 
+ */
+
 .column-menu-container {
     position: absolute;
     right: 0;
@@ -380,7 +395,9 @@
     outline: none;
 }
 
-/* Card styles */
+/*
+ * Card styles 
+ */
 
 .card {
     width: 90%;

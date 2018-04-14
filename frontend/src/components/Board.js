@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import Column from './Column';
 import BoardMenu from './BoardMenu';
+import CardModal from './CardModal';
 import { connect } from 'react-redux';
 import { 
     storeBoard, clearBoard,
@@ -24,7 +25,9 @@ class Board extends Component {
             board_name: '',
             board_data: {},
             columnFormOpen: false,
-            columnFormText: ''
+            columnFormText: '',
+            cardModalOpen: false,
+            cardModalId: -1
         }
     }
 
@@ -137,8 +140,20 @@ class Board extends Component {
     }
 
     handleChange = (e) => {
+        this.setState({[e.target.id]: e.target.value});
+    }
+
+    openCardModal(card_id) {
         this.setState({
-            [e.target.id]: e.target.value
+            cardModalOpen: true,
+            cardModalId: card_id
+        });
+    }
+
+    closeCardModal() {
+        this.setState({
+            cardModalOpen: false,
+            cardModalId: -1
         });
     }
 
@@ -164,8 +179,21 @@ class Board extends Component {
                 key={index} cards={myCards}
                 deleteColumn={(col_id, card_ids) => this.deleteColumn(col_id, card_ids)}
                 renameColumn={(col_id, col_name) => this.renameColumn(col_id, col_name)}
-                addCard={(card) => this.addCard(card)} />
+                addCard={(card) => this.addCard(card)}
+                openCardModal={(card_id) => this.openCardModal(card_id)} />
         });
+
+        var cardModalCard = null;
+        if (this.state.cardModalOpen) {
+            for (var i = 0; i < cards.length; i++) {
+                if (cards[i].card_id === this.state.cardModalId) {
+                    cardModalCard = cards[i];
+                }
+            }
+            if (cardModalCard === null) {
+                console.log("Card not found for card modal: id " + this.state.cardModalId);
+            }
+        }
 
         return(
             <div className="board">
@@ -194,6 +222,11 @@ class Board extends Component {
                     </div>
                     <BoardMenu />
                 </div>
+                {this.state.cardModalOpen && 
+                    <CardModal id={this.state.cardModalid} card={cardModalCard}
+                        closeCardModal={() => this.closeCardModal()}    
+                    />
+                }
             </div>
         );
     }

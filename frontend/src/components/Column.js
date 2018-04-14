@@ -229,8 +229,12 @@ class Column extends Component {
         });
 
         var cards = cardArray.map((card, index) => {
-            return <Card name={card.card_name} id={card.card_id} 
-                column={this.props.id} position={card.card_position} key={index} />
+            return (
+                <Card name={card.card_name} id={card.card_id} key={index}
+                    column={this.props.id} position={card.card_position}
+                    openCardModal={(card_id) => this.props.openCardModal(card_id)}
+                />
+            )
         });
 
         return connectDropTarget(

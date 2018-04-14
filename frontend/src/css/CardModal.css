@@ -1,0 +1,30 @@
+/* Card modal styles */
+
+.card-modal-backdrop {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 100vw;
+    background: rgba(0, 0, 0, 0.5);
+    overflow: hidden;
+}
+
+.card-modal-container {
+    position: relative;
+    width: 75vw;
+    height: 75vh;
+    margin: 12.5vh auto;
+    background: #eee;
+    border-radius: 10px;
+    border: 2px solid #555;
+    box-shadow: 0px 0px 24px -2px #bbb;
+}
+
+.card-modal-info {
+    padding: 24px;
+}
+
+.card-modal-name {
+    margin: 0;
+}
