@@ -12,19 +12,79 @@
 
 .card-modal-container {
     position: relative;
-    width: 75vw;
-    height: 75vh;
-    margin: 12.5vh auto;
-    background: #eee;
+    width: 35vw;
+    height: 70vh;
+    margin: 15vh auto;
+    background: #f7f7f7;
     border-radius: 10px;
-    border: 2px solid #555;
+    border: 1px solid #333;
     box-shadow: 0px 0px 24px -2px #bbb;
 }
 
 .card-modal-info {
     padding: 24px;
+    color: #333;
 }
 
-.card-modal-name {
+.card-modal-item {
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.card-modal-item.small-margin {
+    margin-bottom: 12px;
+}
+
+.card-modal-columns {
+    display: grid;
+    grid-template-columns: 70% 30%;
+    grid-template-rows: 100%;
+}
+
+.card-modal-right {
+    border-left: 1px solid #afafaf;
+    padding-left: 12px;
+}
+
+#card-modal-name {
     margin: 0;
+    display: inline-block;
+    font-size: 16pt;
+    color: #42426a;
+}
+
+.card-modal-columns span {
+    background: #ccc;
+    padding: 2px 4px;
+    border-radius: 5px;
+    font-size: 14px;
+    font-weight: normal;
+}
+
+.card-modal-description {
+    margin-top: 36px;
+}
+
+.card-modal-description-text {
+    margin-top: 0;
+}
+
+.card-modal-comments {
+    margin-top: 36px;
+}
+
+.card-modal-options-buttons button {
+    background: #eee;
+    box-shadow: 2px 2px 1px -1px #999;
+    border: none;
+    border-radius: 5px;
+    padding: 4px 6px;
+    margin-bottom: 8px; 
+    cursor: pointer;
+    display: block;        
+    color: #333;
+}
+
+.card-modal-options-buttons button:hover {
+    opacity: 0.7;
 }
