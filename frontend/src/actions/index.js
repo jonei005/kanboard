@@ -58,7 +58,7 @@ export const deleteColumn = (column_id, card_ids) => ({
     }
 });
 
-// TODO
+// used to move a card, via drag and drop
 export const moveCard = (card_id, old_col_id, new_col_id, old_card_pos, new_card_pos) => ({
     type: MOVE_CARD,
     payload: {
@@ -70,7 +70,7 @@ export const moveCard = (card_id, old_col_id, new_col_id, old_card_pos, new_card
     }
 });
 
-// TODO
+// used to add a card to a column/board
 export const createCard = (card) => ({
     type: CREATE_CARD,
     payload: {
@@ -78,8 +78,10 @@ export const createCard = (card) => ({
     }
 });
 
-// TODO
-export const deleteCard = () => ({
+// used to delete a card from a column/board
+export const deleteCard = (card_id) => ({
     type: DELETE_CARD,
-    payload: {}
+    payload: {
+        card_id: card_id
+    }
 });

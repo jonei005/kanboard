@@ -1,4 +1,6 @@
 import React, { Component } from 'react';
+//import { connect } from 'react-redux';
+//import { deleteCard } from './../actions';
 import './../css/CardModal.css';
 
 class CardModal extends Component {
@@ -8,6 +10,10 @@ class CardModal extends Component {
 
         // bind function to component event listener can be added/removed 
         this.keyDown = this.keyDown.bind(this);
+
+        this.state = {
+            deleteCardFormOpen: false
+        }
     }
 
     keyDown(e) {
@@ -24,6 +30,47 @@ class CardModal extends Component {
 
     componentWillUnmount() {
         document.removeEventListener('keydown', this.keyDown);
+    }
+
+    toggleDeleteCardForm() {
+        this.setState({deleteCardFormOpen: !this.state.deleteCardFormOpen});
+    }
+
+    deleteCard() {
+
+        // delete card from DB via api call, then delete in redux store
+        fetch('http://localhost:3001/deletecard/' + this.props.card.card_id, {
+            method: 'post',
+            body: JSON.stringify({token: localStorage.getItem('kanboard-user-token')}),
+            headers: {'content-type': 'application/json'}
+        }).then((response) => {
+            if (response.status === 200) {
+                return response.json();
+            }
+            else {
+                console.log('Hmm something went wrong with delete card fetch', response);
+                return null;
+            }
+        }).then((data) => {
+            if (data) {
+                console.log(data.message);
+            }
+
+            // redux store stuff
+
+            // close card modal
+            this.props.closeCardModal();
+        });
+    }
+
+    toggleRenameCardForm() {
+        //
+        return;
+    }
+
+    toggleEditDescriptionForm() {
+        //
+        return;
     }
     
 
@@ -107,9 +154,18 @@ class CardModal extends Component {
                                     <button>Add Tags</button>
                                     <button>Change Due Date</button>
                                     <button>Set Priority</button>
-                                    <button>Edit Description</button>
-                                    <button>Rename Card</button>
-                                    <button>Delete Card</button>
+                                    <button onClick={() => this.toggleEditDescriptionForm()}>Edit Description</button>
+                                    <button onClick={() => this.toggleRenameCardForm()}>Rename Card</button>
+                                    {!this.state.deleteCardFormOpen
+                                        ?
+                                        <button onClick={() => this.toggleDeleteCardForm()} className="delete-card-button">Delete Card</button>
+                                        :
+                                        <div className="delete-card-form">
+                                            <p>Are you sure you want to delete this card?</p>
+                                            <button onClick={() => this.deleteCard()} className="delete-card-button">Confirm Delete</button>
+                                            <button onClick={() => this.toggleDeleteCardForm()}>Cancel</button>
+                                        </div>
+                                    }
                                 </div>
                             </div>
                         </div>

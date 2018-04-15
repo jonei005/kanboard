@@ -661,6 +661,38 @@ router.post('/addcard/:column_id', auth.authenticate, function(req, res) {
 
 
 // DELETE CARD
+router.post('/deletecard/:card_id', auth.authenticate, function(req, res) {
+  // steps:
+  // delete card from ColumnsToCards, get column_id
+  // delete card from Cards, get position
+  // decrement position of all Cards in same column after this card
+
+  var card_id = req.params.card_id;
+
+  var queryString = ' \
+    WITH my_column AS ( \
+      DELETE FROM ColumnsToCards WHERE card_id = $1 RETURNING * \
+    ), my_card AS ( \
+      DELETE FROM Cards WHERE card_id = $1 RETURNING * \
+    ), update_cards AS ( \
+      SELECT * FROM ColumnsToCards WHERE column_id = (SELECT column_id FROM my_column LIMIT 1) \
+    ) UPDATE Cards SET card_position = card_position - 1 \
+      WHERE card_id IN (SELECT card_id FROM update_cards) \
+      AND card_position > (SELECT card_position FROM my_card LIMIT 1) \
+      RETURNING * \
+  ';
+
+  db.query(queryString, [card_id], (err, result) => {
+    if (err) {
+      console.log('Error with delete card query', err);
+      return res.status(500).json({message: 'Database error on card delete'});
+    }
+
+    res.status(200).json({
+      message: 'Card deleted successfully, updated position of ' + result.rows.length + ' cards.',
+    });
+  });
+})
 
 
 // MOVE CARD
