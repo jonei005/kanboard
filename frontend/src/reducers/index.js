@@ -4,7 +4,7 @@ import {
     STORE_USER, CLEAR_USER,
     STORE_BOARD, CLEAR_BOARD,
     CREATE_COLUMN, RENAME_COLUMN, DELETE_COLUMN,
-    MOVE_CARD, CREATE_CARD, DELETE_CARD
+    MOVE_CARD, CREATE_CARD, DELETE_CARD, UPDATE_CARD
 } from "../constants/actionTypes";
 
 const initialState = {
@@ -134,7 +134,7 @@ const rootReducer = (state = initialState, action) => {
                 cards: cards
             };
 
-        case MOVE_CARD: // TODO
+        case MOVE_CARD: 
             // move a card to another column, update card positions 
             cards = [];
             cards = cards.concat(state.cards);
@@ -227,7 +227,7 @@ const rootReducer = (state = initialState, action) => {
                 cards: cards
             };
         
-        case DELETE_CARD: // TODO
+        case DELETE_CARD: 
             // remove a card from the list
             cards = [];
             cards = cards.concat(state.cards);
@@ -259,6 +259,24 @@ const rootReducer = (state = initialState, action) => {
                 ...state,
                 cards: cards
             };
+
+        case UPDATE_CARD: // TODO
+            // update any card info for a specific card
+            cards = [];
+            cards = cards.concat(state.cards);
+
+            for (i = 0; i < cards.length; i++) {
+                if (cards[i].card_id === action.payload.card_id) {
+                    if (action.payload.update_type === 'rename') {
+                        cards[i].card_name = action.payload.data.card_name;
+                    }
+                }
+            }
+
+            return {
+                ...state, 
+                cards: cards
+            }
 
         default:
             // unrecognized action, so return the original state

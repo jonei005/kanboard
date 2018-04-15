@@ -817,11 +817,33 @@ router.post('/movecard/:card_id', auth.authenticate, function(req, res) {
       results: result.rows
     });
   });
+});
 
+// UPDATE CARD INFO
+router.post('/updatecard/:update_type/:card_id', auth.authenticate, function(req, res) {
+  var queryString = '';
+  var queryParameters = [];
   
+  if (req.params.update_type === 'rename') {
+    queryString = 'UPDATE Cards SET card_name = $1 WHERE card_id = $2 RETURNING card_name';
+    queryParameters = [req.body.new_card_name, req.params.card_id];
+  }
 
-  
+  if (queryString.length === 0 || queryParameters.length === 0) {
+    return res.status(500).json({message: 'Unrecognized card update type'});
+  }
 
+  db.query(queryString, queryParameters, (err, result) => {
+    if (err) {
+      console.log('Error with rename card query', err);
+      return res.status(500).json({message: 'Database error on card rename'});
+    }
+
+    res.status(200).json({
+      message: 'Card renamed successfully',
+      card_name: result.rows[0]
+    });
+  });
 });
 
 module.exports = router;

@@ -94,6 +94,31 @@
     color: red;
 }
 
+
+
+/* Card Modal Forms */
+
+.rename-card-form input {
+    font-size: 16pt;
+    height: 25px;
+    box-sizing: border-box;
+}
+
+.rename-card-form button {
+    height: 25px;
+    width: 25px;
+    vertical-align: top;
+    background: none;
+    border: none;
+    margin-left: -25px;
+    font-size: 12pt;
+}
+
+.rename-card-form button:hover {
+    opacity: 0.7;
+    cursor: pointer;
+}
+
 .delete-card-form p {
     font-size: 14px;
     color: red;

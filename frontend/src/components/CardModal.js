@@ -1,7 +1,9 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { deleteCard } from './../actions';
+import { deleteCard, updateCard } from './../actions';
 import './../css/CardModal.css';
+
+const RENAME = 'rename';
 
 class CardModal extends Component {
 
@@ -12,7 +14,9 @@ class CardModal extends Component {
         this.keyDown = this.keyDown.bind(this);
 
         this.state = {
-            deleteCardFormOpen: false
+            renameCardFormOpen: false,
+            deleteCardFormOpen: false,
+            renameCardFormInput: props.card.card_name
         }
     }
 
@@ -30,6 +34,53 @@ class CardModal extends Component {
 
     componentWillUnmount() {
         document.removeEventListener('keydown', this.keyDown);
+    }
+
+    toggleRenameCardForm() {
+        this.setState({renameCardFormOpen: !this.state.renameCardFormOpen});
+    }
+
+    renameCard() {
+        var new_card_name = this.state.renameCardFormInput;
+
+        if (new_card_name.length === 0) {
+            this.setState({
+                renameCardFormOpen: false,
+                renameCardFormInput: this.props.card.card_name
+            });
+            return;
+        }
+        
+        if (new_card_name === this.props.card.card_name) {
+            this.setState({renameCardFormOpen: false});
+            return;
+        }
+
+        fetch('http://localhost:3001/updatecard/rename/' + this.props.card.card_id, {
+            method: 'post',
+            body: JSON.stringify({
+                token: localStorage.getItem('kanboard-user-token'),
+                new_card_name: new_card_name
+            }),
+            headers: {'content-type': 'application/json'}
+        }).then((response) => {
+            if (response.status === 200) {
+                return response.json();
+            }
+            else {
+                console.log('Hmm something went wrong with rename card fetch', response);
+                return null;
+            }
+        }).then((data) => {
+            if (data) {
+                console.log(data.message);
+
+                this.setState({renameCardFormOpen: false});
+
+                // redux store stuff
+                this.props.updateCard(this.props.card.card_id, {card_name: new_card_name}, RENAME);
+            }            
+        });
     }
 
     toggleDeleteCardForm() {
@@ -64,14 +115,13 @@ class CardModal extends Component {
         });
     }
 
-    toggleRenameCardForm() {
+    toggleEditDescriptionForm() {
         //
         return;
     }
 
-    toggleEditDescriptionForm() {
-        //
-        return;
+    handleChange = (e) => {
+        this.setState({[e.target.id]: e.target.value});
     }
     
 
@@ -122,7 +172,22 @@ class CardModal extends Component {
             <div className="card-modal-backdrop" onClick={() => this.props.closeCardModal()}>
                 <div className="card-modal-container" onClick={(e) => e.stopPropagation()}>
                     <div className="card-modal-info">
-                        <h3 id="card-modal-name">{card.card_name}</h3>
+                        {!this.state.renameCardFormOpen
+                            ?
+                            <h3 id="card-modal-name" onClick={() => this.toggleRenameCardForm()}>{card.card_name}</h3>
+                            :
+                            <div className="rename-card-form">
+                                <input type="text" id="renameCardFormInput" autoFocus
+                                    value={this.state.renameCardFormInput} 
+                                    onChange={(e) => this.handleChange(e)}
+                                    onKeyDown={(e) => {if (e.keyCode === 13) this.renameCard()}}
+                                    onFocus={(e) => {e.target.select()}}
+                                />
+                                <button onClick={() => this.renameCard()}>
+                                    <i className="fas fa-arrow-right"></i>
+                                </button>
+                            </div>
+                        }
                         <div className="card-modal-columns">
                             <div className="card-modal-left">
                                 <div className="card-modal-tags">
@@ -179,7 +244,8 @@ class CardModal extends Component {
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        deleteCard: (card_id) => dispatch(deleteCard(card_id))
+        deleteCard: (card_id) => dispatch(deleteCard(card_id)),
+        updateCard: (card_id, data, update_type) => dispatch(updateCard(card_id, data, update_type))
     }
 }
 
