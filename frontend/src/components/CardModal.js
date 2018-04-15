@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-//import { connect } from 'react-redux';
-//import { deleteCard } from './../actions';
+import { connect } from 'react-redux';
+import { deleteCard } from './../actions';
 import './../css/CardModal.css';
 
 class CardModal extends Component {
@@ -56,10 +56,11 @@ class CardModal extends Component {
                 console.log(data.message);
             }
 
-            // redux store stuff
-
             // close card modal
             this.props.closeCardModal();
+
+            // redux store stuff
+            this.props.deleteCard(this.props.card.card_id);
         });
     }
 
@@ -176,4 +177,10 @@ class CardModal extends Component {
     }
 }
 
-export default CardModal;
+const mapDispatchToProps = (dispatch) => {
+    return {
+        deleteCard: (card_id) => dispatch(deleteCard(card_id))
+    }
+}
+
+export default connect(null, mapDispatchToProps)(CardModal);

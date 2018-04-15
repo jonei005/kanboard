@@ -229,7 +229,36 @@ const rootReducer = (state = initialState, action) => {
         
         case DELETE_CARD: // TODO
             // remove a card from the list
-            return state;
+            cards = [];
+            cards = cards.concat(state.cards);
+
+            var card_position = -1;
+            var column_id = -1;
+
+            // search for card we want to delete
+            for (i = 0; i < cards.length; i++) {
+                if (cards[i].card_id === action.payload.card_id) {
+                    // get card's position and column
+                    card_position = cards[i].card_position;
+                    column_id = cards[i].column_id;
+
+                    // delete the card from the array
+                    cards.splice(i, 1);
+                    break;
+                }
+            }
+
+            // decrement positions of cards that came after it in same column
+            for (i = 0; i < cards.length; i++) {
+                if (cards[i].column_id === column_id && cards[i].card_position > card_position) {
+                    cards[i].card_position--;
+                }
+            }
+
+            return {
+                ...state,
+                cards: cards
+            };
 
         default:
             // unrecognized action, so return the original state
