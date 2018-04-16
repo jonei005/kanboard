@@ -243,8 +243,9 @@ class CardModal extends Component {
                                 </div>
                                 <div className="card-modal-description">
                                     <p className="card-modal-item small-margin">
-                                        <i className="fas fa-clipboard-list"></i> Description {this.state.editDescriptionFormOpen &&
-                                            <button onClick={() => this.editDescription()}><i className="fas fa-check"></i></button>
+                                        <i className="fas fa-clipboard-list"></i> Description 
+                                        {this.state.editDescriptionFormOpen &&
+                                            <button onClick={() => this.editDescription()}>Save <i className="fas fa-check"></i></button>
                                         }
                                     </p>
                                     {!this.state.editDescriptionFormOpen

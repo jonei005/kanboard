@@ -68,6 +68,7 @@
 
 .card-modal-description {
     margin-top: 36px;
+    position: relative;
 }
 
 .card-modal-description-text {
@@ -143,9 +144,13 @@
 }
 
 .card-modal-description button {
+    position: absolute;
+    top: 0;
+    right: 0;
     background: none;
     border: none;
     color: green;
+    font-weight: bold;
     cursor: pointer;
 }
 
