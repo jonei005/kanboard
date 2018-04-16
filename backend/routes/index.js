@@ -836,14 +836,16 @@ router.post('/updatecard/:update_type/:card_id', auth.authenticate, function(req
       queryParameters = [req.body.new_card_description, req.params.card_id];
       break;
 
+    case 'addcomment':
+        var comment = req.body.new_comment;
+        comment.timestamp = Date.now();
+        queryString = 'UPDATE Cards SET card_comments = card_comments || $1::jsonb WHERE card_id = $2 RETURNING card_comments';
+        queryParameters = [JSON.stringify(comment), req.params.card_id];
+      break;
+
     default:
       break;
   }
-
-  // if (req.params.update_type === 'rename') {
-  //   queryString = 'UPDATE Cards SET card_name = $1 WHERE card_id = $2 RETURNING card_name';
-  //   queryParameters = [req.body.new_card_name, req.params.card_id];
-  // }
 
   // if queryString or queryParameters are not overwritten, there must be some error
   if (queryString === '' || queryParameters.length === 0) {

@@ -224,7 +224,7 @@ class Board extends Component {
                 </div>
                 {this.state.cardModalOpen && 
                     <CardModal id={this.state.cardModalid} card={cardModalCard}
-                        closeCardModal={() => this.closeCardModal()}    
+                        user={this.props.user} closeCardModal={() => this.closeCardModal()}    
                     />
                 }
             </div>
@@ -234,11 +234,12 @@ class Board extends Component {
 
 const mapStateToProps = (state) => {
     return {
-      boardData: state.boardData,
-      columns: state.columns,
-      cards: state.cards
+        user: state.user,
+        boardData: state.boardData,
+        columns: state.columns,
+        cards: state.cards
     }
-  }
+}
 
 const mapDispatchToProps = (dispatch) => {
     return {

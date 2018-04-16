@@ -5,6 +5,7 @@ import './../css/CardModal.css';
 
 const RENAME = 'rename';
 const DESCRIPTION = 'description';
+const ADDCOMMENT = 'addcomment';
 
 class CardModal extends Component {
 
@@ -18,8 +19,10 @@ class CardModal extends Component {
             renameCardFormOpen: false,
             deleteCardFormOpen: false,
             editDescriptionFormOpen: false,
+            commentFormOpen: false,
             renameCardFormInput: props.card.card_name,
-            editDescriptionFormInput: props.card.card_description || ''
+            editDescriptionFormInput: props.card.card_description || '',
+            commentFormInput: ''
         }
     }
 
@@ -160,6 +163,57 @@ class CardModal extends Component {
 
             }
         });
+    }
+
+    toggleCommentForm() {
+        this.setState({
+            commentFormOpen: !this.state.commentFormOpen, 
+            commentFormInput: ''
+        });
+    }
+
+    addComment() {
+
+        if (this.state.commentFormInput === '') {
+            this.setState({commentFormOpen: false});
+            return;
+        }
+        
+        var comment = this.state.commentFormInput;
+        var user_id = this.props.user.user_id;
+        var user_name = this.props.user.user_name;
+
+        var commentObject = {comment, user_id, user_name};
+        
+        fetch('http://localhost:3001/updatecard/addcomment/' + this.props.card.card_id, {
+            method: 'post',
+            body: JSON.stringify({
+                token: localStorage.getItem('kanboard-user-token'),
+                new_comment: commentObject
+            }),
+            headers: {'content-type': 'application/json'}
+        }).then((response) => {
+            if (response.status === 200) {
+                return response.json();
+            }
+            else {
+                console.log('Hmm something went wrong with add comment fetch', response);
+                return null;
+            }
+        }).then((data) => {
+            if (data) {
+                console.log(data.message);
+
+                this.setState({
+                    commentFormOpen: false,
+                    commentFormInput: ''
+                });
+
+                // update in redux
+                this.props.updateCard(this.props.card.card_id, {card_comments: data.result.card_comments}, ADDCOMMENT);
+            }
+        });
+
         
     }
 
@@ -203,17 +257,36 @@ class CardModal extends Component {
         // get card comments if there are any
         var comments = null;
         if (card.card_comments !== null && card.card_comments.length > 0) {
-            comments = card.card_comments.map((comment, index) => {
-                return (
-                    <p className="card-modal-comment">{comment}</p>
-                )
+            comments = card.card_comments;
+
+            // sort them in decreasing order (recent first) based on timestamp
+            comments.sort((comment1, comment2) => {
+                return comment2.timestamp - comment1.timestamp;
             })
+
+            comments = comments.map((comment, index) => {
+                var timestamp = new Date(comment.timestamp).toDateString();
+                return (
+                    <div className="card-modal-comment" key={index}>
+                        <p className="card-modal-comment-name">{comment.user_name}</p>
+                        <p className="card-modal-comment-timestamp">{timestamp}</p>
+                        <p className="card-modal-comment-text">{comment.comment}</p>
+                    </div>
+                )
+            });
+
         }
 
         return (
             <div className="card-modal-backdrop" onClick={() => this.props.closeCardModal()}>
                 <div className="card-modal-container" onClick={(e) => e.stopPropagation()}>
                     <div className="card-modal-info">
+                        <button onClick={() => this.props.closeCardModal()} className="card-modal-close-button" title="Close">
+                            <i className="fas fa-times"></i>
+                        </button>
+                        <button className="card-modal-info-button" title="Info">
+                            <i className="far fa-question-circle"></i>
+                        </button>
                         {!this.state.renameCardFormOpen
                             ?
                             <h3 id="card-modal-name" onClick={() => this.toggleRenameCardForm()}>{card.card_name}</h3>
@@ -264,7 +337,24 @@ class CardModal extends Component {
                                     }
                                 </div>
                                 <div className="card-modal-comments">
-                                    <p className="card-modal-item small-margin"><i className="fas fa-comment"></i> Comments</p>
+                                    <p className="card-modal-item small-margin">
+                                        <i className="fas fa-comment"></i> Comments 
+                                        <button onClick={() => this.toggleCommentForm()} className="open-comment-form-button" title="Add Comment">
+                                            <i className="fas fa-plus"></i>
+                                        </button>
+                                    </p>
+                                    {this.state.commentFormOpen &&
+                                        <div className="add-comment-form">
+                                            <textarea id="commentFormInput" autoFocus rows="4"
+                                                placeholder="Type your comment here"
+                                                value={this.state.commentFormInput}
+                                                onChange={(e) => this.handleChange(e)}
+                                                onKeyDown={(e) => {if (e.keyCode === 13 && e.shiftKey) this.addComment()}}
+                                            />
+                                            <button onClick={() => this.addComment()} className="save-comment-button">Save Comment <i className="fas fa-check"></i></button>
+                                            <button onClick={() => this.toggleCommentForm()} className="cancel-comment-button">Cancel <i className="fas fa-ban"></i></button>
+                                        </div>
+                                    }
                                     {comments || <p>No comments here</p>}
                                 </div>
                             </div>

@@ -27,6 +27,34 @@
     color: #333;
 }
 
+.card-modal-close-button {
+    position: relative;
+    float: right;
+    background: none;
+    border: none;
+    color: #afafaf;
+    font-size: 14pt;
+    cursor: pointer;
+}
+
+.card-modal-close-button:hover {
+    color: red;
+}
+
+.card-modal-info-button {
+    position: relative;
+    float: right;
+    background: none;
+    border: none;
+    color: #afafaf;
+    font-size: 14pt;
+    cursor: pointer;
+}
+
+.card-modal-info-button:hover {
+    color: #1c7aef;
+}
+
 .card-modal-item {
     font-size: 16px;
     font-weight: bold;
@@ -77,8 +105,42 @@
     white-space: pre-wrap;
 }
 
+.card-modal-description-text:hover {
+    opacity: 0.8;
+}
+
 .card-modal-comments {
     margin-top: 36px;
+}
+
+.card-modal-comment {
+    position: relative;
+    border: 1px solid #afafaf;
+    border-radius: 5px;
+    background: #eeeeef;
+    padding: 6px;
+    font-size: 10pt;
+    white-space: pre-wrap;
+    margin-bottom: 12px;
+}
+
+.card-modal-comment-name {
+    margin: 0;
+    padding-bottom: 2px;
+    border-bottom: 1px solid #afafaf;
+}
+
+.card-modal-comment-timestamp {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    margin: 0;
+    color: #777;
+}
+
+.card-modal-comment-text {
+    margin-top: 12px;
+    margin-bottom: 6px;
 }
 
 .card-modal-options-buttons button {
@@ -156,4 +218,40 @@
 
 .card-modal-description button:hover {
     opacity: 0.7;
+}
+
+.open-comment-form-button {
+    border: none;
+    background: none;
+    color: #afafaf;
+    cursor: pointer;
+    font-size: 12pt;
+}
+
+.open-comment-form-button:hover {
+    color: #1c7aef;
+}
+
+.add-comment-form button {
+    border: none;
+    background: none;
+    font-size: 10pt;
+    cursor: pointer;
+    color: #afafaf;
+    margin: 6px 12px 0 0;
+    padding: 2px 0;
+}
+
+.save-comment-button:hover {
+    color: green;
+}
+
+.cancel-comment-button:hover {
+    color: #333;
+}
+
+.add-comment-form textarea {
+    display: block;
+    width: 98%;
+    font-family: sans-serif;
 }

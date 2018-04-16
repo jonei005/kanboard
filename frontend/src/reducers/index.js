@@ -273,6 +273,9 @@ const rootReducer = (state = initialState, action) => {
                     else if (action.payload.update_type === 'description') {
                         cards[i].card_description = action.payload.data.card_description;
                     }
+                    else if (action.payload.update_type === 'addcomment') {
+                        cards[i].card_comments = action.payload.data.card_comments
+                    }
                 }
             }
 
