@@ -19,6 +19,7 @@
     border-radius: 10px;
     border: 1px solid #333;
     box-shadow: 0px 0px 24px -2px #bbb;
+    overflow: auto;
 }
 
 .card-modal-info {
@@ -39,6 +40,10 @@
     display: grid;
     grid-template-columns: 70% 30%;
     grid-template-rows: 100%;
+}
+
+.card-modal-left {
+    padding-right: 12px;
 }
 
 .card-modal-right {
@@ -67,6 +72,8 @@
 
 .card-modal-description-text {
     margin-top: 0;
+    cursor: pointer;
+    white-space: pre-wrap;
 }
 
 .card-modal-comments {
@@ -127,4 +134,21 @@
 .delete-card-form button {
     margin-right: 6px;
     display: inline-block;
+}
+
+.edit-card-description-form textarea {
+    font-size: 12pt;
+    font-family: sans-serif;
+    width: 98%;
+}
+
+.card-modal-description button {
+    background: none;
+    border: none;
+    color: green;
+    cursor: pointer;
+}
+
+.card-modal-description button:hover {
+    opacity: 0.7;
 }

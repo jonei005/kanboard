@@ -4,6 +4,7 @@ import { deleteCard, updateCard } from './../actions';
 import './../css/CardModal.css';
 
 const RENAME = 'rename';
+const DESCRIPTION = 'description';
 
 class CardModal extends Component {
 
@@ -16,7 +17,9 @@ class CardModal extends Component {
         this.state = {
             renameCardFormOpen: false,
             deleteCardFormOpen: false,
-            renameCardFormInput: props.card.card_name
+            editDescriptionFormOpen: false,
+            renameCardFormInput: props.card.card_name,
+            editDescriptionFormInput: props.card.card_description || ''
         }
     }
 
@@ -116,8 +119,48 @@ class CardModal extends Component {
     }
 
     toggleEditDescriptionForm() {
-        //
-        return;
+        this.setState({
+            editDescriptionFormOpen: !this.state.editDescriptionFormOpen,
+            editDescriptionFormInput: this.props.card.card_description || ''
+        });
+    }
+
+    editDescription() {
+        var new_card_description = this.state.editDescriptionFormInput;
+
+        if (new_card_description === this.props.card.card_description) {
+            this.setState({editDescriptionFormOpen: false});
+            return;
+        }
+
+        fetch('http://localhost:3001/updatecard/description/' + this.props.card.card_id, {
+            method: 'post',
+            body: JSON.stringify({
+                token: localStorage.getItem('kanboard-user-token'),
+                new_card_description: new_card_description
+            }),
+            headers: {'content-type': 'application/json'}
+        }).then((response) => {
+            if (response.status === 200) {
+                return response.json();
+            }
+            else {
+                console.log('Hmm something went wrong with edit card description fetch', response);
+                return null;
+            }
+        }).then((data) => {
+            if (data) {
+                console.log(data.message);
+
+                // close edit description form
+                this.setState({editDescriptionFormOpen: false});
+
+                // update in redux
+                this.props.updateCard(this.props.card.card_id, {card_description: new_card_description}, DESCRIPTION);
+
+            }
+        });
+        
     }
 
     handleChange = (e) => {
@@ -153,7 +196,7 @@ class CardModal extends Component {
 
         // get card description if there is one
         var description = null;
-        if (card.card_description !== null) {
+        if (card.card_description !== null && card.card_description.length > 0) {
             description = card.card_description;
         }
         
@@ -166,7 +209,6 @@ class CardModal extends Component {
                 )
             })
         }
-        
 
         return (
             <div className="card-modal-backdrop" onClick={() => this.props.closeCardModal()}>
@@ -200,10 +242,25 @@ class CardModal extends Component {
                                     <p className="card-modal-item"><i className="fas fa-exclamation-circle"></i> Priority {priority || <span className="tag-none">None</span>}</p>
                                 </div>
                                 <div className="card-modal-description">
-                                    <p className="card-modal-item small-margin"><i className="fas fa-clipboard-list"></i> Description</p>
-                                    <p className="card-modal-description-text">
-                                        {description || "Click here to add a description."}
+                                    <p className="card-modal-item small-margin">
+                                        <i className="fas fa-clipboard-list"></i> Description {this.state.editDescriptionFormOpen &&
+                                            <button onClick={() => this.editDescription()}><i className="fas fa-check"></i></button>
+                                        }
                                     </p>
+                                    {!this.state.editDescriptionFormOpen
+                                        ?
+                                        <p className="card-modal-description-text" onClick={() => this.toggleEditDescriptionForm()}>
+                                            {description || "Click here to add a description."}
+                                        </p>
+                                        :
+                                        <div className="edit-card-description-form">
+                                            <textarea id="editDescriptionFormInput" autoFocus rows="8"
+                                                value={this.state.editDescriptionFormInput}
+                                                onChange={(e) => this.handleChange(e)}
+                                                onKeyDown={(e) => {if (e.keyCode === 13 && e.shiftKey) this.editDescription()}}
+                                            />
+                                        </div>
+                                    }
                                 </div>
                                 <div className="card-modal-comments">
                                     <p className="card-modal-item small-margin"><i className="fas fa-comment"></i> Comments</p>

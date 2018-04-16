@@ -824,24 +824,41 @@ router.post('/updatecard/:update_type/:card_id', auth.authenticate, function(req
   var queryString = '';
   var queryParameters = [];
   
-  if (req.params.update_type === 'rename') {
-    queryString = 'UPDATE Cards SET card_name = $1 WHERE card_id = $2 RETURNING card_name';
-    queryParameters = [req.body.new_card_name, req.params.card_id];
+  // based on update type given in url, we must write a custom query
+  switch(req.params.update_type) {
+    case 'rename':
+      queryString = 'UPDATE Cards SET card_name = $1 WHERE card_id = $2 RETURNING card_name';
+      queryParameters = [req.body.new_card_name, req.params.card_id];
+      break;
+
+    case 'description':
+      queryString = 'UPDATE Cards SET card_description = $1 WHERE card_id = $2 RETURNING card_description';
+      queryParameters = [req.body.new_card_description, req.params.card_id];
+      break;
+
+    default:
+      break;
   }
 
-  if (queryString.length === 0 || queryParameters.length === 0) {
+  // if (req.params.update_type === 'rename') {
+  //   queryString = 'UPDATE Cards SET card_name = $1 WHERE card_id = $2 RETURNING card_name';
+  //   queryParameters = [req.body.new_card_name, req.params.card_id];
+  // }
+
+  // if queryString or queryParameters are not overwritten, there must be some error
+  if (queryString === '' || queryParameters.length === 0) {
     return res.status(500).json({message: 'Unrecognized card update type'});
   }
 
   db.query(queryString, queryParameters, (err, result) => {
     if (err) {
       console.log('Error with rename card query', err);
-      return res.status(500).json({message: 'Database error on card rename'});
+      return res.status(500).json({message: 'Database error on card update'});
     }
 
     res.status(200).json({
-      message: 'Card renamed successfully',
-      card_name: result.rows[0]
+      message: 'Card updated successfully',
+      result: result.rows[0]
     });
   });
 });

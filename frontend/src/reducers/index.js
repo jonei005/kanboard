@@ -270,6 +270,9 @@ const rootReducer = (state = initialState, action) => {
                     if (action.payload.update_type === 'rename') {
                         cards[i].card_name = action.payload.data.card_name;
                     }
+                    else if (action.payload.update_type === 'description') {
+                        cards[i].card_description = action.payload.data.card_description;
+                    }
                 }
             }
 
