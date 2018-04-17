@@ -837,10 +837,15 @@ router.post('/updatecard/:update_type/:card_id', auth.authenticate, function(req
       break;
 
     case 'addcomment':
-        var comment = req.body.new_comment;
-        comment.timestamp = Date.now();
-        queryString = 'UPDATE Cards SET card_comments = card_comments || $1::jsonb WHERE card_id = $2 RETURNING card_comments';
-        queryParameters = [JSON.stringify(comment), req.params.card_id];
+      var comment = req.body.new_comment;
+      comment.timestamp = Date.now();
+      queryString = 'UPDATE Cards SET card_comments = card_comments || $1::jsonb WHERE card_id = $2 RETURNING card_comments';
+      queryParameters = [JSON.stringify(comment), req.params.card_id];
+      break;
+
+    case 'duedate':
+      queryString = 'UPDATE Cards SET card_due = $1 WHERE card_id = $2 RETURNING card_due';
+      queryParameters = [req.body.due_date, req.params.card_id];
       break;
 
     default:

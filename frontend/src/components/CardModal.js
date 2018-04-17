@@ -6,6 +6,7 @@ import './../css/CardModal.css';
 const RENAME = 'rename';
 const DESCRIPTION = 'description';
 const ADDCOMMENT = 'addcomment';
+const DUEDATE = 'duedate';
 
 class CardModal extends Component {
 
@@ -20,6 +21,7 @@ class CardModal extends Component {
             deleteCardFormOpen: false,
             editDescriptionFormOpen: false,
             commentFormOpen: false,
+            dueDateFormOpen: false,
             renameCardFormInput: props.card.card_name,
             editDescriptionFormInput: props.card.card_description || '',
             commentFormInput: ''
@@ -213,8 +215,53 @@ class CardModal extends Component {
                 this.props.updateCard(this.props.card.card_id, {card_comments: data.result.card_comments}, ADDCOMMENT);
             }
         });
+    }
 
+    toggleDueDateForm() {
+        this.setState({dueDateFormOpen: !this.state.dueDateFormOpen});
+    }
+
+    setDueDate(e) {
+        e.preventDefault();
+        var dueDate = document.getElementById("due-date-input").value;
+
+        // console.log(dueDate);
+
+        var dateCheck = new Date(dueDate + ' 00:00');
+        if (isNaN(dateCheck.getTime())) {
+            console.log('Wrong date mate');
+            return;
+        }
         
+        console.log(dateCheck.toDateString());
+
+        fetch('http://localhost:3001/updatecard/duedate/' + this.props.card.card_id, {
+            method: 'post',
+            body: JSON.stringify({
+                token: localStorage.getItem('kanboard-user-token'),
+                due_date: dueDate
+            }),
+            headers: {'content-type': 'application/json'}
+        }).then((response) => {
+            if (response.status === 200) {
+                return response.json();
+            }
+            else {
+                console.log('Hmm something went wrong with add due date fetch', response);
+                return null;
+            }
+        }).then((data) => {
+            if (data) {
+                console.log(data.message);
+
+                this.setState({dueDateFormOpen: false});
+
+                // update in redux
+                this.props.updateCard(this.props.card.card_id, {due_date: dateCheck}, DUEDATE);
+            }
+        });
+
+        return;
     }
 
     handleChange = (e) => {
@@ -239,7 +286,8 @@ class CardModal extends Component {
         // get card due date if there is one
         var due = null;
         if (card.card_due !== null) {
-            due = card.card_due;
+            due = new Date(card.card_due).toDateString();
+            //due = card.card_due;
         }
 
         // get card priority if there is one
@@ -309,7 +357,22 @@ class CardModal extends Component {
                                     <p className="card-modal-item"><i className="fas fa-tag"></i> Tags {tags || <span className="tag-none">None</span>}</p>
                                 </div>
                                 <div className="card-modal-due-date">
-                                    <p className="card-modal-item"><i className="fas fa-clock"></i> Due Date {due || <span className="tag-none">None</span>}</p>
+                                    <p className="card-modal-item"><i className="fas fa-clock"></i> Due Date {
+                                        <span className="due-date-text" onClick={() => this.toggleDueDateForm()}>{due}</span> || <span className="tag-none">None</span>
+                                        }
+                                    </p>
+                                    {this.state.dueDateFormOpen &&
+                                        <form className="set-due-date-form" onSubmit={(e) => this.setDueDate(e)}>
+                                            <span>Enter a due date: &nbsp;</span>
+                                            <input type="date" id="due-date-input"/>
+                                            <button type="submit" className="set-due-date-button" title="Set Due Date">
+                                                <i className="fas fa-check"></i>
+                                            </button>
+                                            <button type="button" onClick={() => this.setState({dueDateFormOpen: false})} className="close-due-date-button" title="Cancel">
+                                                <i className="fas fa-ban"></i>
+                                            </button>
+                                        </form>
+                                    }
                                 </div>
                                 <div className="card-modal-priority">
                                     <p className="card-modal-item"><i className="fas fa-exclamation-circle"></i> Priority {priority || <span className="tag-none">None</span>}</p>
@@ -366,7 +429,7 @@ class CardModal extends Component {
                                     <p className="card-modal-item small-margin"><i className="fas fa-cog"></i> Options</p>
                                     <button>Add Assignees</button>
                                     <button>Add Tags</button>
-                                    <button>Change Due Date</button>
+                                    <button onClick={() => this.toggleDueDateForm()}>Change Due Date</button>
                                     <button>Set Priority</button>
                                     <button onClick={() => this.toggleEditDescriptionForm()}>Edit Description</button>
                                     <button onClick={() => this.toggleRenameCardForm()}>Rename Card</button>

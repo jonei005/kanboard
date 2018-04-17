@@ -267,15 +267,36 @@ const rootReducer = (state = initialState, action) => {
 
             for (i = 0; i < cards.length; i++) {
                 if (cards[i].card_id === action.payload.card_id) {
-                    if (action.payload.update_type === 'rename') {
-                        cards[i].card_name = action.payload.data.card_name;
+                    switch(action.payload.update_type) {
+                        case 'rename':
+                            cards[i].card_name = action.payload.data.card_name;
+                            break;
+
+                        case 'description': 
+                            cards[i].card_description = action.payload.data.card_description;
+                            break;
+
+                        case 'addcomment':
+                            cards[i].card_comments = action.payload.data.card_comments
+                            break;
+
+                        case 'duedate':
+                            cards[i].card_due = action.payload.data.due_date;
+                            break;
+
+                        default:
+                            break;
                     }
-                    else if (action.payload.update_type === 'description') {
-                        cards[i].card_description = action.payload.data.card_description;
-                    }
-                    else if (action.payload.update_type === 'addcomment') {
-                        cards[i].card_comments = action.payload.data.card_comments
-                    }
+
+                    // if (action.payload.update_type === 'rename') {
+                    //     cards[i].card_name = action.payload.data.card_name;
+                    // }
+                    // else if (action.payload.update_type === 'description') {
+                    //     cards[i].card_description = action.payload.data.card_description;
+                    // }
+                    // else if (action.payload.update_type === 'addcomment') {
+                    //     cards[i].card_comments = action.payload.data.card_comments
+                    // }
                 }
             }
 
