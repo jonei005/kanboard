@@ -7,6 +7,8 @@ const RENAME = 'rename';
 const DESCRIPTION = 'description';
 const ADDCOMMENT = 'addcomment';
 const DUEDATE = 'duedate';
+const PRIORITY = 'priority';
+//const TAGS = 'tags';
 
 class CardModal extends Component {
 
@@ -22,6 +24,7 @@ class CardModal extends Component {
             editDescriptionFormOpen: false,
             commentFormOpen: false,
             dueDateFormOpen: false,
+            priorityFormOpen: false,
             renameCardFormInput: props.card.card_name,
             editDescriptionFormInput: props.card.card_description || '',
             commentFormInput: ''
@@ -264,6 +267,46 @@ class CardModal extends Component {
         return;
     }
 
+    togglePriorityForm() {
+        this.setState({priorityFormOpen: !this.state.priorityFormOpen});
+    }
+
+    editPriority(priority) {
+        if (priority === -1 || priority === this.props.card.card_priority) {
+            this.setState({priorityFormOpen: false});
+            return;
+        }
+
+        console.log('Set priority to: ', priority);
+        
+        fetch('http://localhost:3001/updatecard/priority/' + this.props.card.card_id, {
+            method: 'post',
+            body: JSON.stringify({
+                token: localStorage.getItem('kanboard-user-token'),
+                card_priority: priority
+            }),
+            headers: {'content-type': 'application/json'}
+        }).then((response) => {
+            if (response.status === 200) {
+                return response.json();
+            }
+            else {
+                console.log('Hmm something went wrong with edit priority fetch', response);
+                return null;
+            }
+        }).then((data) => {
+            if (data) {
+                console.log(data.message);
+
+                this.setState({priorityFormOpen: false});
+
+                // update in redux
+                this.props.updateCard(this.props.card.card_id, {card_priority: priority}, PRIORITY);
+            }
+        });
+        
+    }
+
     handleChange = (e) => {
         this.setState({[e.target.id]: e.target.value});
     }
@@ -292,8 +335,38 @@ class CardModal extends Component {
 
         // get card priority if there is one
         var priority = null;
+        var priorityClass = null;
+        var priorityText = null;
         if (card.card_priority !== null) {
             priority = card.card_priority;
+            switch(priority) {
+                case 0: 
+                    priorityClass = 'priority-none';
+                    priorityText = 'None';
+                    break;
+                case 1:
+                    priorityClass = 'priority-very-low';
+                    priorityText = 'Very Low';
+                    break;
+                case 2: 
+                    priorityClass = 'priority-low';
+                    priorityText = 'Low';
+                    break;
+                case 3:
+                    priorityClass = 'priority-medium';
+                    priorityText = 'Medium';
+                    break;
+                case 4: 
+                    priorityClass = 'priority-high';
+                    priorityText = 'High';
+                    break;
+                case 5:
+                    priorityClass = 'priority-very-high';
+                    priorityText = 'Very High';
+                    break;
+                default:
+                    break;
+            }
         }
 
         // get card description if there is one
@@ -322,7 +395,6 @@ class CardModal extends Component {
                     </div>
                 )
             });
-
         }
 
         return (
@@ -335,6 +407,7 @@ class CardModal extends Component {
                         <button className="card-modal-info-button" title="Info">
                             <i className="far fa-question-circle"></i>
                         </button>
+                        {/* CARD NAME & RENAME FORM */}
                         {!this.state.renameCardFormOpen
                             ?
                             <h3 id="card-modal-name" onClick={() => this.toggleRenameCardForm()}>{card.card_name}</h3>
@@ -353,14 +426,13 @@ class CardModal extends Component {
                         }
                         <div className="card-modal-columns">
                             <div className="card-modal-left">
+                                {/* TAGS & EDIT TAGS FORM */}
                                 <div className="card-modal-tags">
                                     <p className="card-modal-item"><i className="fas fa-tag"></i> Tags {tags || <span className="tag-none">None</span>}</p>
                                 </div>
+                                {/* DUE DATE & DUE DATE FORM */}
                                 <div className="card-modal-due-date">
-                                    <p className="card-modal-item"><i className="fas fa-clock"></i> Due Date {
-                                        <span className="due-date-text" onClick={() => this.toggleDueDateForm()}>{due}</span> || <span className="tag-none">None</span>
-                                        }
-                                    </p>
+                                    <p className="card-modal-item"><i className="fas fa-clock"></i> Due Date <span className="due-date-text" onClick={() => this.toggleDueDateForm()}>{due || "None"}</span></p>
                                     {this.state.dueDateFormOpen &&
                                         <form className="set-due-date-form" onSubmit={(e) => this.setDueDate(e)}>
                                             <span>Enter a due date: &nbsp;</span>
@@ -374,9 +446,24 @@ class CardModal extends Component {
                                         </form>
                                     }
                                 </div>
+                                {/* PRIORITY & EDIT PRIORITY FORM */}
                                 <div className="card-modal-priority">
-                                    <p className="card-modal-item"><i className="fas fa-exclamation-circle"></i> Priority {priority || <span className="tag-none">None</span>}</p>
+                                    <p className="card-modal-item"><i className="fas fa-exclamation-circle"></i> Priority <span className={"priority-text " + (priorityClass || "")} onClick={() => this.togglePriorityForm()}>{priorityText || "None"}</span></p>
+                                    {this.state.priorityFormOpen &&
+                                        <div className="edit-priority-form">
+                                            <p className="edit-priority-text">Select a priority level: </p>
+                                            <button onClick={() => this.editPriority(0)} className="set-priority-button priority-none">None</button>
+                                            <button onClick={() => this.editPriority(1)} className="set-priority-button priority-very-low">Very Low</button>
+                                            <button onClick={() => this.editPriority(2)} className="set-priority-button priority-low">Low</button>
+                                            <br />
+                                            <button onClick={() => this.editPriority(3)} className="set-priority-button priority-medium">Medium</button>
+                                            <button onClick={() => this.editPriority(4)} className="set-priority-button priority-high">High</button>
+                                            <button onClick={() => this.editPriority(5)} className="set-priority-button priority-very-high">Very High</button>
+                                            <button onClick={() => this.editPriority(-1)} className="cancel-priority-button">Cancel <i className="fas fa-ban"></i></button>
+                                        </div>
+                                    }
                                 </div>
+                                {/* DESCRIPTION & EDIT DESCRIPTION FORM */}
                                 <div className="card-modal-description">
                                     <p className="card-modal-item small-margin">
                                         <i className="fas fa-clipboard-list"></i> Description 
@@ -394,11 +481,12 @@ class CardModal extends Component {
                                             <textarea id="editDescriptionFormInput" autoFocus rows="8"
                                                 value={this.state.editDescriptionFormInput}
                                                 onChange={(e) => this.handleChange(e)}
-                                                onKeyDown={(e) => {if (e.keyCode === 13 && e.shiftKey) this.editDescription()}}
+                                                onKeyDown={(e) => {if (e.keyCode === 13 && e.ctrlKey) this.editDescription()}}
                                             />
                                         </div>
                                     }
                                 </div>
+                                {/* COMMENTS & ADD COMMENTS FORM */}
                                 <div className="card-modal-comments">
                                     <p className="card-modal-item small-margin">
                                         <i className="fas fa-comment"></i> Comments 
@@ -412,7 +500,7 @@ class CardModal extends Component {
                                                 placeholder="Type your comment here"
                                                 value={this.state.commentFormInput}
                                                 onChange={(e) => this.handleChange(e)}
-                                                onKeyDown={(e) => {if (e.keyCode === 13 && e.shiftKey) this.addComment()}}
+                                                onKeyDown={(e) => {if (e.keyCode === 13 && e.ctrlKey) this.addComment()}}
                                             />
                                             <button onClick={() => this.addComment()} className="save-comment-button">Save Comment <i className="fas fa-check"></i></button>
                                             <button onClick={() => this.toggleCommentForm()} className="cancel-comment-button">Cancel <i className="fas fa-ban"></i></button>
@@ -422,15 +510,17 @@ class CardModal extends Component {
                                 </div>
                             </div>
                             <div className="card-modal-right">
+                                {/* ASSIGNEES & ADD ASSIGNEES FORM */}
                                 <div className="card-modal-assignees">
                                     <p className="card-modal-item small-margin"><i className="fas fa-user-circle"></i> Assignees</p>
                                 </div>
+                                {/* CARD OPTIONS BUTTONS & DELETE FORM */}
                                 <div className="card-modal-options-buttons">
                                     <p className="card-modal-item small-margin"><i className="fas fa-cog"></i> Options</p>
                                     <button>Add Assignees</button>
                                     <button>Add Tags</button>
                                     <button onClick={() => this.toggleDueDateForm()}>Change Due Date</button>
-                                    <button>Set Priority</button>
+                                    <button onClick={() => this.togglePriorityForm()}>Set Priority</button>
                                     <button onClick={() => this.toggleEditDescriptionForm()}>Edit Description</button>
                                     <button onClick={() => this.toggleRenameCardForm()}>Rename Card</button>
                                     {!this.state.deleteCardFormOpen

@@ -284,19 +284,13 @@ const rootReducer = (state = initialState, action) => {
                             cards[i].card_due = action.payload.data.due_date;
                             break;
 
+                        case 'priority':
+                            cards[i].card_priority = action.payload.data.card_priority;
+                            break;
+
                         default:
                             break;
                     }
-
-                    // if (action.payload.update_type === 'rename') {
-                    //     cards[i].card_name = action.payload.data.card_name;
-                    // }
-                    // else if (action.payload.update_type === 'description') {
-                    //     cards[i].card_description = action.payload.data.card_description;
-                    // }
-                    // else if (action.payload.update_type === 'addcomment') {
-                    //     cards[i].card_comments = action.payload.data.card_comments
-                    // }
                 }
             }
 

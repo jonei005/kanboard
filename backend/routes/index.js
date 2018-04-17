@@ -848,6 +848,11 @@ router.post('/updatecard/:update_type/:card_id', auth.authenticate, function(req
       queryParameters = [req.body.due_date, req.params.card_id];
       break;
 
+    case 'priority':
+      queryString = 'UPDATE Cards SET card_priority = $1 WHERE card_id = $2 RETURNING card_priority';
+      queryParameters = [req.body.card_priority, req.params.card_id];
+      break;
+
     default:
       break;
   }
