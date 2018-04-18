@@ -853,6 +853,11 @@ router.post('/updatecard/:update_type/:card_id', auth.authenticate, function(req
       queryParameters = [req.body.card_priority, req.params.card_id];
       break;
 
+    case 'tags':
+      queryString = 'UPDATE Cards SET card_tags = $1 WHERE card_id = $2 RETURNING card_tags';
+      queryParameters = [req.body.card_tags, req.params.card_id];
+      break;
+
     default:
       break;
   }

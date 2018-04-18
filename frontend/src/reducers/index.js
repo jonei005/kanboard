@@ -288,6 +288,13 @@ const rootReducer = (state = initialState, action) => {
                             cards[i].card_priority = action.payload.data.card_priority;
                             break;
 
+                        case 'tags':
+                            // have to do this trick to make sure the arrays are separate
+                            var card_tags = [];
+                            card_tags = card_tags.concat(action.payload.data.card_tags);
+                            cards[i].card_tags = card_tags;
+                            break;
+
                         default:
                             break;
                     }

@@ -95,6 +95,46 @@
     font-weight: normal;
 }
 
+.card-modal-tags {
+    margin-top: 12px;
+}
+
+.card-modal-tags .card-modal-item {
+    display: inline;
+}
+
+.card-modal-tags .tags-list {
+    display: inline-block;
+    overflow-y: hidden;
+    overflow-x: auto;
+    max-width: 80%;
+    vertical-align: text-top;
+}
+
+.card-modal-tags .tag {
+    cursor: pointer;
+    margin-right: 6px;
+}
+
+.card-modal-tags .tag:hover {
+    opacity: 0.7;
+}
+
+.card-modal-tags .tags-list::-webkit-scrollbar {
+    display: none;
+    height: 6px;
+}
+
+.card-modal-tags .tags-list::-webkit-scrollbar-track {
+    box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.1);
+}
+
+.card-modal-tags .tags-list::-webkit-scrollbar-thumb {
+    border-radius: 5px;
+    box-shadow: inset 0 0 2px rgba(0, 0, 0, 0.1);
+    background-color: rgba(0, 0, 0, 0.1);
+}
+
 .due-date-text:hover {
     cursor: pointer;
     opacity: 0.7;
@@ -233,6 +273,52 @@
 .delete-card-form button {
     margin-right: 6px;
     display: inline-block;
+}
+
+.edit-tags-form {
+    font-size: 14px;
+}
+
+.edit-tags-form .possible-tags {
+    display: grid;
+    grid-template-columns: 72px 72px 72px 72px;
+    grid-gap: 8px;
+}
+
+.edit-tags-form button.possible-tag {
+    background: #dadada;
+    border: none;
+    border-radius: 5px;
+    padding: 4px 6px;
+    font-size: 14px;
+    cursor: pointer;
+    color: #333;
+}
+
+.edit-tags-form button.possible-tag:hover {
+    opacity: 0.7;
+}
+
+.edit-tags-form button.possible-tag.selected {
+    background: #9cccff;
+}
+
+.edit-tags-form > button {
+    border: none;
+    background: none;
+    font-size: 10pt;
+    cursor: pointer;
+    color: #afafaf;
+    margin: 12px 12px 6px 0;
+    padding: 2px 0;
+}
+
+.save-tags-button:hover {
+    color: green;
+}
+
+.cancel-tags-button:hover {
+    color: #333;
 }
 
 .set-due-date-form span {

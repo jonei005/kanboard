@@ -8,7 +8,7 @@ const DESCRIPTION = 'description';
 const ADDCOMMENT = 'addcomment';
 const DUEDATE = 'duedate';
 const PRIORITY = 'priority';
-//const TAGS = 'tags';
+const TAGS = 'tags';
 
 class CardModal extends Component {
 
@@ -18,6 +18,9 @@ class CardModal extends Component {
         // bind function to component event listener can be added/removed 
         this.keyDown = this.keyDown.bind(this);
 
+        var card_tags = [];
+        card_tags = card_tags.concat(props.card.card_tags);
+
         this.state = {
             renameCardFormOpen: false,
             deleteCardFormOpen: false,
@@ -25,9 +28,11 @@ class CardModal extends Component {
             commentFormOpen: false,
             dueDateFormOpen: false,
             priorityFormOpen: false,
+            tagFormOpen: false,
             renameCardFormInput: props.card.card_name,
             editDescriptionFormInput: props.card.card_description || '',
-            commentFormInput: ''
+            commentFormInput: '',
+            tagFormSelections: card_tags
         }
     }
 
@@ -307,6 +312,67 @@ class CardModal extends Component {
         
     }
 
+    toggleTagForm() {
+        this.setState({tagFormOpen: !this.state.tagFormOpen});
+    }
+
+    selectTag(tag) {
+        var updatedTagSelections = this.state.tagFormSelections;
+
+        if (updatedTagSelections.includes(tag)) {
+            var index = updatedTagSelections.indexOf(tag);
+            if (index !== -1) {
+                updatedTagSelections.splice(index, 1);
+            }
+            else {
+                console.log("Error: Deselected tag that shouldn't have been selected.");
+            }
+        }
+        else {
+            updatedTagSelections.push(tag);
+        }
+
+        this.setState({tagFormSelections: updatedTagSelections});
+        console.log(updatedTagSelections);
+    }
+
+    editTags() {
+        var new_tags = this.state.tagFormSelections;
+
+        if (new_tags === this.props.card.card_tags) {
+            this.setState({tagFormOpen: false});
+            return;
+        }
+
+        console.log("New Tags: ", new_tags);
+
+        fetch('http://localhost:3001/updatecard/tags/' + this.props.card.card_id, {
+            method: 'post',
+            body: JSON.stringify({
+                token: localStorage.getItem('kanboard-user-token'),
+                card_tags: new_tags
+            }),
+            headers: {'content-type': 'application/json'}
+        }).then((response) => {
+            if (response.status === 200) {
+                return response.json();
+            }
+            else {
+                console.log('Hmm something went wrong with edit tags fetch', response);
+                return null;
+            }
+        }).then((data) => {
+            if (data) {
+                console.log(data.message);
+
+                this.setState({tagFormOpen: false});
+
+                // update in redux
+                this.props.updateCard(this.props.card.card_id, {card_tags: new_tags}, TAGS);
+            }
+        });
+    }
+
     handleChange = (e) => {
         this.setState({[e.target.id]: e.target.value});
     }
@@ -318,19 +384,38 @@ class CardModal extends Component {
 
         // get card tags if there are any
         var tags = null;
-        if (card.card_tags !== null) {
+        if (card.card_tags !== null && card.card_tags.length > 0) {
             tags = card.card_tags.map((tag, index) => {
+                var tagClass = 'tag tag-' + tag.toLowerCase();
                 return(
-                    <span className={"tag-"+tag}>{tag}</span> 
+                    <span className={tagClass} onClick={() => this.toggleTagForm()} key={index}>{tag}</span> 
                 )
             });
+        }
+
+        var tagArray = null;
+        if (this.state.tagFormOpen) {
+            var possibleTags = ['Bug', 'Feature', 'Frontend', 'Backend', 
+                'Database', 'QuickFix', 'UserStory', 'Epic'
+            ];
+
+            tagArray = possibleTags.map((tag, index) => {
+                var possibleTagClass = 'possible-tag';
+                if (this.state.tagFormSelections.includes(tag)) {
+                    possibleTagClass += ' selected'
+                }
+
+                return (
+                    <button className={possibleTagClass} onClick={() => this.selectTag(tag)} key={index}>{tag}</button>
+                )
+            })
+
         }
 
         // get card due date if there is one
         var due = null;
         if (card.card_due !== null) {
             due = new Date(card.card_due).toDateString();
-            //due = card.card_due;
         }
 
         // get card priority if there is one
@@ -428,7 +513,19 @@ class CardModal extends Component {
                             <div className="card-modal-left">
                                 {/* TAGS & EDIT TAGS FORM */}
                                 <div className="card-modal-tags">
-                                    <p className="card-modal-item"><i className="fas fa-tag"></i> Tags {tags || <span className="tag-none">None</span>}</p>
+                                    {/* <p className="card-modal-item"><i className="fas fa-tag"></i> Tags {tags || <span className="tag tag-none" onClick={() => this.toggleTagForm()}>None</span>}</p> */}
+                                    <p className="card-modal-item"><i className="fas fa-tag"></i> Tags </p>
+                                    <div className="tags-list">{tags || <span className="tag tag-none" onClick={() => this.toggleTagForm()}>None</span>}</div>
+                                    {this.state.tagFormOpen &&
+                                        <div className="edit-tags-form">
+                                            <p>Select tags for this card:</p>
+                                            <div className="possible-tags">
+                                                {tagArray}
+                                            </div>
+                                            <button onClick={() => this.editTags()} className="save-tags-button">Save Tags <i className="fas fa-check"></i></button>
+                                            <button onClick={() => this.toggleTagForm()} className="cancel-tags-button">Cancel <i className="fas fa-ban"></i></button>
+                                        </div>
+                                    }
                                 </div>
                                 {/* DUE DATE & DUE DATE FORM */}
                                 <div className="card-modal-due-date">
