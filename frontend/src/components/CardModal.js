@@ -333,7 +333,6 @@ class CardModal extends Component {
         }
 
         this.setState({tagFormSelections: updatedTagSelections});
-        console.log(updatedTagSelections);
     }
 
     editTags() {
@@ -343,8 +342,6 @@ class CardModal extends Component {
             this.setState({tagFormOpen: false});
             return;
         }
-
-        console.log("New Tags: ", new_tags);
 
         fetch('http://localhost:3001/updatecard/tags/' + this.props.card.card_id, {
             method: 'post',
@@ -414,8 +411,15 @@ class CardModal extends Component {
 
         // get card due date if there is one
         var due = null;
+        var overdue = false;
         if (card.card_due !== null) {
-            due = new Date(card.card_due).toDateString();
+            due = new Date(card.card_due);
+            var today = new Date().setHours(0, 0, 0, 0);
+            if (due < today) {
+                console.log('overdue');
+                overdue = true;
+            }
+            due = due.toDateString();
         }
 
         // get card priority if there is one
@@ -529,7 +533,7 @@ class CardModal extends Component {
                                 </div>
                                 {/* DUE DATE & DUE DATE FORM */}
                                 <div className="card-modal-due-date">
-                                    <p className="card-modal-item"><i className="fas fa-clock"></i> Due Date <span className="due-date-text" onClick={() => this.toggleDueDateForm()}>{due || "None"}</span></p>
+                                <p className="card-modal-item"><i className="fas fa-clock"></i> Due Date <span className="due-date-text" onClick={() => this.toggleDueDateForm()}>{due || "None"}</span> {overdue && <span className="due-overdue">(Overdue)</span>}</p>
                                     {this.state.dueDateFormOpen &&
                                         <form className="set-due-date-form" onSubmit={(e) => this.setDueDate(e)}>
                                             <span>Enter a due date: &nbsp;</span>
