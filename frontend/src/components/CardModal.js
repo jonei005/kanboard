@@ -233,16 +233,12 @@ class CardModal extends Component {
         e.preventDefault();
         var dueDate = document.getElementById("due-date-input").value;
 
-        // console.log(dueDate);
-
         var dateCheck = new Date(dueDate + ' 00:00');
         if (isNaN(dateCheck.getTime())) {
             console.log('Wrong date mate');
             return;
         }
         
-        console.log(dateCheck.toDateString());
-
         fetch('http://localhost:3001/updatecard/duedate/' + this.props.card.card_id, {
             method: 'post',
             body: JSON.stringify({
@@ -281,8 +277,6 @@ class CardModal extends Component {
             this.setState({priorityFormOpen: false});
             return;
         }
-
-        console.log('Set priority to: ', priority);
         
         fetch('http://localhost:3001/updatecard/priority/' + this.props.card.card_id, {
             method: 'post',
@@ -416,7 +410,6 @@ class CardModal extends Component {
             due = new Date(card.card_due);
             var today = new Date().setHours(0, 0, 0, 0);
             if (due < today) {
-                console.log('overdue');
                 overdue = true;
             }
             due = due.toDateString();
@@ -537,7 +530,7 @@ class CardModal extends Component {
                                     {this.state.dueDateFormOpen &&
                                         <form className="set-due-date-form" onSubmit={(e) => this.setDueDate(e)}>
                                             <span>Enter a due date: &nbsp;</span>
-                                            <input type="date" id="due-date-input"/>
+                                            <input type="date" id="due-date-input" autoFocus />
                                             <button type="submit" className="set-due-date-button" title="Set Due Date">
                                                 <i className="fas fa-check"></i>
                                             </button>
@@ -619,7 +612,7 @@ class CardModal extends Component {
                                 <div className="card-modal-options-buttons">
                                     <p className="card-modal-item small-margin"><i className="fas fa-cog"></i> Options</p>
                                     <button>Add Assignees</button>
-                                    <button>Add Tags</button>
+                                    <button onClick={() => this.toggleTagForm()}>Add Tags</button>
                                     <button onClick={() => this.toggleDueDateForm()}>Change Due Date</button>
                                     <button onClick={() => this.togglePriorityForm()}>Set Priority</button>
                                     <button onClick={() => this.toggleEditDescriptionForm()}>Edit Description</button>
