@@ -435,13 +435,13 @@ router.post('/createboard', auth.authenticate, function(req, res) {
 // RENAME BOARD
 // Receive string "board_name" and id "board_id"
 // Set new name of board_id to board_name in DB
-router.post('/renameboard', auth.authenticate, function(req, res, next) {
+router.post('/renameboard/:board_id', auth.authenticate, function(req, res, next) {
 
   // TODO: make sure user is board owner before renaming
 
   var queryString = 'UPDATE Boards SET board_name = $1 WHERE board_id = $2 RETURNING *';
 
-  db.query(queryString, [req.body.new_board_name, req.body.board_id], (err, results) => {
+  db.query(queryString, [req.body.new_board_name, req.params.board_id], (err, results) => {
     if (err) {
       console.log('Error with board rename query', err);
       return res.status(500).json({message: 'Database error'});

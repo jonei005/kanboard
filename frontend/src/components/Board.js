@@ -4,7 +4,7 @@ import BoardMenu from './BoardMenu';
 import CardModal from './CardModal';
 import { connect } from 'react-redux';
 import { 
-    storeBoard, clearBoard,
+    storeBoard, updateBoard, clearBoard,
     createColumn, deleteColumn, renameColumn,
     createCard
 } from './../actions'; // make actual action for updating board stuffs
@@ -27,7 +27,9 @@ class Board extends Component {
             columnFormOpen: false,
             columnFormText: '',
             cardModalOpen: false,
-            cardModalId: -1
+            cardModalId: -1,
+            renameFormOpen: false,
+            renameFormInput: props.boardData.board_name
         }
     }
 
@@ -58,13 +60,56 @@ class Board extends Component {
             // store board, column, card data in redux store
             this.props.storeBoard(data.boardData, data.columnData, data.cardData);
 
-            
+            // write board_name to renameFormInput 
+            this.setState({renameFormInput: data.boardData.board_name});
         });
     }
 
     componentWillUnmount() {
         // remove the board, column, and card data from redux store
         this.props.clearBoard();
+    }
+
+    toggleRenameForm() {
+        this.setState({renameFormOpen: !this.state.renameFormOpen, renameFormInput: this.props.boardData.board_name});
+    }
+
+    renameBoard() {
+        var new_board_name = this.state.renameFormInput;
+
+        if (new_board_name === this.props.boardData.board_name || new_board_name === '') {
+            this.setState({renameFormOpen: false, renameFormInput: this.props.boardData.board_name});
+            return;
+        }
+
+        fetch('http://localhost:3001/renameboard/' + this.props.boardData.board_id, {
+            method: 'post',
+            body: JSON.stringify({
+                token: localStorage.getItem('kanboard-user-token'),
+                new_board_name: new_board_name,
+            }),
+            headers: {
+                'content-type': 'application/json' 
+            }
+        }).then((response) => {
+            if (response.status === 200) {
+                return response.json();
+            }
+            else {
+                console.log('Hmm something went wrong with board rename fetch', response);
+                return null;
+            }
+        }).then((data) => {
+            if (data) {
+                console.log(data.message);
+                
+                // close the rename form
+                this.setState({renameFormOpen: false, renameFormInput: new_board_name});
+
+                // update board name in redux
+                this.props.updateBoard({board_name: new_board_name}, 'rename');
+            }
+        });
     }
 
     toggleColumnForm() {
@@ -198,7 +243,19 @@ class Board extends Component {
         return(
             <div className="board">
                 <div className="container">
-                    <h1 className="page-title">{this.props.boardData.board_name}</h1>
+                    {!this.state.renameFormOpen
+                        ?
+                        <h1 className="page-title" onClick={() => this.toggleRenameForm()}>{this.props.boardData.board_name}</h1>
+                        :
+                        <div className="rename-board-form">
+                            <input type="text" id="renameFormInput" value={this.state.renameFormInput} autoFocus 
+                                onChange={(e) => this.handleChange(e)}
+                                onKeyDown={(e) => {if (e.keyCode === 13) this.renameBoard()}}
+                                onFocus={(e) => {e.target.select()}}
+                            />
+                        </div>
+
+                    }
                     <hr className="title-underline" />
                 </div>
                 <div className="columns">
@@ -220,7 +277,7 @@ class Board extends Component {
                             }
                         </div>
                     </div>
-                    <BoardMenu />
+                    <BoardMenu toggleRenameForm={() => this.toggleRenameForm()}/>
                 </div>
                 {this.state.cardModalOpen && 
                     <CardModal id={this.state.cardModalid} card={cardModalCard}
@@ -244,6 +301,7 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
     return {
         storeBoard: (boardData, columns, cards) => dispatch(storeBoard(boardData, columns, cards)),
+        updateBoard: (data, update_type) => dispatch(updateBoard(data, update_type)),
         clearBoard: () => dispatch(clearBoard()),
         createColumn: (column) => dispatch(createColumn(column)),
         deleteColumn: (column_id, card_ids) => dispatch(deleteColumn(column_id, card_ids)),

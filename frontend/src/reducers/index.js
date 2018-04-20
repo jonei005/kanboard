@@ -2,7 +2,7 @@
 
 import { 
     STORE_USER, CLEAR_USER,
-    STORE_BOARD, CLEAR_BOARD,
+    STORE_BOARD, UPDATE_BOARD, CLEAR_BOARD,
     CREATE_COLUMN, RENAME_COLUMN, DELETE_COLUMN,
     MOVE_CARD, CREATE_CARD, DELETE_CARD, UPDATE_CARD
 } from "../constants/actionTypes";
@@ -30,7 +30,7 @@ const rootReducer = (state = initialState, action) => {
             // clear user data from store (on logout)
             return {...state, user: action.payload, auth: false};
 
-        case STORE_BOARD: // TODO
+        case STORE_BOARD:
             // add board data to store (when entering board page)
             return {
                 ...state,
@@ -38,6 +38,25 @@ const rootReducer = (state = initialState, action) => {
                 columns: action.payload.columns,
                 cards: action.payload.cards
             };
+
+        case UPDATE_BOARD:
+            var board = Object.assign({}, state.boardData);
+            
+            switch (action.payload.update_type) {
+                
+                case 'rename':
+                    board.board_name = action.payload.data.board_name;
+                    break;
+
+                default:
+                    break;
+            }
+
+            return {
+                ...state,
+                boardData: board
+            }
+            
 
         case CLEAR_BOARD:
             // clear board data from store (when leaving board page)

@@ -52,12 +52,11 @@ class DashboardTile extends Component {
 
         var token = localStorage.getItem('kanboard-user-token');
         
-        fetch('http://localhost:3001/renameboard', {
+        fetch('http://localhost:3001/renameboard/' + this.props.id, {
             method: 'post',
             body: JSON.stringify({
                 token: token,
                 new_board_name: newName,
-                board_id: this.props.id
             }),
             headers: {
                 'content-type': 'application/json' 

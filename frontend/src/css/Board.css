@@ -19,6 +19,17 @@
     color: #333;
 }
 
+.board .rename-board-form {
+    text-align: center;
+    margin-top: -6px;
+}
+
+.board .rename-board-form input {
+    font-size: 28pt;
+    box-sizing: border-box;
+    text-align: center;    
+}
+
 /* 
  * Column styles 
  */

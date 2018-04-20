@@ -2,7 +2,7 @@
 
 import { 
     STORE_USER, CLEAR_USER,
-    STORE_BOARD, CLEAR_BOARD,
+    STORE_BOARD, UPDATE_BOARD, CLEAR_BOARD,
     CREATE_COLUMN, RENAME_COLUMN, DELETE_COLUMN,
     MOVE_CARD, CREATE_CARD, DELETE_CARD, UPDATE_CARD
 } from "../constants/actionTypes";
@@ -24,6 +24,15 @@ export const storeBoard = (boardData, columns, cards) => ({
         boardData: boardData,
         columns: columns,
         cards: cards
+    }
+});
+
+// used to update board (name, description...)
+export const updateBoard = (data, update_type) => ({
+    type: UPDATE_BOARD,
+    payload: {
+        data: data,
+        update_type: update_type
     }
 });
 
