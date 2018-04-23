@@ -7,9 +7,18 @@ class BoardMenu extends Component {
 
         this.state = {
             description: '',
+            deleteBoardFormOpen: false
         }
     }
 
+    toggleDeleteBoardForm() {
+        this.setState({deleteBoardFormOpen: !this.state.deleteBoardFormOpen});
+    }
+
+    deleteBoard() {
+        this.setState({deleteBoardFormOpen: false});
+        this.props.deleteBoard();
+    }
 
     render() {
 
@@ -42,9 +51,16 @@ class BoardMenu extends Component {
                             <i className="fas fa-cog fa-sm"></i> Board Options
                         </h3>
                         <button id="menu-rename-board-button" onClick={() => this.props.toggleRenameForm()}>Rename Board</button>
-                        <button id="menu-add-column-button">Add Column</button>
-                        <button id="menu-delete-column-button">Delete Column</button>
-                        <button id="menu-delete-board-button">Delete Board</button>
+                        <button id="menu-add-column-button" onClick={() => this.props.toggleColumnForm()}>Add Column</button>
+                        <button id="menu-delete-board-button" onClick={() => this.toggleDeleteBoardForm()}>Delete Board</button>
+                        {this.state.deleteBoardFormOpen &&
+                            <div className="delete-board-form">
+                                <p>Warning:</p>
+                                <p>Are you sure you want to delete your board, <span>{this.props.name}</span>? This can not be undone. All data, including all card descriptions and comments, will be erased forever.</p>
+                                <button className="delete-board-button" onClick={() => this.deleteBoard()}>Delete Board</button>
+                                <button className="cancel-delete-board-button" onClick={() => this.toggleDeleteBoardForm()}>Cancel</button>
+                            </div>
+                        }
                     </div>
                     <div className="board-menu-members">
                         <h3 className="board-menu-title">

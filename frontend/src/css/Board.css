@@ -15,6 +15,10 @@
     padding: 36px 0 12px;
 }
 
+.board .page-title {
+    cursor: pointer;
+}
+
 .board h3 {
     color: #333;
 }
@@ -237,7 +241,7 @@
     margin-bottom: 24px;
 }
 
-.board-menu-options button {
+.board-menu-options > button {
     background: none;
     border: none;
     display: block;
@@ -249,12 +253,58 @@
     color: #42426a;
 }
 
-.board-menu-options button:hover {
+.board-menu-options > button:hover {
     opacity: 0.7;
 }
 
 #menu-delete-board-button:hover {
     color: red;
+}
+
+.board-menu-options .delete-board-form {
+    background: rgba(255, 0, 0, 0.1);
+    border: 1px solid rgba(150, 0, 0, 0.2);
+    border-radius: 5px;
+    padding: 8px 12px 12px; 
+    color: red;
+    text-align: center;
+}
+
+.board-menu-options .delete-board-form p {
+    text-align: left;
+}
+
+.board-menu-options .delete-board-form span {
+    font-weight: bold;
+}
+
+.board-menu-options .delete-board-form button {
+    border: none;
+    background: #eee;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-bottom: 12px;
+    margin-right: 24px;
+    box-shadow: 2px 2px 4px -2px #333;
+    padding: 6px;
+}
+
+.board-menu-options .delete-board-form .delete-board-button {
+    color: rgba(255, 0, 0, 0.8);
+}
+
+.board-menu-options .delete-board-form .delete-board-button:hover {
+    box-shadow: 2px 2px 4px -1px red;
+    color: red;
+}
+
+.board-menu-options .delete-board-form .cancel-delete-board-button {
+    color: rgba(0, 0, 0, 0.8);
+}
+
+.board-menu-options .delete-board-form .cancel-delete-board-button:hover {
+    box-shadow: 2px 2px 4px -1px #333;
+    color: black;
 }
 
 .board-menu-members ul {
@@ -266,6 +316,8 @@
 .board-menu-members ul li {
     margin-bottom: 12px;
 }
+
+
 
 /* Board menu scrollbar styles (only works in webkit browsers) */
 .board-menu::-webkit-scrollbar {

@@ -29,7 +29,8 @@ class Board extends Component {
             cardModalOpen: false,
             cardModalId: -1,
             renameFormOpen: false,
-            renameFormInput: props.boardData.board_name
+            renameFormInput: props.boardData.board_name,
+            boardDeleted: false
         }
     }
 
@@ -202,6 +203,13 @@ class Board extends Component {
         });
     }
 
+    deleteBoard() {
+        // delete the board
+
+        // fetch
+
+        // redirect to dashboard page
+    }
 
     render() {
 
@@ -277,11 +285,15 @@ class Board extends Component {
                             }
                         </div>
                     </div>
-                    <BoardMenu toggleRenameForm={() => this.toggleRenameForm()}/>
+                    <BoardMenu name={this.props.boardData.board_name} 
+                        toggleRenameForm={() => this.toggleRenameForm()}
+                        toggleColumnForm={() => this.toggleColumnForm()} 
+                        deleteBoard={() => this.deleteBoard()}
+                    />
                 </div>
                 {this.state.cardModalOpen && 
                     <CardModal id={this.state.cardModalid} card={cardModalCard}
-                        user={this.props.user} closeCardModal={() => this.closeCardModal()}    
+                        user={this.props.user} closeCardModal={() => this.closeCardModal()}   
                     />
                 }
             </div>
