@@ -215,8 +215,14 @@ class Board extends Component {
 
         var cards = this.props.cards;
 
+        var columnArray = [];
+        columnArray = columnArray.concat(this.props.columns);
+        columnArray.sort((col1, col2) => {
+            return col1.column_position - col2.column_position;
+        });
+
         // map redux state columns/cards to their proper place
-        var columns = this.props.columns.map((column, index) => {
+        var columns = columnArray.map((column, index) => {
             var myCards = [];
 
             // Loop over all cards
