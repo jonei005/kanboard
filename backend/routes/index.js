@@ -357,19 +357,6 @@ router.post('/board/:id', auth.authenticate, function(req, res) {
         delete columnData[i]['board_description'];
       }
 
-      // v2
-      // uses regex to delete board keys in case new ones are added (not working 100%)
-      // var deleteBoardRegex = /(board_)\w+/g;
-      // for (var i = 0; i < columnData.length; i++) {
-      //   for (var key in columnData[i]) {
-      //     if (columnData[i].hasOwnProperty(key) && deleteBoardRegex.test(key)) {
-      //       console.log('key matched: ' + key);
-      //       delete columnData[i][key];
-      //     }
-      //   }
-      // }
-        
-
       return res.status(200).json({
         message: 'Found board with board_id = ' + board_id,
         boardData: boardData,
@@ -496,7 +483,7 @@ router.post('/deleteboard/:board_id', auth.authenticate, function(req, res, next
       return res.status(500).json({message: 'Database error on board deletion'});
     }
 
-    console.log('Successfully deleted board ' + req.body.board_id);
+    // console.log('Successfully deleted board ' + req.body.board_id);
     return res.status(200).json({message: 'Board deleted successfully'});
   });
 });

@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import Column from './Column';
 import BoardMenu from './BoardMenu';
 import CardModal from './CardModal';
+import { Redirect } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { 
     storeBoard, updateBoard, clearBoard,
@@ -204,15 +205,32 @@ class Board extends Component {
     }
 
     deleteBoard() {
-        // delete the board
+        fetch('http://localhost:3001/deleteboard/' + this.state.board_id, {
+            method: 'post',
+            body: JSON.stringify({
+                token: localStorage.getItem('kanboard-user-token')
+            }),
+            headers: {
+                'content-type': 'application/json' 
+            }
+        }).then((response) => {
+            if (response.status !== 200) {
+                console.log('Something went wrong with fetch delete board');
+            }
+            return response.json();
+        }).then((data) => {
 
-        // fetch
+            console.log(data.message);
 
-        // redirect to dashboard page
+            if (data) {
+                // triggers redirect to dashboard page
+                this.setState({boardDeleted: true});
+            }
+            
+        });
     }
 
     editBoardDescription(new_description) {
-        // alert(new_description);
         fetch('http://localhost:3001/updateboard/description/' + this.state.board_id, {
             method: 'post',
             body: JSON.stringify({
@@ -287,6 +305,8 @@ class Board extends Component {
 
         return(
             <div className="board">
+                {/* Triggered after board is deleted: redirect user back to dashboard */}
+                {this.state.boardDeleted && <Redirect to="/dashboard" />}
                 <div className="container">
                     {!this.state.renameFormOpen
                         ?
