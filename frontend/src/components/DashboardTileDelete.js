@@ -6,7 +6,7 @@ class DashboardTileDelete extends Component {
         return(
             <div className="dashboard-tile-delete-form">
                 <button className="board-delete-button delete" title="Delete Board" onClick={() => this.props.submitDelete(true)}>
-                    Confirm Delete <i className="fas fa-check"></i>
+                    Delete Board <i className="fas fa-check"></i>
                 </button> 
                 <button className="board-delete-button cancel" title="Cancel" onClick={() => this.props.submitDelete(false)}>
                     Cancel <i className="fas fa-ban"></i>

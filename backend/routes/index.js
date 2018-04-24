@@ -243,33 +243,6 @@ router.post('/boards', auth.authenticate, function(req, res) {
   });
 });
 
-// SEND USER BOARDS
-// used to verify token and send single board (for use when creating a single board)
-// CURRENTLY UNTESTED
-// router.post('/boards/:id', auth.authenticate, function(req, res) {
-
-//   var board_id = req.params.id;
-
-//   // get single board based on user_id
-//   var queryString = 'SELECT board_id, board_name FROM Boards WHERE board_id = $1';
-
-//   db.query(queryString, [board_id], (err, result) => {
-//     if (err) {
-//       console.log('Error getting single board from database with user token', err);
-
-//       return res.status(500).json({
-//         message: 'Error getting boards from DB with token.',
-//       });
-//     }  
-
-//     // send stringified array of boards to client
-//     return res.status(200).json({
-//       message: 'Successfully retrieved board with id ' + board_id,
-//       boards: JSON.stringify(result.rows[0])
-//     });
-//   });
-// });
-
 // SEND BOARD DETAILS
 // used to send all board details (columns, cards, etc) to client
 router.post('/board/:id', auth.authenticate, function(req, res) {
@@ -280,19 +253,6 @@ router.post('/board/:id', auth.authenticate, function(req, res) {
 
   // TODO: verify in query that user_id is an owner or member of the board
 
-  // Select a board that matches given board id
-  // Include all BoardsToColumns mappings from this board to any columns
-  // Include all Columns mapped to from BoardsToColumns
-  // Include all ColumnsToCards mappings from this board's columns to any cards
-  // Include all Cards mapped to from ColumnsToCards
-  // var queryString = " \
-  //   SELECT * FROM Boards \
-  //     INNER JOIN BoardsToColumns ON BoardsToColumns.board_id = Boards.board_id \
-  //     INNER JOIN Columns ON Columns.column_id = BoardsToColumns.column_id \
-  //     LEFT JOIN ColumnsToCards ON ColumnsToCards.column_id = Columns.column_id \
-  //     FULL JOIN Cards ON Cards.card_id = ColumnsToCards.card_id \
-  //   WHERE Boards.board_id = $1 \
-  // ";
 
   // this query gets all columns, separate from cards so I can easily get the column_ids
   var queryString1 = " \
@@ -301,12 +261,6 @@ router.post('/board/:id', auth.authenticate, function(req, res) {
       INNER JOIN Columns ON Columns.column_id = BoardsToColumns.column_id \
     WHERE Boards.board_id = $1 \
   ";
-
-  // var queryString1 = " \
-  //   WITH column_ids AS (SELECT column_id FROM BoardsToColumns WHERE board_id = $1) \
-  //   SELECT * FROM Columns WHERE column_id IN (SELECT column_id FROM column_ids) \
-  // ";
-
 
   db.query(queryString1, [board_id], (err, result) => {
     if (err) {
@@ -552,7 +506,6 @@ router.post('/addcolumn/:board_id', auth.authenticate, function(req, res) {
 // deletes column based on its column_id (found in pathname)
 router.post('/deletecolumn/:column_id', auth.authenticate, function(req, res) {
 
-  // TODO: update positions of columns that came after it (how?)
   // in query: get position of column to delete (curPos)
   // get associated board using BoardsToColumns
   // select all Columns associated with that board in BoardsToColumns with pos > curPos
