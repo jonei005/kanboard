@@ -48,6 +48,10 @@ const rootReducer = (state = initialState, action) => {
                     board.board_name = action.payload.data.board_name;
                     break;
 
+                case 'description':
+                    board.board_description = action.payload.data.board_description;
+                    break;
+
                 default:
                     break;
             }

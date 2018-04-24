@@ -6,8 +6,10 @@ class BoardMenu extends Component {
         super(props);
 
         this.state = {
-            description: '',
-            deleteBoardFormOpen: false
+            description: props.description,
+            deleteBoardFormOpen: false,
+            editDescriptionFormOpen: false,
+            descriptionFormInput: this.props.description
         }
     }
 
@@ -18,6 +20,30 @@ class BoardMenu extends Component {
     deleteBoard() {
         this.setState({deleteBoardFormOpen: false});
         this.props.deleteBoard();
+    }
+
+    toggleEditDescriptionForm() {
+        this.setState({
+            editDescriptionFormOpen: !this.state.editDescriptionFormOpen,
+            descriptionFormInput: this.props.description
+        });
+    }
+
+    editDescription() {
+        var new_description = this.state.descriptionFormInput;
+
+        if (new_description === this.props.description) {
+            this.setState({editDescriptionFormOpen: false});
+            return;
+        }
+
+        this.props.editBoardDescription(new_description);
+
+        this.setState({editDescriptionFormOpen: false});
+    }
+
+    handleChange = (e) => {
+        this.setState({[e.target.id]: e.target.value});
     }
 
     render() {
@@ -33,8 +59,8 @@ class BoardMenu extends Component {
             return <li key={index}>{user.name}</li>
         });
         
-        var sampleDescription = "This is a sample board description. Click here to write your own description. It is beneficial to describe the mission of the board to all users.";
-        var description = this.state.description || sampleDescription;
+        // var sampleDescription = "This is a sample board description. Click here to write your own description. It is beneficial to describe the mission of the board to all users.";
+        var description = this.props.description || "Click here to add a description.";
 
 
         return(
@@ -44,7 +70,25 @@ class BoardMenu extends Component {
                         <h3 className="board-menu-title">
                             <i className="fas fa-align-left fa-sm"></i> Board Description
                         </h3>
-                        <p>{description}</p>
+                        {!this.state.editDescriptionFormOpen
+                            ?
+                            <p className="board-description" onClick={() => this.toggleEditDescriptionForm()}>{description}</p>
+                            :
+                            <div className="edit-board-description-form">
+                                <textarea value={this.state.descriptionFormInput} autoFocus rows="8" id="descriptionFormInput"
+                                    placeholder="Write a description of your board"
+                                    onChange={(e) => this.handleChange(e)}
+                                    onKeyDown={(e) => {if (e.keyCode === 13 && e.ctrlKey) this.editDescription()}}
+                                />
+                                <button onClick={() => this.editDescription()} className="edit-board-description-button">
+                                    Save Description <i className="fas fa-check"></i>
+                                </button>
+                                
+                                <button onClick={() => this.toggleEditDescriptionForm()} className="cancel-edit-board-description-button">
+                                    Cancel <i className="fas fa-ban"></i>
+                                </button>
+                            </div>
+                        }
                     </div>
                     <div className="board-menu-options">
                         <h3 className="board-menu-title">

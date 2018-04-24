@@ -211,6 +211,37 @@ class Board extends Component {
         // redirect to dashboard page
     }
 
+    editBoardDescription(new_description) {
+        // alert(new_description);
+        fetch('http://localhost:3001/updateboard/description/' + this.state.board_id, {
+            method: 'post',
+            body: JSON.stringify({
+                token: localStorage.getItem('kanboard-user-token'),
+                board_description: new_description
+            }),
+            headers: {
+                'content-type': 'application/json' 
+            }
+        }).then((response) => {
+            if (response.status !== 200) {
+                console.log('Something went wrong with fetch edit board description');
+            }
+            return response.json();
+        }).then((data) => {
+
+            console.log(data.message);
+
+            if (data) {
+                
+    
+                // add column data to redux store
+                this.props.updateBoard({board_description: new_description}, 'description');
+            }
+            
+        });
+        
+    }
+
     render() {
 
         var cards = this.props.cards;
@@ -292,9 +323,11 @@ class Board extends Component {
                         </div>
                     </div>
                     <BoardMenu name={this.props.boardData.board_name} 
+                        description={this.props.boardData.board_description}
                         toggleRenameForm={() => this.toggleRenameForm()}
                         toggleColumnForm={() => this.toggleColumnForm()} 
                         deleteBoard={() => this.deleteBoard()}
+                        editBoardDescription={(new_description) => this.editBoardDescription(new_description)}
                     />
                 </div>
                 {this.state.cardModalOpen && 

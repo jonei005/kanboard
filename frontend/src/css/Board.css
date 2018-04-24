@@ -235,6 +235,34 @@
     padding: 0 6px;
     font-size: 14px;
     line-height: 1.5;
+    cursor: pointer;
+}
+
+.board-menu-description .edit-board-description-form {
+    text-align: right;
+}
+
+.board-menu-description .edit-board-description-form textarea {
+    width: 100%;
+    box-sizing: border-box;
+    font-family: sans-serif;
+}
+
+.board-menu-description .edit-board-description-form button {
+    border: none;
+    background: none;
+    margin-left: 6px;
+    padding: 6px;
+    cursor: pointer;
+    color: #555;
+}
+
+.board-menu-description .edit-board-description-form .edit-board-description-button:hover {
+    color: green;
+}
+
+.board-menu-description .edit-board-description-form .cancel-edit-board-description-button:hover {
+    color: black;
 }
 
 .board-menu-options {

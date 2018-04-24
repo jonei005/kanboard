@@ -345,7 +345,8 @@ router.post('/board/:id', auth.authenticate, function(req, res) {
       // get boardData from columns query results
       var boardData = {
         board_id: result.rows[0].board_id,
-        board_name: result.rows[0].board_name
+        board_name: result.rows[0].board_name,
+        board_description: result.rows[0].board_description
       };
 
       // cut out unnecessary keys in columnData (not really needed, but nice to have)
@@ -498,9 +499,27 @@ router.post('/deleteboard/:board_id', auth.authenticate, function(req, res, next
     console.log('Successfully deleted board ' + req.body.board_id);
     return res.status(200).json({message: 'Board deleted successfully'});
   });
-
-
 });
+
+router.post('/updateboard/description/:board_id', auth.authenticate, function(req, res) {
+  var queryString = " \
+    UPDATE Boards SET board_description = $1 WHERE board_id = $2 RETURNING * \
+  ";
+
+  var queryParameters = [req.body.board_description, req.params.board_id];
+
+  db.query(queryString, queryParameters, (err, result) => {
+    if (err) {
+      console.log('Error with update board description query', err);
+      return res.status(500).json({message: 'Database error on board description update'});
+    }
+
+    return res.status(200).json({
+      message: 'Board description updated successfully',
+      board_description: result.rows[0].board_description
+    })
+  });
+})
 
 // ADD COLUMN
 // adds column data (found in req.body) to DB, associated with board_id given from pathname
