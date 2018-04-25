@@ -162,9 +162,19 @@ class BoardMenu extends Component {
                             </div>
                         }
                     </div>
+                    <div className="board-menu-owner board-menu-members">
+                        <h3 className="board-menu-title">
+                            <i className="far fa-user fa-sm"></i> Board Owner
+                        </h3>
+                        {this.state.owner &&
+                            <Link to={"/user/" + this.state.owner.user_id} className="board-member">
+                                {this.state.owner.user_name}
+                            </Link>
+                        }
+                    </div>
                     <div className="board-menu-members">
                         <h3 className="board-menu-title">
-                            <i className="far fa-user fa-sm"></i> Board Members
+                            <i className="fas fa-users fa-sm"></i> Board Members
                         </h3>
                         {members}
                     </div>

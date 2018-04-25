@@ -339,6 +339,10 @@
     color: black;
 }
 
+.board-menu-owner {
+    margin-bottom: 24px;
+}
+
 .board-menu-members ul {
     list-style: none;
     padding: 0 6px;
