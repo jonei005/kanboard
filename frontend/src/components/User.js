@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import './../css/User.css';
 
 class User extends Component {
 
@@ -36,12 +37,44 @@ class User extends Component {
     }
 
     render() {
-        return(
-            <div>
-                <p>User Page</p>
-                <p>{this.state.user_id}</p>
-            </div>
-        );
+        if (this.state.user) {
+            return(
+                <div className="container">
+                    <h1 className="page-title">{this.state.user.user_name + "'s Profile"}</h1>
+                    <hr className="title-underline" />
+
+                    <div className="user-info">
+                        <div className="user-item user-email">
+                            <p>Email: <span>{this.state.user.user_email}</span></p>
+                        </div>
+
+                        <div className="user-item user-location">
+                            <p>Location: <span>{this.state.user.user_location || "Not Given"}</span></p>
+                        </div>
+
+                        <div className="user-item user-company">
+                            <p>Company: <span>{this.state.user.user_company || "Not Given"}</span></p>
+                        </div>
+
+                        <div className="user-item user-position">
+                            <p>Position: <span>{this.state.user.user_position || "Not Given"}</span></p>
+                        </div>
+
+                        <div className="user-item user-bio">
+                            <p>Bio: <span>{this.state.user.user_bio || "Not Given"}</span></p>
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+        else {
+            return(
+                <div className="container">
+
+                </div>
+            );
+        }
+        
     }
 }
 

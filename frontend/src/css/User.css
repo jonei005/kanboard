@@ -1,0 +1,18 @@
+/* Styles for User component (viewing user info) */
+
+.user-info {
+    font-size: 14pt;
+}
+
+.user-item p {
+    font-weight: bold;
+    color: #333;
+}
+
+.user-item span {
+    font-weight: normal;
+}
+
+.user-item.user-bio span {
+    display: block;
+}
