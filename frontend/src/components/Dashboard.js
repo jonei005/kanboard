@@ -125,6 +125,23 @@ class Dashboard extends Component {
         }
     }
 
+    unlinkBoard(id) {
+        var currentBoards = this.state.sharedBoards;
+        var deleteIndex = -1;
+        
+        for (var i = 0; i < currentBoards.length; i++) {
+            if (currentBoards[i].board_id === id) {
+                deleteIndex = i;
+            }
+        }
+
+        if (deleteIndex > -1) {
+            // remove that element of array
+            currentBoards.splice(deleteIndex, 1);
+            this.setState({sharedBoards: currentBoards});
+        }
+    }
+
     toggleShareModal(board_name, board_id) {
         this.setState({
             shareModalOpen: !this.state.shareModalOpen,
@@ -146,7 +163,7 @@ class Dashboard extends Component {
 
         var boardTiles = boards.map((board, num) => {
             return (
-                <DashboardTile key={num} name={board.board_name}  
+                <DashboardTile key={num} name={board.board_name} owned={true}
                     position={board.board_position} id={board.board_id}
                     renameBoard={(newName, id) => this.renameBoard(newName, id)}
                     deleteBoard={(id) => this.deleteBoard(id)} 
@@ -159,10 +176,10 @@ class Dashboard extends Component {
 
         var sharedBoardTiles = sharedBoards.map((board, num) => {
             return (
-                <DashboardTile key={num} name={board.board_name}  
+                <DashboardTile key={num} name={board.board_name} owned={false}
                     position={board.board_position} id={board.board_id}
                     renameBoard={(newName, id) => this.renameBoard(newName, id)}
-                    deleteBoard={(id) => this.deleteBoard(id)} 
+                    unlinkBoard={(id) => this.unlinkBoard(id)} 
                     toggleShareModal={(name, id) => this.toggleShareModal(name, id)}
                 />
             )
@@ -179,7 +196,7 @@ class Dashboard extends Component {
                         <p><i className="fas fa-plus"></i></p>
                     </div>
                 </div>
-                {this.sharedBoardTiles && this.sharedBoardTiles.length > 0 &&
+                {sharedBoardTiles && sharedBoardTiles.length > 0 &&
                     <div className="dashboard-shared-boards">
                         <h3 className="dashboard-title">Shared With Me</h3>
                         <div id="dashboard">

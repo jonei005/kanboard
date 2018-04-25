@@ -23,9 +23,17 @@ class DashboardTileMenu extends Component {
                 <div className="dashboard-tile-menu-button" title="Share Board" onClick={() => this.openShareModal()}>
                     <i className="fas fa-share-alt"></i>
                 </div>
-                <div className="dashboard-tile-menu-button" title="Delete Board" onClick={() => this.openDeleteForm()}>
-                    <i className="far fa-trash-alt"></i>
-                </div>
+                {this.props.owned
+                    ?
+                        <div className="dashboard-tile-menu-button" title="Delete Board" onClick={() => this.openDeleteForm()}>
+                            <i className="far fa-trash-alt"></i>
+                        </div>
+                    :
+                        <div className="dashboard-tile-menu-button" title="Unlink From Board" onClick={() => this.openDeleteForm()}>
+                            <i className="fas fa-unlink"></i>
+                        </div>
+                }
+                
             </div>
         );
     }

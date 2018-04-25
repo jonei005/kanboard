@@ -110,13 +110,38 @@ class DashboardTile extends Component {
             }).then((data) => {
                 if (data) {
                     console.log(data.message);
-                    
-                    // close the delete form
-                    this.setState({deleteFormOpen: false});
 
                     // pass id to Dashboard parent component so it can delete board and update state
                     this.props.deleteBoard(this.props.id);
                 }
+            });
+        }
+    }
+
+    submitUnlink(wantToUnlink) {
+        this.setState({deleteFormOpen: false});
+
+        if (wantToUnlink) {
+            fetch('http://localhost:3001/unlinkboard/' + this.props.id, {
+                method: 'post',
+                body: JSON.stringify({
+                    token: localStorage.getItem('kanboard-user-token')
+                }),
+                headers: {
+                    'content-type': 'application/json' 
+                }
+            }).then((response) => {
+                if (response.status !== 200) {
+                    console.log('Something went wrong with fetch unlink board');
+                }
+                return response.json();
+            }).then((data) => {
+                if (data) {
+                    console.log(data.message);
+
+                    this.props.unlinkBoard(this.props.id);
+                }
+                
             });
         }
     }
@@ -128,10 +153,20 @@ class DashboardTile extends Component {
                     {!this.state.renameFormOpen && !this.state.deleteFormOpen && <p>{this.props.name}</p>}
                 </Link>
 
-                {this.state.renameFormOpen && <DashboardTileRename name={this.props.name} submitRename={(newName) => this.submitRename(newName)} />}
-                {this.state.deleteFormOpen && <DashboardTileDelete submitDelete={(wantToDelete) => this.submitDelete(wantToDelete)} />}
+                {this.state.renameFormOpen && 
+                    <DashboardTileRename name={this.props.name} 
+                        submitRename={(newName) => this.submitRename(newName)} 
+                    />
+                }
 
-                <DashboardTileMenu 
+                {this.state.deleteFormOpen && 
+                    <DashboardTileDelete owned={this.props.owned} 
+                        submitDelete={(wantToDelete) => this.submitDelete(wantToDelete)} 
+                        submitUnlink={(wantToUnlink) => this.submitUnlink(wantToUnlink)}
+                    />
+                }
+
+                <DashboardTileMenu owned={this.props.owned}
                     openRenameForm={() => this.openRenameForm()} 
                     openShareModal={() => this.openShareModal()} 
                     openDeleteForm={() => this.openDeleteForm()} 

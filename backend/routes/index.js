@@ -492,6 +492,8 @@ router.post('/deleteboard/:board_id', auth.authenticate, function(req, res, next
   });
 });
 
+// UNLINK FROM BOARD
+// used for users to remove shared board from their list without deleting it
 router.post('/unlinkboard/:board_id', auth.authenticate, function(req, res) {
   var decodedToken = res.locals.decodedToken;
   var queryString = "DELETE FROM BoardMembers WHERE board_id = $1 AND user_id = $2";
