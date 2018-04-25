@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { Link } from 'react-router-dom';
 
 class BoardMenu extends Component {
 
@@ -7,10 +8,40 @@ class BoardMenu extends Component {
 
         this.state = {
             description: props.description,
+            members: [],
+            owner: {},
             deleteBoardFormOpen: false,
             editDescriptionFormOpen: false,
             descriptionFormInput: this.props.description
         }
+    }
+
+    componentDidMount() {
+        // get owner and members of the board
+        fetch('http://localhost:3001/boardmembers/' + this.props.id, {
+            method: 'post',
+            body: JSON.stringify({token: localStorage.getItem('kanboard-user-token')}),
+            headers: {
+                'content-type': 'application/json' 
+            }
+        }).then((response) => {
+            if (response.status === 200) {
+                return response.json();
+            }
+            else {
+                console.log('Hmm something went wrong with get members fetch', response);
+                return null;
+            }
+        }).then((data) => {
+            if (data) {
+                console.log(data.message);
+
+                this.setState({
+                    members: data.board_members,
+                    owner: data.board_owner
+                });
+            }
+        });
     }
 
     toggleDeleteBoardForm() {
@@ -48,16 +79,30 @@ class BoardMenu extends Component {
 
     render() {
 
-        var usersArray = [
-            {name: 'Jeremy'},
-            {name: 'Jeff'},
-            {name: 'Some Other Guy'},
-            {name: 'Sample User'}
-        ];
+        // var usersArray = [
+        //     {name: 'Jeremy'},
+        //     {name: 'Jeff'},
+        //     {name: 'Some Other Guy'},
+        //     {name: 'Sample User'}
+        // ];
         
-        var users = usersArray.map((user, index) => {
-            return <li key={index}>{user.name}</li>
-        });
+        var membersArray = this.state.members || null;
+        var members = [];
+        
+        if (membersArray) {
+            members = membersArray.sort((member1, member2) => {
+                return member1.user_name.toLowerCase() > member2.user_name.toLowerCase();
+            });
+
+            members = membersArray.map((member, index) => {
+                return (
+                    <Link to={"/user/" + member.user_id} key={index} className="board-member">
+                        {member.user_name}
+                    </Link>
+                )
+            });
+        }
+        
         
         // var sampleDescription = "This is a sample board description. Click here to write your own description. It is beneficial to describe the mission of the board to all users.";
         var description = this.props.description || "Click here to add a description.";
@@ -110,9 +155,7 @@ class BoardMenu extends Component {
                         <h3 className="board-menu-title">
                             <i className="far fa-user fa-sm"></i> Board Members
                         </h3>
-                        <ul>
-                            {users}
-                        </ul>
+                        {members}
                     </div>
                 </div>
             </div>

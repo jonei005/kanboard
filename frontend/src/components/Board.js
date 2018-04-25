@@ -342,7 +342,7 @@ class Board extends Component {
                             }
                         </div>
                     </div>
-                    <BoardMenu name={this.props.boardData.board_name} 
+                    <BoardMenu name={this.props.boardData.board_name} id={this.state.board_id}
                         description={this.props.boardData.board_description}
                         toggleRenameForm={() => this.toggleRenameForm()}
                         toggleColumnForm={() => this.toggleColumnForm()} 

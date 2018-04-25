@@ -149,8 +149,8 @@ class ShareBoardModal extends Component {
                 <div className="share-modal-container" onClick={(e) => e.stopPropagation()}>
                     <div className="share-modal">
                         <button onClick={() => this.props.toggleShareModal()} className="share-modal-close-button" title="Close">
-                                <i className="fas fa-times"></i>
-                            </button>
+                            <i className="fas fa-times"></i>
+                        </button>
                         <h3 className="share-modal-name">{"Share Board: " + this.props.name}</h3>
                         <div className="share-modal-form">
                             <p>Add a member to the board by submitting their email address below.</p>
@@ -163,15 +163,18 @@ class ShareBoardModal extends Component {
                             {this.state.errorMessage && <p className="share-modal-form-error">{this.state.errorMessage}</p>}
                         </div>
                         <div className="share-modal-board-owner">
-                            <p className="share-modal-board-owner-title">Board Owner</p>
+                            <p className="share-modal-board-owner-title"><i className="fas fa-user-circle fa-lg"></i>  Board Owner</p>
                             {owner && 
-                                <div>{owner.user_name}</div>
+                                <Link to={"/user/" + owner.user_id} className="board-member .board-owner">
+                                    {owner.user_name}
+                                </Link>
                             }
                         </div>
                         <div className="share-modal-board-members">
-                            <p className="share-modal-board-members-title">Board Members</p>
+                            <p className="share-modal-board-members-title"><i className="fas fa-users fa-lg"></i> Board Members</p>
                             {members}
                         </div>
+                        <button onClick={() => this.props.toggleShareModal()} className="share-modal-done-button" title="Done">Done</button>
                     </div>
                 </div>
             </div>            
