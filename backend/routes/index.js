@@ -251,10 +251,14 @@ router.post('/boards', auth.authenticate, function(req, res) {
   var decodedToken = res.locals.decodedToken;
 
   // get list of user's boards based on user_id
-  var queryString = 'WITH myboards AS (SELECT board_id FROM BoardOwners WHERE user_id = $1) \
-    SELECT board_id, board_name, board_position FROM Boards WHERE board_id IN (SELECT board_id FROM myboards) ORDER BY board_position ASC';
+  var queryString = ' \
+    WITH myboards AS ( \
+      SELECT board_id FROM BoardOwners WHERE user_id = $1 \
+    ) SELECT board_id, board_name, board_position FROM Boards \
+    WHERE board_id IN (SELECT board_id FROM myboards) ORDER BY board_position ASC \
+  ';
 
-  db.query(queryString, [decodedToken.user_id], (err, result) => {
+  db.query(queryString, [decodedToken.user_id], (err, resultOwned) => {
     if (err) {
       console.log('Error getting boards from database with user token', err);
 
@@ -263,11 +267,29 @@ router.post('/boards', auth.authenticate, function(req, res) {
       });
     }  
 
-    // send stringified array of boards to client
-    return res.status(200).json({
-      message: 'Found ' + result.rows.length + ' boards.',
-      boards: JSON.stringify(result.rows)
-    });
+    var queryString2 = ' \
+      WITH myboards AS ( \
+        SELECT board_id FROM BoardMembers WHERE user_id = $1 \
+      ) SELECT board_id, board_name, board_position FROM Boards \
+      WHERE board_id IN (SELECT board_id FROM myboards) ORDER BY board_position ASC \
+    ';
+
+    db.query(queryString2, [decodedToken.user_id], (err, resultMember) => {
+      if (err) {
+        console.log('Error getting boards from database with user token', err);
+        return res.status(500).json({message: 'Error getting boards from DB with token.'});
+      }  
+
+      // send stringified array of boards to client
+      return res.status(200).json({
+        message: 'Successfully retrieved boards.',
+        owned_boards: resultOwned.rows,
+        shared_boards: resultMember.rows
+      });
+
+    })
+
+    
 
 
   });
@@ -434,8 +456,6 @@ router.post('/renameboard/:board_id', auth.authenticate, function(req, res, next
 router.post('/deleteboard/:board_id', auth.authenticate, function(req, res, next) {
 
   // TODO: make sure user is board owner before deleting
-  // TODO: if user is not owner, just delete that user's mapping to the board
-  //       else, delete the entire board and all remnants of it
   
   // Things to delete:
   // * Board
@@ -470,6 +490,21 @@ router.post('/deleteboard/:board_id', auth.authenticate, function(req, res, next
     // console.log('Successfully deleted board ' + req.body.board_id);
     return res.status(200).json({message: 'Board deleted successfully'});
   });
+});
+
+router.post('/unlinkboard/:board_id', auth.authenticate, function(req, res) {
+  var decodedToken = res.locals.decodedToken;
+  var queryString = "DELETE FROM BoardMembers WHERE board_id = $1 AND user_id = $2";
+  var queryParameters = [req.params.board_id, decodedToken.user_id];
+
+  db.query(queryString, queryParameters, (err, result) => {
+    if (err) {
+      console.log('Error with unlink query', err);
+      return res.status(500).json({message: 'Database error on board unlink'});
+    }
+
+    return res.status(200).json({message: 'Successfully unlinked from board'});
+  })
 });
 
 router.post('/updateboard/description/:board_id', auth.authenticate, function(req, res) {

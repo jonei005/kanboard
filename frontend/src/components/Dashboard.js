@@ -14,6 +14,7 @@ class Dashboard extends Component {
         // replace this with redux store
         this.state = {
             boards: [],
+            sharedBoards: [],
             shareModalOpen: false,
             shareModalBoardName: '',
             shareModalBoardId: -1
@@ -37,12 +38,14 @@ class Dashboard extends Component {
         }).then((response) => {
             return response.json();
         }).then((data) => {
-            // console.log('Data: ', data);
-            // console.log(JSON.parse(data.boards));
 
             // replace this with redux store?
-            var boardsArray = JSON.parse(data.boards);
-            this.setState({boards: boardsArray});
+            // var ownedBoardsArray = JSON.parse(data.boards);
+
+            this.setState({
+                boards: data.owned_boards,
+                sharedBoards: data.shared_boards
+            });
         });
     }
 
@@ -152,16 +155,39 @@ class Dashboard extends Component {
             )
         });
 
+        var sharedBoards = this.state.sharedBoards;
+
+        var sharedBoardTiles = sharedBoards.map((board, num) => {
+            return (
+                <DashboardTile key={num} name={board.board_name}  
+                    position={board.board_position} id={board.board_id}
+                    renameBoard={(newName, id) => this.renameBoard(newName, id)}
+                    deleteBoard={(id) => this.deleteBoard(id)} 
+                    toggleShareModal={(name, id) => this.toggleShareModal(name, id)}
+                />
+            )
+        })
+
         return (
             <div className="container">
                 <h1 className="page-title">{name}'s Dashboard</h1>
                 <hr className="title-underline" />
+                <h3 className="dashboard-title">My Boards</h3>
                 <div id="dashboard">
                     {boardTiles}
                     <div className="new-board-tile" onClick={() => this.createNewBoard()} title="Create New Board">
                         <p><i className="fas fa-plus"></i></p>
                     </div>
                 </div>
+                {this.sharedBoardTiles && this.sharedBoardTiles.length > 0 &&
+                    <div className="dashboard-shared-boards">
+                        <h3 className="dashboard-title">Shared With Me</h3>
+                        <div id="dashboard">
+                            {sharedBoardTiles}
+                        </div>
+                    </div>
+                }
+                
 
                 {this.state.shareModalOpen &&
                     <ShareBoardModal name={this.state.shareModalBoardName} id={this.state.shareModalBoardId}

@@ -11,6 +11,7 @@ class BoardMenu extends Component {
             members: [],
             owner: {},
             deleteBoardFormOpen: false,
+            unlinkBoardFormOpen: false,
             editDescriptionFormOpen: false,
             descriptionFormInput: this.props.description
         }
@@ -53,6 +54,15 @@ class BoardMenu extends Component {
         this.props.deleteBoard();
     }
 
+    toggleUnlinkBoardForm() {
+        this.setState({unlinkBoardFormOpen: !this.state.unlinkBoardFormOpen});
+    }
+
+    unlinkBoard() {
+        this.setState({unlinkBoardFormOpen: false});
+        this.props.unlinkBoard();
+    }
+
     toggleEditDescriptionForm() {
         this.setState({
             editDescriptionFormOpen: !this.state.editDescriptionFormOpen,
@@ -78,13 +88,6 @@ class BoardMenu extends Component {
     }
 
     render() {
-
-        // var usersArray = [
-        //     {name: 'Jeremy'},
-        //     {name: 'Jeff'},
-        //     {name: 'Some Other Guy'},
-        //     {name: 'Sample User'}
-        // ];
         
         var membersArray = this.state.members || null;
         var members = [];
@@ -103,10 +106,7 @@ class BoardMenu extends Component {
             });
         }
         
-        
-        // var sampleDescription = "This is a sample board description. Click here to write your own description. It is beneficial to describe the mission of the board to all users.";
         var description = this.props.description || "Click here to add a description.";
-
 
         return(
             <div className="board-menu-container">
@@ -141,7 +141,18 @@ class BoardMenu extends Component {
                         </h3>
                         <button id="menu-rename-board-button" onClick={() => this.props.toggleRenameForm()}>Rename Board</button>
                         <button id="menu-add-column-button" onClick={() => this.props.toggleColumnForm()}>Add Column</button>
-                        <button id="menu-delete-board-button" onClick={() => this.toggleDeleteBoardForm()}>Delete Board</button>
+                        {this.state.owner && this.state.owner.user_id === this.props.loggedInUser
+                            ? <button id="menu-delete-board-button" onClick={() => this.toggleDeleteBoardForm()}>Delete Board</button>
+                            : <button id="menu-delete-board-button" onClick={() => this.toggleUnlinkBoardForm()}>Unlink From Board</button>
+                        }
+                        {this.state.unlinkBoardFormOpen &&
+                            <div className="delete-board-form">
+                                <p>Warning:</p>
+                                <p>Are you sure you want to unlink from board: <span>{this.props.name}</span>? The board will not be deleted, but you will no longer have access to it.</p>
+                                <button className="delete-board-button" onClick={() => this.unlinkBoard()}>Unlink From Board</button>
+                                <button className="cancel-delete-board-button" onClick={() => this.toggleUnlinkBoardForm()}>Cancel</button>
+                            </div>
+                        }
                         {this.state.deleteBoardFormOpen &&
                             <div className="delete-board-form">
                                 <p>Warning:</p>

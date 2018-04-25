@@ -230,6 +230,33 @@ class Board extends Component {
         });
     }
 
+    unlinkBoard() {
+        // for shared boards, only remove it from your list (board is not deleted)
+        fetch('http://localhost:3001/unlinkboard/' + this.state.board_id, {
+            method: 'post',
+            body: JSON.stringify({
+                token: localStorage.getItem('kanboard-user-token')
+            }),
+            headers: {
+                'content-type': 'application/json' 
+            }
+        }).then((response) => {
+            if (response.status !== 200) {
+                console.log('Something went wrong with fetch unlink board');
+            }
+            return response.json();
+        }).then((data) => {
+
+            console.log(data.message);
+
+            if (data) {
+                // triggers redirect to dashboard page
+                this.setState({boardDeleted: true});
+            }
+            
+        });
+    }
+
     editBoardDescription(new_description) {
         fetch('http://localhost:3001/updateboard/description/' + this.state.board_id, {
             method: 'post',
@@ -343,10 +370,12 @@ class Board extends Component {
                         </div>
                     </div>
                     <BoardMenu name={this.props.boardData.board_name} id={this.state.board_id}
+                        loggedInUser={this.props.user.user_id}
                         description={this.props.boardData.board_description}
                         toggleRenameForm={() => this.toggleRenameForm()}
                         toggleColumnForm={() => this.toggleColumnForm()} 
                         deleteBoard={() => this.deleteBoard()}
+                        unlinkBoard={() => this.unlinkBoard()}
                         editBoardDescription={(new_description) => this.editBoardDescription(new_description)}
                     />
                 </div>
