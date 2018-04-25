@@ -178,7 +178,7 @@ router.options('/register', function(req, res, next) {
   return res.status(200);
 });
 
-// GET USER REQUESTS
+// GET USER REQUESTS (FOR LOGGED IN USER)
 // used to verify that a token is correct and send user data (such as on page refresh)
 router.post('/user', auth.authenticate, function(req, res) {
   
@@ -211,6 +211,36 @@ router.post('/user', auth.authenticate, function(req, res) {
 
   });
 
+});
+
+// GET USER INFO (FOR USERS NOT OURSELVES)
+// 
+router.post('/user/:user_id', auth.authenticate, function(req, res) {
+
+  // get user data from database based on user_id in token
+  var queryString = 'SELECT user_id, user_email, user_name, \
+    user_bio, user_company, user_position, user_location \
+    FROM Users WHERE user_id=$1';
+  
+  db.query(queryString, [req.params.user_id], (err, result) => {
+    if (err) {
+      console.log('Error getting user with token', err);
+
+      return res.status(500).json({
+        message: 'Error getting user from DB',
+        success: false
+      });
+    }
+
+    var user = result.rows[0];
+
+    // send user data back to client
+    return res.status(200).json({
+      message: 'User succesfully retrieved.',
+      user: user,
+      success: true
+    });
+  });
 });
 
 // SEND USER BOARDS

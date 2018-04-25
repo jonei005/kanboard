@@ -6,6 +6,7 @@ import Register from './../components/Register';
 import About from './../components/About';
 import Dashboard from './../components/Dashboard';
 import Board from './../components/Board';
+import User from './../components/User';
 
 export default () => {
     return (
@@ -17,6 +18,7 @@ export default () => {
             <Route exact path='/dashboard' component={Dashboard} />
             <Route exact path='/board' component={Board} /> 
             <Route path='/board/:id' component={Board} />
+            <Route path='/user/:id' component={User} />
         </Switch>
     );
 }
