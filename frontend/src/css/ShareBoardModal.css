@@ -1,0 +1,95 @@
+/* Styles for Share Board Modal */
+
+.share-modal-backdrop {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 100vw;
+    background: rgba(0, 0, 0, 0.5);
+    overflow: hidden;
+}
+
+.share-modal-container {
+    position: relative;
+    width: 35vw;
+    height: 70vh;
+    margin: 15vh auto;
+    background: #f7f7f7;
+    border-radius: 10px;
+    border: 1px solid #333;
+    box-shadow: 0px 0px 24px -2px #bbb;
+    overflow: auto;
+}
+
+.share-modal {
+    padding: 24px;
+    color: #333;
+}
+
+.share-modal-close-button {
+    position: relative;
+    float: right;
+    background: none;
+    border: none;
+    color: #afafaf;
+    font-size: 14pt;
+    cursor: pointer;
+}
+
+.share-modal-close-button:hover {
+    color: red;
+}
+
+.share-modal-name {
+    margin: 0;
+    display: inline-block;
+    font-size: 16pt;
+    color: #42426a;
+    width: 90%;
+}
+
+.share-modal-form input {
+    padding: 4px;
+}
+
+.share-modal-form .share-modal-form-button {
+    border: none;
+    background: none;
+    color: #555;
+    cursor: pointer;
+    padding: 6px;
+}
+
+.share-modal-form .share-modal-form-button:hover {
+    color: green;    
+}
+
+.share-modal-form-error {
+    color: red;
+}
+
+.share-modal-board-owner-title {
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.share-modal-board-members-title {
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.board-member {
+    text-decoration: none;
+    background: #eee;
+    border-radius: 5px;
+    padding: 6px;
+    margin-right: 12px;
+    color: #333;
+    display: inline-block;
+    margin-bottom: 12px;
+}
+
+.board-member:hover {
+    opacity: 0.7;
+}

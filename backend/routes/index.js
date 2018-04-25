@@ -462,6 +462,86 @@ router.post('/updateboard/description/:board_id', auth.authenticate, function(re
   });
 })
 
+// BOARD MEMBERS & OWNER
+// return list of board members and the board owner to client
+router.post('/boardmembers/:board_id', auth.authenticate, function(req, res) {
+  var queryStringOwner = " \
+    SELECT * FROM BoardOwners \
+    INNER JOIN Users ON Users.user_id = BoardOwners.user_id \
+    WHERE board_id = $1 \
+  ";
+  var queryParametersOwner = [req.params.board_id];
+
+  db.query(queryStringOwner, queryParametersOwner, (err, result) => {
+    if (err) {
+      console.log('Error with get board owner query', err);
+      return res.status(500).json({message: 'Database error on get board members'});
+    }
+
+    var boardOwner = {
+      user_id: result.rows[0].user_id,
+      user_name: result.rows[0].user_name
+    };
+
+    var queryStringMembers = " \
+      SELECT BoardMembers.user_id, Users.user_name, Users.user_email FROM BoardMembers \
+      INNER JOIN Users ON Users.user_id = BoardMembers.user_id \
+      WHERE board_id = $1 \
+    ";
+    var queryParametersMembers = [req.params.board_id];
+
+    db.query(queryStringMembers, queryParametersMembers, (err, resultMembers) => {
+      if (err) {
+        console.log('Error with get board members query', err);
+        return res.status(500).json({message: 'Database error on get board members'});
+      }
+
+      return res.status(200).json({
+        message: 'Successfully retrieved board owner and members',
+        board_owner: boardOwner,
+        board_members: resultMembers.rows
+      })
+    });
+  });
+});
+
+router.post('/addmember/:board_id', auth.authenticate, function(req, res) {
+
+  var queryStringUser = "SELECT user_id, user_name, user_email FROM Users WHERE user_email = $1";
+  var queryParametersUser = [req.body.user_email];
+
+  db.query(queryStringUser, queryParametersUser, (err, resultUser) => {
+    if (err) {
+      console.log('Error with addmember query find user', err);
+      return res.status(500).json({message: 'Database error on addmember query'});
+    }
+
+    if (resultUser.rows.length === 0) {
+      return res.status(200).json({
+        message: 'User doesn\'t exist',
+        success: false
+      })
+    }
+    else {
+      var queryString = "INSERT INTO BoardMembers (board_id, user_id) VALUES ($1, $2) RETURNING *";
+      var queryParameters = [req.params.board_id, resultUser.rows[0].user_id];
+
+      db.query(queryString, queryParameters, (err, result) => {
+        if (err) {
+          console.log('Error with addmember query insert boardmembers', err);
+          return res.status(500).json({message: 'Database error on addmember query'});
+        }
+
+        return res.status(200).json({
+          message: 'Successfully added member to board',
+          success: true,
+          user: resultUser.rows[0]
+        })
+      });
+    }
+  });  
+});
+
 // ADD COLUMN
 // adds column data (found in req.body) to DB, associated with board_id given from pathname
 router.post('/addcolumn/:board_id', auth.authenticate, function(req, res) {
@@ -482,7 +562,7 @@ router.post('/addcolumn/:board_id', auth.authenticate, function(req, res) {
     req.body.column_name,
     req.body.column_position,
     req.params.board_id
-  ]
+  ];
 
   db.query(queryString, queryParameters, (err, result) => {
     if (err) {

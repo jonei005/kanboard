@@ -11,7 +11,7 @@ class DashboardTile extends Component {
 
         this.state = {
             renameFormOpen: false,
-            shareFormOpen: false,
+            shareModalOpen: false,
             deleteFormOpen: false
         }
     }
@@ -20,25 +20,27 @@ class DashboardTile extends Component {
         // toggle rename form, close others
         this.setState({
             renameFormOpen: !this.state.renameFormOpen,
-            shareFormOpen: false,
+            shareModalOpen: false,
             deleteFormOpen: false
         });
     }
 
-    openShareForm() {
+    openShareModal() {
         // toggle share form, close others
         this.setState({
             renameFormOpen: false,
-            shareFormOpen: !this.state.shareFormOpen,
+            shareModalOpen: !this.state.shareModalOpen,
             deleteFormOpen: false
         });
+
+        this.props.toggleShareModal(this.props.name, this.props.id);
     }
 
     openDeleteForm() {
         // toggle delete form, close others
         this.setState({
             renameFormOpen: false,
-            shareFormOpen: false,
+            shareModalOpen: false,
             deleteFormOpen: !this.state.deleteFormOpen
         });
     }
@@ -131,8 +133,9 @@ class DashboardTile extends Component {
 
                 <DashboardTileMenu 
                     openRenameForm={() => this.openRenameForm()} 
-                    openShareForm={() => this.openShareForm()} 
+                    openShareModal={() => this.openShareModal()} 
                     openDeleteForm={() => this.openDeleteForm()} 
+                    closeShareModal={() => this.setState({shareModalOpen: false})}
                 />
             </div>
         );

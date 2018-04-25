@@ -2,7 +2,9 @@ import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 import DashboardTile from './DashboardTile';
+import ShareBoardModal from './ShareBoardModal';
 import './../css/Dashboard.css';
+import './../css/ShareBoardModal.css';
 
 class Dashboard extends Component {
 
@@ -11,7 +13,10 @@ class Dashboard extends Component {
 
         // replace this with redux store
         this.state = {
-            boards: []
+            boards: [],
+            shareModalOpen: false,
+            shareModalBoardName: '',
+            shareModalBoardId: -1
         }
     }
 
@@ -117,6 +122,14 @@ class Dashboard extends Component {
         }
     }
 
+    toggleShareModal(board_name, board_id) {
+        this.setState({
+            shareModalOpen: !this.state.shareModalOpen,
+            shareModalBoardName: board_name,
+            shareModalBoardId: board_id
+        });
+    }
+
     render() {
 
         // get user name from redux store
@@ -129,10 +142,14 @@ class Dashboard extends Component {
         })
 
         var boardTiles = boards.map((board, num) => {
-            return <DashboardTile key={num} name={board.board_name}  
-                position={board.board_position} id={board.board_id}
-                renameBoard={(newName, id) => this.renameBoard(newName, id)}
-                deleteBoard={(id) => this.deleteBoard(id)} />
+            return (
+                <DashboardTile key={num} name={board.board_name}  
+                    position={board.board_position} id={board.board_id}
+                    renameBoard={(newName, id) => this.renameBoard(newName, id)}
+                    deleteBoard={(id) => this.deleteBoard(id)} 
+                    toggleShareModal={(name, id) => this.toggleShareModal(name, id)}
+                />
+            )
         });
 
         return (
@@ -145,6 +162,13 @@ class Dashboard extends Component {
                         <p><i className="fas fa-plus"></i></p>
                     </div>
                 </div>
+
+                {this.state.shareModalOpen &&
+                    <ShareBoardModal name={this.state.shareModalBoardName} id={this.state.shareModalBoardId}
+                        toggleShareModal={() => this.toggleShareModal()}
+
+                    />
+                }
             </div>
         );
     }
