@@ -38,6 +38,9 @@ class User extends Component {
 
     render() {
         if (this.state.user) {
+
+            var bioClass = !this.state.user.user_bio ? "empty" : "";
+
             return(
                 <div className="container">
                     <h1 className="page-title">{this.state.user.user_name + "'s Profile"}</h1>
@@ -45,23 +48,23 @@ class User extends Component {
 
                     <div className="user-info">
                         <div className="user-item user-email">
-                            <p>Email: <span>{this.state.user.user_email}</span></p>
+                            <p><i className="fas fa-envelope fa-lg"></i> Email: <span>{this.state.user.user_email}</span></p>
                         </div>
 
                         <div className="user-item user-location">
-                            <p>Location: <span>{this.state.user.user_location || "Not Given"}</span></p>
+                            <p><i className="fas fa-compass fa-lg"></i> Location: <span>{this.state.user.user_location || "Not Given"}</span></p>
                         </div>
 
                         <div className="user-item user-company">
-                            <p>Company: <span>{this.state.user.user_company || "Not Given"}</span></p>
+                            <p><i className="fas fa-building fa-lg"></i> Company: <span>{this.state.user.user_company || "Not Given"}</span></p>
                         </div>
 
                         <div className="user-item user-position">
-                            <p>Position: <span>{this.state.user.user_position || "Not Given"}</span></p>
+                            <p><i className="fas fa-people-carry fa-lg"></i> Position: <span>{this.state.user.user_position || "Not Given"}</span></p>
                         </div>
 
                         <div className="user-item user-bio">
-                            <p>Bio: <span>{this.state.user.user_bio || "Not Given"}</span></p>
+                            <p><i className="fas fa-user-circle fa-lg"></i> Bio: <span className={bioClass}>{this.state.user.user_bio || "Not Given"}</span></p>
                         </div>
                     </div>
                 </div>

@@ -1,7 +1,12 @@
 /* Styles for User component (viewing user info) */
 
 .user-info {
+    margin-top: 36px;
     font-size: 14pt;
+}
+
+.user-item {
+    margin-bottom: 36px;
 }
 
 .user-item p {
@@ -15,4 +20,8 @@
 
 .user-item.user-bio span {
     display: block;
+}
+
+.user-item.user-bio span.empty {
+    display: inline;
 }
