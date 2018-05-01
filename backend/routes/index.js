@@ -243,6 +243,70 @@ router.post('/user/:user_id', auth.authenticate, function(req, res) {
   });
 });
 
+router.post('/account', auth.authenticate, function(req, res) {
+  var decodedToken = res.locals.decodedToken;
+
+  // get user data from database based on user_id in token
+  var queryString = 'SELECT user_id, user_email, user_name, \
+    user_bio, user_company, user_position, user_location \
+    FROM Users WHERE user_id=$1';
+  
+  db.query(queryString, [decodedToken.user_id], (err, result) => {
+    if (err) {
+      console.log('Error getting account with token', err);
+
+      return res.status(500).json({
+        message: 'Error getting account from DB',
+        success: false
+      });
+    }
+
+    var user = result.rows[0];
+
+    // send user data back to client
+    return res.status(200).json({
+      message: 'Account succesfully retrieved.',
+      user: user,
+      success: true
+    });
+  });
+});
+
+router.post('/updateaccount/:field', auth.authenticate, function(req, res) {
+  var decodedToken = res.locals.decodedToken;
+
+  // build query string based on field parameter (updating column, location, etc)
+  var queryString = 'UPDATE Users SET ';
+  switch(req.params.field) {
+    case 'location':
+      queryString += 'user_location';
+      break;
+    case 'company':
+      queryString += 'user_company';
+      break;
+    case 'position':
+      queryString += 'user_position';
+      break;
+    case 'bio':
+      queryString += 'user_bio';
+      break;
+    default:
+      return res.status(500).json({message: 'Unrecognized update account field'});
+  }
+  queryString += ' = $1 WHERE user_id = $2';
+
+  var queryParameters = [req.body.data, decodedToken.user_id];
+
+  db.query(queryString, queryParameters, (err, result) => {
+    if (err) {
+      console.log('Error updating account with user token', err);
+      return res.status(500).json({message: 'Error updating account in database.'});
+    }  
+
+    return res.status(200).json({message: 'Successfuly updated account.'})
+  });
+});
+
 // SEND USER BOARDS
 // used to verify token and send list of user boards (for use in the dashboard page)
 router.post('/boards', auth.authenticate, function(req, res) {

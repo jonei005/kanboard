@@ -39,7 +39,7 @@ class AuthNav extends Component {
                     <Link to="/about" className="nav-button">About</Link>
                 </div>
                 <div id="navigation-right">
-                    <Link to="/about" className="nav-button">Account</Link>
+                    <Link to="/account" className="nav-button">Account</Link>
                     <Link to="/" className="nav-button" onClick={() => this.logout()}>Logout</Link>
                 </div>
             </div>

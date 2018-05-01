@@ -1,4 +1,4 @@
-/* Styles for User component (viewing user info) */
+/* Styles for Account and User components (viewing/editing user info) */
 
 .user-info {
     margin-top: 36px;
@@ -20,8 +20,59 @@
 
 .user-item.user-bio span {
     display: block;
+    white-space: pre-line;
+    margin-top: 24px;
 }
 
 .user-item.user-bio span.empty {
     display: inline;
+}
+
+.account .user-item span:hover {
+    cursor: pointer;
+    opacity: 0.7;
+}
+
+.account .user-item.user-email span:hover {
+    cursor: text;
+    opacity: 1;
+}
+
+.account p.edit-account-note {
+    text-align: center;
+}
+
+/* Account Forms */
+.account .user-item div p {
+    display: inline;
+    vertical-align: middle;
+}
+
+.account .user-item input {
+    margin-right: 6px;
+    display: inline;
+}
+
+.account .user-item button {
+    background: none;
+    border: none;
+    padding: 4px;
+    color: #555;
+    cursor: pointer;
+    height: 21px;
+}
+
+.account .user-item button.save-button:hover {
+    color: green;
+}
+
+.account .user-item button.cancel-button:hover {
+    color: #333;
+}
+
+.account .account-bio-form textarea {
+    display: block;
+    width: 50%;
+    margin-top: 12px;
+    margin-bottom: 6px;
 }
