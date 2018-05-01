@@ -459,19 +459,19 @@ router.post('/deleteboard/:board_id', auth.authenticate, function(req, res, next
   
   // Things to delete:
   // * Board
-  // * BoardOwners or BoardUsers mapping
+  // * BoardOwners and BoardMembers mapping
   // * BoardsToColumns mappings
   // * Columns in the board
   // * ColumnsToCards mappings
   // * Cards in each column
-
-  // Sheesh
 
   var queryString = " \
     WITH my_board_id as ( \
       DELETE FROM Boards WHERE board_id = $1 RETURNING board_id \
     ), owner_id as ( \
       DELETE FROM BoardOwners WHERE board_id = (SELECT board_id FROM my_board_id LIMIT 1) RETURNING user_id \
+    ), member_ids as ( \
+      DELETE FROM BoardMembers WHERE board_id = (SELECT board_id FROM my_board_id LIMIT 1) RETURNING user_id \
     ), column_ids as ( \
       DELETE FROM BoardsToColumns WHERE board_id = (SELECT board_id FROM my_board_id LIMIT 1) RETURNING column_id \
     ), more_columns as ( \
@@ -509,6 +509,7 @@ router.post('/unlinkboard/:board_id', auth.authenticate, function(req, res) {
   })
 });
 
+// UPDATE BOARD DESCRIPTION
 router.post('/updateboard/description/:board_id', auth.authenticate, function(req, res) {
   var queryString = " \
     UPDATE Boards SET board_description = $1 WHERE board_id = $2 RETURNING * \
