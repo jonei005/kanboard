@@ -1,19 +1,135 @@
 /* Landing page styles */
 
-#kanboard.container {
+#kanboard-header {
+    background: url("./../landing.jpg");
+    background-size: cover;
+    background-position-y: bottom;
+}
+
+#kanboard-header-overlay {
+    padding: 48px 0;
+    background: rgba(0,0,0,0.4);
+}
+
+#kanboard .container {
     color: #333;
 }
 
-#kanboard .page-title {
+#kanboard .container p {
+    line-height: 1.5;
+}
+
+#kanboard-header .page-title {
     font-size: 36pt;
+    color: #fbf380;
+}
+
+#kanboard-header .kanboard-header-description {
+    font-weight: bold;
+    color: white;
+    line-height: 1.5;
+    margin-top: 48px;
+    margin-bottom: 64px;
+    text-align: justify;
+    font-size: 16pt;
+}
+
+#kanboard-header .landing-buttons {
+    text-align: center;
+    position: relative;
+    padding: 12px 0;
+}
+
+#kanboard-header .landing-buttons a {
+    color: white;
+    text-decoration: none;
+    padding: 12px;
+    background: #42426a;
+    border-radius: 5px;
+    margin: 0 12px 0;
+    font-weight: bold;
+}
+
+#kanboard-header .landing-buttons a:hover {
+    color: #fbf380;
+    background: #42426aCC;
+}
+
+#kanboard h2.kanboard-section-title {
+    color: #42426a;
+    display: block;
+    margin: 24px auto;
+    width: fit-content;
 }
 
 .kanboard-description {
     text-align: justify;
-    font-size: 16pt;
+    font-size: 14pt;
     margin-bottom: 48px;
+    color: #333;
 }
 
-.kanboard-description:first-of-type {
-    margin-top: 64px;
+/* Sticky notes */
+.kanboard-sticky-notes {
+    display: grid;
+    grid-template-columns: repeat(3, 28%);
+    grid-gap: 8%;
+    margin: 0 auto 84px;
+}
+
+.kanboard-sticky-note {
+    color: #333;
+    text-align: center;
+    padding: 24px;
+    line-height: 1.5;
+    background: #fbf380;
+    background: linear-gradient(135deg, #fffab1, #fbf380);
+    box-shadow: 4px 4px 6px -1px #888;
+}
+
+.kanboard-sticky-note h3 {
+    line-height: normal;
+    text-align: center;
+    margin: 0 0 12px;
+}
+
+/* These are used to make different color sticky notes */
+/*
+.kanboard-sticky-note.sticky-note-2 {
+    background: linear-gradient(135deg, #d8f9d8, #a4d096);
+}
+
+.kanboard-sticky-note.sticky-note-3 {
+    background: linear-gradient(135deg, #f9e1ff, #c8a2d4);
+}
+*/
+
+/* Footer styles */
+#kanboard .footer {
+    margin-top: 48px;
+    border-top: 2px solid #afafaf;
+}
+
+#kanboard .footer .container{
+    padding: 24px 0;
+}
+
+#kanboard .footer .footer-text {
+    width: 50%;
+    display: inline-block;
+}
+
+#kanboard .footer .footer-links {
+    width: 50%;
+    display: inline-block;
+    text-align: right;
+}
+
+#kanboard .footer a {
+    color: #42426a;
+    text-decoration: none;
+}
+
+#kanboard .footer a:hover {
+    opacity: 0.8;
 }
