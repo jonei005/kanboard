@@ -219,9 +219,9 @@ class Account extends Component {
 
             return (
                 <div className="container account">
-                    <h1 className="page-title">Edit Your Profile</h1>
+                    <h1 className="page-title">Your Profile</h1>
                     <hr className="title-underline" />
-                    <p className="edit-account-note">Note: Click on your information to edit it. All changes will be saved in the database.</p>
+                    <p className="edit-account-note">Note: Click on your information to edit it.</p>
 
                     <div className="user-info">
                         <div className="user-item user-email">

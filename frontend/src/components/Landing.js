@@ -48,7 +48,7 @@ class Landing extends Component {
                                 :
                                 <div className="landing-buttons">
                                     <Link to="/register">Create Account</Link>
-                                    <Link to="/login">Log in</Link>
+                                    <Link to="/login">Login</Link>
                                 </div>
                             }
                         </div>
