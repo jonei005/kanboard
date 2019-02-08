@@ -3,6 +3,7 @@ import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 import DashboardTile from './DashboardTile';
 import ShareBoardModal from './ShareBoardModal';
+import api from './../constants/api.js';
 import './../css/Dashboard.css';
 import './../css/ShareBoardModal.css';
 
@@ -29,7 +30,7 @@ class Dashboard extends Component {
         // send user token, get boards from database based on user id
         // add boards to state (id and name)
 
-        fetch('http://localhost:3001/boards', {
+        fetch(api + '/boards', {
             method: 'post',
             body: JSON.stringify({token: token}),
             headers: {

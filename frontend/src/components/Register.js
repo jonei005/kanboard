@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { Redirect } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { storeUser } from './../actions';
+import api from './../constants/api.js';
 import './../css/Register.css';
 
 class Register extends Component {
@@ -80,7 +81,7 @@ class Register extends Component {
 
         var data = JSON.stringify(userData);
 
-        fetch("http://localhost:3001/register", {
+        fetch(api + "/register", {
             method: "post",
             body: data,
             headers: {
@@ -103,7 +104,7 @@ class Register extends Component {
             };
 
             // then login user *** WORK IN PROGRESS
-            fetch("http://localhost:3001/login", {
+            fetch(api + "/login", {
                 method: "post",
                 body: JSON.stringify(loginData),
                 headers: {

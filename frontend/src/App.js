@@ -6,6 +6,7 @@ import Routes from './routes';
 import Navigation from './components/Navigation';
 import { DragDropContext } from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
+import api from './constants/api.js';
 import './css/App.css';
 
 // App component that loads the router
@@ -16,7 +17,7 @@ class App extends Component {
     var token = localStorage.getItem('kanboard-user-token') || null;
     
     if (token) {
-      fetch('http://localhost:3001/user', {
+      fetch(api + '/user', {
         method: 'post',
         body: JSON.stringify({token: token}),
         headers: {
