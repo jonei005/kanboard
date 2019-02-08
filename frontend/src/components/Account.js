@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import api from './../constants/api.js';
 import './../css/User.css';
 
 class Account extends Component {
@@ -21,7 +22,7 @@ class Account extends Component {
 
     componentDidMount() {
         // fetch user info 
-        fetch('http://localhost:3001/account', {
+        fetch(api + '/account', {
             method: 'post',
             body: JSON.stringify({token: localStorage.getItem('kanboard-user-token')}),
             headers: {
@@ -56,7 +57,7 @@ class Account extends Component {
             return;
         }
 
-        fetch('http://localhost:3001/updateaccount/location', {
+        fetch(api + '/updateaccount/location', {
             method: 'post',
             body: JSON.stringify({
                 token: localStorage.getItem('kanboard-user-token'),
@@ -93,7 +94,7 @@ class Account extends Component {
             return;
         }
 
-        fetch('http://localhost:3001/updateaccount/company', {
+        fetch(api + '/updateaccount/company', {
             method: 'post',
             body: JSON.stringify({
                 token: localStorage.getItem('kanboard-user-token'),
@@ -130,7 +131,7 @@ class Account extends Component {
             return;
         }
 
-        fetch('http://localhost:3001/updateaccount/position', {
+        fetch(api + '/updateaccount/position', {
             method: 'post',
             body: JSON.stringify({
                 token: localStorage.getItem('kanboard-user-token'),
@@ -167,7 +168,7 @@ class Account extends Component {
             return;
         }
 
-        fetch('http://localhost:3001/updateaccount/bio', {
+        fetch(api + '/updateaccount/bio', {
             method: 'post',
             body: JSON.stringify({
                 token: localStorage.getItem('kanboard-user-token'),

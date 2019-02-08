@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import api from './../constants/api';
 import './../css/User.css';
 
 class User extends Component {
@@ -15,7 +16,7 @@ class User extends Component {
     }
 
     componentDidMount() {
-        fetch('http://localhost:3001/user/' + this.state.user_id, {
+        fetch(api + '/user/' + this.state.user_id, {
             method: 'post',
             body: JSON.stringify({token: localStorage.getItem('kanboard-user-token')}),
             headers: {

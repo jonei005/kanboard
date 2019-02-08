@@ -44,7 +44,7 @@ class Login extends Component {
         }
 
         // make POST request
-        fetch("http://localhost:3001/login", {
+        fetch(api + '/login', {
             method: "post",
             body: JSON.stringify(data),
             headers: {

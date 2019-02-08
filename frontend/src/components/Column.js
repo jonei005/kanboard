@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import Card from './Card';
 import { DropTarget } from 'react-dnd';
 import dndTypes from './../constants/dndTypes';
+import api from './../constants/api';
 
 // specifies drop target contract, all methods optional
 const columnTarget = {
@@ -74,7 +75,7 @@ class Column extends Component {
 
         var token = localStorage.getItem('kanboard-user-token');
 
-        fetch('http://localhost:3001/addcard/' + this.props.id, {
+        fetch(api + '/addcard/' + this.props.id, {
             method: 'post',
             body: JSON.stringify({
                 token: token,
@@ -131,7 +132,7 @@ class Column extends Component {
         if (wantToDelete) {
             var token = localStorage.getItem('kanboard-user-token');
 
-            fetch('http://localhost:3001/deletecolumn/' + this.props.id, {
+            fetch(api + '/deletecolumn/' + this.props.id, {
                 method: 'post',
                 body: JSON.stringify({
                     token: token
@@ -185,7 +186,7 @@ class Column extends Component {
         var token = localStorage.getItem('kanboard-user-token');
 
         // send new column name to api in body
-        fetch('http://localhost:3001/updatecolumn/name/' + this.props.id, {
+        fetch(api + '/updatecolumn/name/' + this.props.id, {
             method: 'post',
             body: JSON.stringify({
                 token: token,

@@ -9,6 +9,7 @@ import {
     createColumn, deleteColumn, renameColumn,
     createCard
 } from './../actions'; // make actual action for updating board stuffs
+import api from './../constants/api';
 import './../css/Board.css';
 
 class Board extends Component {
@@ -42,7 +43,7 @@ class Board extends Component {
         // send user token, get board data from database based on path
         // add boards to state (id and name)
 
-        fetch('http://localhost:3001/board/' + this.state.board_id, {
+        fetch(api + '/board/' + this.state.board_id, {
             method: 'post',
             body: JSON.stringify({token: token}),
             headers: {
@@ -84,7 +85,7 @@ class Board extends Component {
             return;
         }
 
-        fetch('http://localhost:3001/renameboard/' + this.props.boardData.board_id, {
+        fetch(api + '/renameboard/' + this.props.boardData.board_id, {
             method: 'post',
             body: JSON.stringify({
                 token: localStorage.getItem('kanboard-user-token'),
@@ -132,7 +133,7 @@ class Board extends Component {
         var column_name = this.state.columnFormText;
 
         
-        fetch('http://localhost:3001/addcolumn/' + this.state.board_id, {
+        fetch(api + '/addcolumn/' + this.state.board_id, {
             method: 'post',
             body: JSON.stringify({
                 token: token,
@@ -205,7 +206,7 @@ class Board extends Component {
     }
 
     deleteBoard() {
-        fetch('http://localhost:3001/deleteboard/' + this.state.board_id, {
+        fetch(api + '/deleteboard/' + this.state.board_id, {
             method: 'post',
             body: JSON.stringify({
                 token: localStorage.getItem('kanboard-user-token')
@@ -232,7 +233,7 @@ class Board extends Component {
 
     unlinkBoard() {
         // for shared boards, only remove it from your list (board is not deleted)
-        fetch('http://localhost:3001/unlinkboard/' + this.state.board_id, {
+        fetch(api + '/unlinkboard/' + this.state.board_id, {
             method: 'post',
             body: JSON.stringify({
                 token: localStorage.getItem('kanboard-user-token')
@@ -258,7 +259,7 @@ class Board extends Component {
     }
 
     editBoardDescription(new_description) {
-        fetch('http://localhost:3001/updateboard/description/' + this.state.board_id, {
+        fetch(api + '/updateboard/description/' + this.state.board_id, {
             method: 'post',
             body: JSON.stringify({
                 token: localStorage.getItem('kanboard-user-token'),

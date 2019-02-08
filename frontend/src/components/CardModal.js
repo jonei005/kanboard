@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { deleteCard, updateCard } from './../actions';
+import api from './../constants/api';
 import './../css/CardModal.css';
 
 const RENAME = 'rename';
@@ -72,7 +73,7 @@ class CardModal extends Component {
             return;
         }
 
-        fetch('http://localhost:3001/updatecard/rename/' + this.props.card.card_id, {
+        fetch(api + '/updatecard/rename/' + this.props.card.card_id, {
             method: 'post',
             body: JSON.stringify({
                 token: localStorage.getItem('kanboard-user-token'),
@@ -106,7 +107,7 @@ class CardModal extends Component {
     deleteCard() {
 
         // delete card from DB via api call, then delete in redux store
-        fetch('http://localhost:3001/deletecard/' + this.props.card.card_id, {
+        fetch(api + '/deletecard/' + this.props.card.card_id, {
             method: 'post',
             body: JSON.stringify({token: localStorage.getItem('kanboard-user-token')}),
             headers: {'content-type': 'application/json'}
@@ -146,7 +147,7 @@ class CardModal extends Component {
             return;
         }
 
-        fetch('http://localhost:3001/updatecard/description/' + this.props.card.card_id, {
+        fetch(api + '/updatecard/description/' + this.props.card.card_id, {
             method: 'post',
             body: JSON.stringify({
                 token: localStorage.getItem('kanboard-user-token'),
@@ -195,7 +196,7 @@ class CardModal extends Component {
 
         var commentObject = {comment, user_id, user_name};
         
-        fetch('http://localhost:3001/updatecard/addcomment/' + this.props.card.card_id, {
+        fetch(api + '/updatecard/addcomment/' + this.props.card.card_id, {
             method: 'post',
             body: JSON.stringify({
                 token: localStorage.getItem('kanboard-user-token'),
@@ -239,7 +240,7 @@ class CardModal extends Component {
             return;
         }
         
-        fetch('http://localhost:3001/updatecard/duedate/' + this.props.card.card_id, {
+        fetch(api + '/updatecard/duedate/' + this.props.card.card_id, {
             method: 'post',
             body: JSON.stringify({
                 token: localStorage.getItem('kanboard-user-token'),
@@ -278,7 +279,7 @@ class CardModal extends Component {
             return;
         }
         
-        fetch('http://localhost:3001/updatecard/priority/' + this.props.card.card_id, {
+        fetch(api + '/updatecard/priority/' + this.props.card.card_id, {
             method: 'post',
             body: JSON.stringify({
                 token: localStorage.getItem('kanboard-user-token'),
@@ -337,7 +338,7 @@ class CardModal extends Component {
             return;
         }
 
-        fetch('http://localhost:3001/updatecard/tags/' + this.props.card.card_id, {
+        fetch(api + '/updatecard/tags/' + this.props.card.card_id, {
             method: 'post',
             body: JSON.stringify({
                 token: localStorage.getItem('kanboard-user-token'),

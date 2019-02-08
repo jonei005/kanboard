@@ -58,7 +58,7 @@ class Dashboard extends Component {
         var board_name = 'New Board'; // get name 
         var board_position = this.state.boards.length;
 
-        fetch('http://localhost:3001/createboard', {
+        fetch(api + '/createboard', {
             method: 'post',
             body: JSON.stringify({
                 token: token, 

@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import DashboardTileMenu from './DashboardTileMenu';
 import DashboardTileRename from './DashboardTileRename';
 import DashboardTileDelete from './DashboardTileDelete';
+import api from './../constants/api';
 
 class DashboardTile extends Component {
 
@@ -54,7 +55,7 @@ class DashboardTile extends Component {
 
         var token = localStorage.getItem('kanboard-user-token');
         
-        fetch('http://localhost:3001/renameboard/' + this.props.id, {
+        fetch(api + '/renameboard/' + this.props.id, {
             method: 'post',
             body: JSON.stringify({
                 token: token,
@@ -91,7 +92,7 @@ class DashboardTile extends Component {
         if (wantToDelete) {
             var token = localStorage.getItem('kanboard-user-token');
 
-            fetch('http://localhost:3001/deleteboard/' + this.props.id, {
+            fetch(api + '/deleteboard/' + this.props.id, {
                 method: 'post',
                 body: JSON.stringify({
                     token: token,
@@ -122,7 +123,7 @@ class DashboardTile extends Component {
         this.setState({deleteFormOpen: false});
 
         if (wantToUnlink) {
-            fetch('http://localhost:3001/unlinkboard/' + this.props.id, {
+            fetch(api + '/unlinkboard/' + this.props.id, {
                 method: 'post',
                 body: JSON.stringify({
                     token: localStorage.getItem('kanboard-user-token')

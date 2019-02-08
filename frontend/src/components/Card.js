@@ -4,6 +4,7 @@ import { DragSource, DropTarget } from 'react-dnd';
 import dndTypes from './../constants/dndTypes';
 import { connect } from 'react-redux';
 import { moveCard } from './../actions';
+import api from './../constants/api';
 
 // CARD DRAG SOURCE
 // specifies drag source contract (what to do when begin/end drag)
@@ -99,7 +100,7 @@ var cardSource = {
             }
 
             if (body) {
-                fetch('http://localhost:3001/movecard/' + item.card_id, {
+                fetch(api + '/movecard/' + item.card_id, {
                     method: 'post',
                     body: JSON.stringify(body),
                     headers: {

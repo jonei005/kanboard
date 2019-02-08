@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
+import api from './../constants/api';
 
 class BoardMenu extends Component {
 
@@ -19,7 +20,7 @@ class BoardMenu extends Component {
 
     componentDidMount() {
         // get owner and members of the board
-        fetch('http://localhost:3001/boardmembers/' + this.props.id, {
+        fetch(api + '/boardmembers/' + this.props.id, {
             method: 'post',
             body: JSON.stringify({token: localStorage.getItem('kanboard-user-token')}),
             headers: {

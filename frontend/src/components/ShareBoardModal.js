@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
+import api from './../constants/api';
 
 class ShareBoardModal extends Component {
 
@@ -23,7 +24,7 @@ class ShareBoardModal extends Component {
 
     componentDidMount() {
         // get owner and members of the board
-        fetch('http://localhost:3001/boardmembers/' + this.props.id, {
+        fetch(api + '/boardmembers/' + this.props.id, {
             method: 'post',
             body: JSON.stringify({token: localStorage.getItem('kanboard-user-token')}),
             headers: {
@@ -85,7 +86,7 @@ class ShareBoardModal extends Component {
 
         this.setState({shareModalFormInput: ''});
 
-        fetch('http://localhost:3001/addmember/' + this.props.id, {
+        fetch(api + '/addmember/' + this.props.id, {
             method: 'post',
             body: JSON.stringify({
                 token: localStorage.getItem('kanboard-user-token'),
