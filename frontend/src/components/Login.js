@@ -3,6 +3,7 @@ import LoginForm from './LoginForm';
 import { Redirect } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { storeUser } from './../actions';
+import api from './../constants/api';
 import './../css/Login.css';
 
 class Login extends Component {
